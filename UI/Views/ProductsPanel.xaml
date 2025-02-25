@@ -1,0 +1,53 @@
+<ScrollView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+            xmlns:vm="src.ViewModels"
+            xmlns:comp="clr-namespace:POS.Components"
+            x:Class="POS.Views.ProductsPanel"
+            Padding="10">
+    <VerticalStackLayout>
+        <HorizontalStackLayout>
+            <Border StrokeShape="RoundRectangle 10"
+                Background="#57595AB2"
+                Padding="16,8"
+                HorizontalOptions="Center">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnBackButtonTapped"/>
+                </Border.GestureRecognizers>
+                <Image
+                    Source="back_arrow.png">
+                </Image>
+            </Border>
+            <Label Text="SM PL"
+                FontSize="50"
+                TextColor="{StaticResource TextPrimary}"
+                Margin="25,0,0,0"/>
+        </HorizontalStackLayout>
+            
+        <Label Text="Items"
+            FontSize="30"
+            TextColor="{StaticResource TextPrimary}"
+            Margin="10,30,0,10"/>
+
+        <FlexLayout
+            AlignItems="Center"
+            AlignContent="Start"
+            Wrap="Wrap"
+            Direction="Row"
+            BindableLayout.ItemsSource="{Binding products}">
+
+            <BindableLayout.ItemTemplate>
+                <DataTemplate>
+                    <comp:LabelPriceButton
+                        ButtonColor="#BFDBFE"
+                        ButtonHeight="125"
+                        ButtonWidth="225"
+                        Label="{Binding name}"
+                        Price="{Binding price}">
+                    </comp:LabelPriceButton>
+                </DataTemplate>
+            </BindableLayout.ItemTemplate>
+
+        </FlexLayout>
+    </VerticalStackLayout>
+    
+</ScrollView>

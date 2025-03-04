@@ -2,11 +2,11 @@ using POS.Models;
 
 namespace POS.Services;
 
-public class ProductService
+public class InventoryService
 {
     private List<Product> _products;
     private List<Category> _categories;
-    public ProductService()
+    public InventoryService()
     {
         // initializes _products and _categories to empty list
     }
@@ -15,7 +15,6 @@ public class ProductService
     {
         // Get product by ID
     }
-
     public List<Product> GetProductsByCategory(string category)
     {
         // Get all products by category

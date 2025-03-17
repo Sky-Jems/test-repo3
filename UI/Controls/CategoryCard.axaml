@@ -1,0 +1,32 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Pos.Controls.CategoryCard"
+             x:CompileBindings="False">
+    <Button
+        Background="{Binding BgColor}"
+        VerticalAlignment="Stretch"
+        HorizontalAlignment="Stretch"
+        Padding="12"
+        CornerRadius="6">
+        <Button.DataContext>
+            <Binding Path="$parent.Category"/>
+        </Button.DataContext>
+
+        <Viewbox HorizontalAlignment="Left">
+            <StackPanel HorizontalAlignment="Left">
+                <Svg
+                    Css="{Binding IconColor}"
+                    MaxHeight="30"
+                    HorizontalAlignment="Left"
+                    Path="{Binding Icon}" />
+                <Label
+                    Foreground="{Binding FgColor}"
+                    FontSize="16"
+                    Content="{Binding Name}"/>
+            </StackPanel>
+        </Viewbox>
+    </Button>
+</UserControl>

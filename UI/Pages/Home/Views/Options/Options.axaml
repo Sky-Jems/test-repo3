@@ -1,0 +1,105 @@
+<UserControl
+    x:Class="Pos.Pages.Home.Views.Options.Options"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:Pos.Pages.Home.Views.Options"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    x:DataType="vm:OptionsViewModel"
+    mc:Ignorable="d">
+    <UserControl.Styles>
+        <Style Selector="TabItem">
+            <Setter Property="Background" Value="#1E1E1E" /> 
+            <!--  Darker background  -->
+            <Setter Property="Foreground" Value="#FFE9C1" /> 
+            <!--  Text color  -->
+            <Setter Property="Padding" Value="15" />
+            <Setter Property="CornerRadius" Value="0,0,0,0" />
+            <Setter Property="Margin" Value="0,0,0,5" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Width" Value="{Binding Bounds.Width, RelativeSource={RelativeSource AncestorType=TabControl}, Converter={StaticResource TabItemController}}" />
+        </Style>
+        <Style Selector="TabControl">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+        </Style>
+    </UserControl.Styles>
+    <Border Padding="24" Background="#101C24">
+        <StackPanel Spacing="12">
+            <DockPanel LastChildFill="False">
+                <StackPanel
+                    Margin="0,0,0,20"
+                    VerticalAlignment="Center"
+                    DockPanel.Dock="Left"
+                    Orientation="Horizontal"
+                    Spacing="5">
+                    <Button
+                        Width="60"
+                        Height="60"
+                        CornerRadius="6">
+                        <Svg Width="21" Path="avares://pos/Assets/Images/back_arrow.svg" />
+                    </Button>
+                    <Label
+                        Height="60"
+                        Margin="10,0,0,0"
+                        VerticalContentAlignment="Center"
+                        FontSize="34"
+                        Foreground="#FFE9C1">
+                        BAKED SHRIMP
+                    </Label>
+                </StackPanel>
+                <StackPanel
+                    Margin="0,0,0,20"
+                    VerticalAlignment="Center"
+                    DockPanel.Dock="Right"
+                    Orientation="Horizontal"
+                    Spacing="5">
+                    <Button
+                        Width="60"
+                        Height="60"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        Background="#4DFFD700"
+                        BorderBrush="#FFD700"
+                        BorderThickness="1"
+                        CornerRadius="6"
+                        Foreground="#FFE9C1">
+                        <Svg Width="21" Path="avares://pos/Assets/Images/minus.svg" />
+                    </Button>
+                    <Label
+                        Height="60"
+                        Margin="10,0,10,0"
+                        VerticalContentAlignment="Center"
+                        FontSize="24"
+                        FontWeight="Thin"
+                        Foreground="#FFE9C1">
+                        (   1   )
+                    </Label>
+                    <Button
+                        Width="60"
+                        Height="60"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        Background="#4DFFD700"
+                        BorderBrush="#FFD700"
+                        BorderThickness="1"
+                        CornerRadius="6"
+                        Foreground="#FFE9C1">
+                        <Svg Width="21" Path="avares://pos/Assets/Images/plus.svg" />
+                    </Button>
+                </StackPanel>
+            </DockPanel>
+            <TabControl
+                Padding="0"
+                HorizontalAlignment="Stretch"
+                ItemsSource="{Binding Tabs}">
+                <TabControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}" />
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
+            </TabControl>
+        </StackPanel>
+    </Border>
+</UserControl>

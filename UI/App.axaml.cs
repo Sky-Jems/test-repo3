@@ -16,6 +16,7 @@ public partial class App : Application
     {
         this.EnableHotReload();
         AvaloniaXamlLoader.Load(this);
+        Resources["TabItemController"] = new TabItemController();
     }
 
     public override void OnFrameworkInitializationCompleted()

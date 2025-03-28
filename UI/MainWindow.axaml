@@ -7,6 +7,8 @@
         x:Class="Pos.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         xmlns:page="clr-namespace:Pos.Pages.Home"
+        xmlns:rxui="http://reactiveui.net"
+        xmlns:app="clr-namespace:Pos"
         Title="Pos">
 
     <Design.DataContext>
@@ -87,7 +89,16 @@
                 </StackPanel>
             </TabItem.Header>
 
-            <page:Home/>
+            <rxui:RoutedViewHost Grid.Row="0" Router="{Binding Router}">
+                <rxui:RoutedViewHost.DefaultContent>
+                    <TextBlock Text="Default content Main"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center" />
+                </rxui:RoutedViewHost.DefaultContent>
+                <rxui:RoutedViewHost.ViewLocator>
+                    <app:PageViewLocator />
+                </rxui:RoutedViewHost.ViewLocator>
+            </rxui:RoutedViewHost>
         </TabItem>
         <TabItem Header="Tab 2">
             <TextBlock Margin="5">This is tab 2 content</TextBlock>

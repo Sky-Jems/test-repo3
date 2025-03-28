@@ -1,6 +1,17 @@
-﻿namespace Pos.ViewModels;
+﻿using System;
+using System.Reactive;
+using Pos.Pages.Home;
+using ReactiveUI;
 
-public partial class MainWindowViewModel : ViewModelBase
+namespace Pos.ViewModels;
+
+public partial class MainWindowViewModel : ReactiveObject, IScreen
 {
-    public string Greeting { get; } = "Welcome to Avalonia!";
+    public RoutingState Router { get; } = new RoutingState();
+    public ReactiveCommand<Unit, IRoutableViewModel> GoBack => Router.NavigateBack;
+
+    public MainWindowViewModel()
+    {
+        Router.Navigate.Execute(new HomeViewModel(this));
+    }
 }

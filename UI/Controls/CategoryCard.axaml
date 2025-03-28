@@ -10,6 +10,7 @@
         VerticalAlignment="Stretch"
         HorizontalAlignment="Stretch"
         Padding="12"
+        Click="OnButtonClick"
         CornerRadius="6">
         <Button.DataContext>
             <Binding Path="$parent.Category"/>

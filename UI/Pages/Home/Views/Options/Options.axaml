@@ -37,7 +37,8 @@
                     <Button
                         Width="60"
                         Height="60"
-                        CornerRadius="6">
+                        CornerRadius="6"
+                        Command="{Binding GoBack}">
                         <Svg Width="21" Path="avares://pos/Assets/Images/back_arrow.svg" />
                     </Button>
                     <Label

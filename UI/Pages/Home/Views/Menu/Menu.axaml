@@ -58,7 +58,7 @@
 
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate>
-                        <controls:MenuItemCard MenuItem="{Binding}" />
+                        <controls:MenuItemCard MenuItem="{Binding}" MenuItemCommand="{Binding $parent[ItemsRepeater].((vm:MenuViewModel)DataContext).MenuItemClickedCommand}" />
                     </DataTemplate>
                 </ItemsRepeater.ItemTemplate>
             </ItemsRepeater>

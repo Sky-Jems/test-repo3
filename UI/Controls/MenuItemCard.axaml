@@ -13,8 +13,11 @@
         HorizontalAlignment="Stretch"
         VerticalAlignment="Stretch"
         Background="{Binding BgColor}"
+        Click="OnButtonClick"
         CornerRadius="6">
-
+        <Button.DataContext>
+            <Binding Path="$parent.MenuItem" />
+        </Button.DataContext>
         <Button.Styles>
             <Style Selector="Button:not(:pressed) /template/ ContentPresenter#PART_ContentPresenter">
                 <Setter Property="Background" Value="{Binding BgColor}" />

@@ -7,28 +7,33 @@ using Avalonia.Layout;
 using Pos.Controls;
 using System.Collections.Generic;
 using System.Linq;
+using Avalonia.ReactiveUI;
+using System;
 
 namespace Pos.Pages.Home.Views.Options;
 
-public partial class Options : UserControl
+public partial class Options : ReactiveUserControl<OptionsViewModel>
 {
     private const int TabItemsPerRow = 5;
 
     public Options()
     {
         InitializeComponent();
-        DataContext = new OptionsViewModel();
-        var viewModel = DataContext as OptionsViewModel;
-        
-        if (viewModel == null) return;
-        
-        foreach (var (optionGroup, index) in viewModel.OptionGroups.Select((group, i) => (group, i)))
-        {
-            var tabItem = CreateTabItem(optionGroup, viewModel.Options, index, viewModel.OptionGroups.Count);
-            viewModel.Tabs.Add(tabItem);
-        }
+        this.DataContextChanged += Options_DataContextChanged;
     }
 
+    private void Options_DataContextChanged(object? sender, EventArgs e)
+    {
+        if (DataContext is OptionsViewModel viewModel)
+        {
+            foreach (var (optionGroup, index) in viewModel.OptionGroups.Select((group, i) => (group, i)))
+            {
+                var tabItem = CreateTabItem(optionGroup, viewModel.Options, index, viewModel.OptionGroups.Count);
+                viewModel.Tabs.Add(tabItem);
+            }
+        }
+    }
+    
     private static TabItem CreateTabItem(OptionGroup optionGroup, IEnumerable<OptionItem> options, int index, int totalCount)
     {
         var contentContainer = new StackPanel();

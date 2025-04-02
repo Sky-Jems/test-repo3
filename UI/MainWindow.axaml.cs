@@ -1,9 +1,8 @@
-using Avalonia.ReactiveUI;
-using Pos.ViewModels;
+using Avalonia.Controls;
 
 namespace Pos.Views;
 
-public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
+public partial class MainWindow : Window
 {
     public MainWindow()
     {

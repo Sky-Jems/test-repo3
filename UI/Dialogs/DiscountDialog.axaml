@@ -1,0 +1,56 @@
+<UserControl
+    x:Class="Pos.Dialogs.DiscountDialog"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:Pos.Dialogs"
+    Width="500"
+    Padding="{StaticResource SemiThicknessLoose}"
+    x:DataType="vm:DiscountDialogViewModel"
+    Background="{StaticResource SemiColorBackground1}"
+    ClipToBounds="True"
+    CornerRadius="{StaticResource SemiBorderRadiusMedium}"
+    mc:Ignorable="d">
+    <StackPanel Spacing="16">
+        <Label
+            HorizontalAlignment="Center"
+            Classes="H5"
+            Content="Apply discount"
+            Theme="{StaticResource TitleLabel}" />
+
+        <ScrollViewer Grid.Row="1" Height="400">
+            <ItemsControl ItemsSource="{Binding DiscountList}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Theme="{StaticResource CardBorder}">
+                            <Grid ColumnDefinitions="* auto">
+                                <TextBlock Grid.Column="0">
+                                    <InlineUIContainer>
+                                        <Label
+                                            Classes="H5"
+                                            Content="{Binding Name}"
+                                            Theme="{StaticResource TitleLabel}" />
+                                    </InlineUIContainer>
+                                    <LineBreak />
+                                    <Run Text="{Binding Description}" />
+                                </TextBlock>
+
+                                <Button
+                                    Grid.Column="1"
+                                    Content="APPLY"
+                                    Theme="{DynamicResource BorderlessButton}" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Spacing="8" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </ScrollViewer>
+    </StackPanel>
+</UserControl>

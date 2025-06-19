@@ -1,0 +1,31 @@
+<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style Selector="DataGrid">
+        <Setter Property="BorderThickness" Value="{StaticResource SemiBorderThicknessControl}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource SemiColorBorder}" />
+        <Setter Property="CornerRadius" Value="{StaticResource SemiBorderRadiusMedium}" />
+    </Style>
+
+    <Style Selector="DataGrid Border#DataGridBorder">
+        <Setter Property="ClipToBounds" Value="True" />
+    </Style>
+
+    <Style Selector="DataGridColumnHeader">
+        <Setter Property="SeparatorBrush" Value="Transparent" />
+        <Setter Property="FontSize" Value="{StaticResource SemiFontSizeHeader6}" />
+    </Style>
+
+    <Style Selector="DataGridColumnHeader:sortascending /template/ PathIcon#SortIcon, DataGridColumnHeader:sortdescending /template/ PathIcon#SortIcon">
+        <Setter Property="Margin" Value="0" />
+    </Style>
+
+    <Style Selector="DataGridCell">
+        <Style Selector="^ ContentPresenter">
+            <Setter Property="Padding" Value="20 0" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+    </Style>
+
+    <Style Selector="DataGridCell TextBlock">
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+</Styles>

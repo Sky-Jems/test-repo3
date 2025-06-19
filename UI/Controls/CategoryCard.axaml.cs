@@ -11,13 +11,22 @@ public partial class CategoryCard : UserControl
 {
     public static readonly StyledProperty<Category> CategoryProperty =
         AvaloniaProperty.Register<CategoryCard, Category>(nameof(Category));
+    
+    public static readonly StyledProperty<Category> SubCategoryProperty =
+        AvaloniaProperty.Register<CategoryCard,Category>(nameof(SubCategory));
+
+    public Category SubCategory
+    {
+        get => GetValue(SubCategoryProperty);
+        set => SetValue(SubCategoryProperty, value);
+    }
 
     public Category Category
     {
         get => GetValue(CategoryProperty);
         set => SetValue(CategoryProperty, value);
     }
-
+    
     public static readonly StyledProperty<ICommand> CategoryCommandProperty =
         AvaloniaProperty.Register<CategoryCard, ICommand>(nameof(CategoryCommand));
 
@@ -25,6 +34,15 @@ public partial class CategoryCard : UserControl
     {
         get => GetValue(CategoryCommandProperty);
         set => SetValue(CategoryCommandProperty, value);
+    }
+    
+    public static readonly StyledProperty<ICommand> SubCategoryCommandProperty =
+        AvaloniaProperty.Register<CategoryCard, ICommand>(nameof(SubCategoryCommand));
+
+    public ICommand SubCategoryCommand
+    {
+        get => GetValue(SubCategoryCommandProperty);
+        set => SetValue(SubCategoryCommandProperty, value);
     }
 
     public CategoryCard()
@@ -34,9 +52,9 @@ public partial class CategoryCard : UserControl
 
     private void OnButtonClick(object? sender, RoutedEventArgs e)
     {
-        if (CategoryCommand?.CanExecute(Category) == true)
+        if (SubCategoryCommand?.CanExecute(SubCategory) == true)
         {
-            CategoryCommand.Execute(Category);
+            SubCategoryCommand.Execute(SubCategory);
         }
     }
 }

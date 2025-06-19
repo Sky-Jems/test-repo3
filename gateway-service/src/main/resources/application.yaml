@@ -1,0 +1,57 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: gateway-service
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: gateway-service-group
+      auto-offset-reset: earliest
+  cloud:
+    gateway:
+      mvc:
+        routes:
+          - id: auth_route
+            uri: http://localhost:8082
+            predicates:
+              - Path=/auth/**
+
+          - id: product_route
+            uri: http://localhost:8080/products
+            predicates:
+              - Path=/products/**
+              - Method=GET
+
+          - id: variant_option_route
+            uri: http://localhost:8080/variant-options
+            predicates:
+              - Path=/variant-options/**
+              - Method=GET
+
+          - id: category_route
+            uri: http://localhost:8080/categories
+            predicates:
+              - Path=/categories/**
+              - Method=GET
+
+          - id: variant_option_value_route
+            uri: http://localhost:8080/variant-option-values
+            predicates:
+              - Path=/variant-option-values/**
+              - Method=GET
+
+          - id: order_route
+            uri: http://localhost:8082/orders
+            predicates:
+              - Path=/orders/**
+              - Method=GET
+
+          - id: variant_route
+            uri: http://localhost:8080/variants
+            predicates:
+              - Path=/variants/**
+              - Method=GET
+
+jwt:
+  secret: sample_secret_key_sample_32_char

@@ -1,0 +1,6 @@
+POST http://localhost:8081/categories
+Content-Type: application/json
+
+{ "name": "Massage" }
+###
+POST http://localhost:8081/categories/

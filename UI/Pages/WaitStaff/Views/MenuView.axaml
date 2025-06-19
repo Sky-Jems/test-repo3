@@ -1,0 +1,55 @@
+<UserControl
+    x:Class="Pos.Pages.WaitStaff.MenuView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:app="using:Pos.Pages.WaitStaff"
+    xmlns:controls="using:Pos.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    x:DataType="app:MenuViewModel"
+    mc:Ignorable="d">
+
+    <Border Padding="32" Background="{StaticResource SemiBackground1Color}">
+        <StackPanel Spacing="12">
+            <StackPanel
+                Margin="0,0,0,12"
+                VerticalAlignment="Center"
+                Orientation="Horizontal"
+                Spacing="16">
+                <Button
+                    Width="40"
+                    Height="40"
+                    Command="{Binding GoBack}">
+                    <PathIcon
+                        Width="16"
+                        Data="{StaticResource SemiIconArrowLeft}"
+                        Theme="{DynamicResource InnerPathIcon}" />
+                </Button>
+                <Label Classes="H2" Theme="{StaticResource TitleLabel}">
+                    Products
+                </Label>
+            </StackPanel>
+
+            <ItemsRepeater
+                Margin="0,0,0,20"
+                VerticalAlignment="Top"
+                ItemsSource="{Binding Products}">
+                <ItemsRepeater.Layout>
+                    <UniformGridLayout
+                        ItemsStretch="Uniform"
+                        MinColumnSpacing="16"
+                        MinItemHeight="100"
+                        MinItemWidth="160"
+                        MinRowSpacing="16" />
+                </ItemsRepeater.Layout>
+
+                <ItemsRepeater.ItemTemplate>
+                    <DataTemplate>
+                        <controls:MenuItemCard MenuItemCommand="{Binding $parent[ItemsRepeater].((app:MenuViewModel)DataContext).MenuItemClickedCommand}" Product="{Binding}" />
+                    </DataTemplate>
+                </ItemsRepeater.ItemTemplate>
+            </ItemsRepeater>
+        </StackPanel>
+    </Border>
+
+</UserControl>

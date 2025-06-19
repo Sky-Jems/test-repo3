@@ -1,0 +1,7 @@
+POST http://localhost:8081/variant-option-values
+Content-Type: application/json
+
+{
+  "value": "testings2",
+  "variant_option_id": 38
+}

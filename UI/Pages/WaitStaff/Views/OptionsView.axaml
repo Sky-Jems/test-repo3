@@ -1,0 +1,81 @@
+<UserControl
+    x:Class="Pos.Pages.WaitStaff.OptionsView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:app="using:Pos.Pages.WaitStaff"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    x:DataType="app:OptionsViewModel"
+    mc:Ignorable="d">
+    <UserControl.Styles>
+        <Style Selector="TabControl">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+        </Style>
+    </UserControl.Styles>
+    <Border Padding="32" Background="{StaticResource SemiBackground1Color}">
+        <StackPanel Spacing="12">
+            <DockPanel LastChildFill="False">
+                <StackPanel
+                    VerticalAlignment="Center"
+                    DockPanel.Dock="Left"
+                    Orientation="Horizontal"
+                    Spacing="16">
+                    <Button
+                        Width="40"
+                        Height="40"
+                        Command="{Binding GoBack}">
+                        <PathIcon
+                            Width="16"
+                            Data="{StaticResource SemiIconArrowLeft}"
+                            Theme="{DynamicResource InnerPathIcon}" />
+                    </Button>
+                    <Label
+                        Classes="H2"
+                        Content="{Binding MenuItem.Name}"
+                        Theme="{StaticResource TitleLabel}" />
+                </StackPanel>
+                <StackPanel
+                    VerticalAlignment="Center"
+                    DockPanel.Dock="Right"
+                    Orientation="Horizontal"
+                    Spacing="12">
+                    <Button
+                        Width="40"
+                        Height="40"
+                        Command="{Binding ClickMinusCommand}">
+                        <PathIcon
+                            Width="16"
+                            Data="{StaticResource SemiIconMinus}"
+                            Theme="{DynamicResource InnerPathIcon}" />
+                    </Button>
+                    <Label
+                        VerticalContentAlignment="Center"
+                        Classes="H5"
+                        Content="{Binding SelectedItemQuantityDisplay}"
+                        Theme="{StaticResource TitleLabel}" />
+                    <Button
+                        Width="40"
+                        Height="40"
+                        Command="{Binding ClickPlusCommand}">
+                        <PathIcon
+                            Width="16"
+                            Data="{StaticResource SemiIconPlus}"
+                            Theme="{DynamicResource InnerPathIcon}" />
+                    </Button>
+                </StackPanel>
+            </DockPanel>
+            <TabControl
+                Padding="0"
+                HorizontalAlignment="Stretch"
+                ItemsSource="{Binding Tabs}"
+                SelectionChanged="SelectedVariantOptionsChanged"
+                Theme="{StaticResource ButtonTabControl}">
+                <TabControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}" />
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
+            </TabControl>
+        </StackPanel>
+    </Border>
+</UserControl>

@@ -1,0 +1,117 @@
+<UserControl
+    x:Class="Pos.Pages.HomePage"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:app="using:Pos.Pages"
+    xmlns:converters="using:Pos.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:products="using:Pos.Pages.Products"
+    xmlns:reports="using:Pos.Pages.Reports"
+    xmlns:waitStaff="using:Pos.Pages.WaitStaff"
+    x:DataType="app:HomePageViewModel"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <converters:EqualsConverter x:Key="equalsConverter" />
+    </UserControl.Resources>
+
+    <Grid ColumnDefinitions="150 *">
+        <Border
+            Grid.Column="0"
+            Padding="16"
+            Background="{StaticResource SemiBackground1Color}">
+            <DockPanel>
+                <Image
+                    Width="120"
+                    Margin="0,24,0,48"
+                    DockPanel.Dock="Top"
+                    Source="avares://pos/Assets/logo.png" />
+
+                <TabStrip
+                    Name="homeTabStrip"
+                    HorizontalAlignment="Stretch"
+                    DockPanel.Dock="Top"
+                    SelectedIndex="0"
+                    Theme="{StaticResource ButtonTabStrip}">
+                    <TabStrip.Styles>
+                        <Style Selector="TabStripItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Center" />
+                            <Setter Property="Padding" Value="8 12" />
+                            <Setter Property="Margin" Value="0" />
+                        </Style>
+                        <Style Selector="TabStripItem &gt; StackPanel.tabContainer">
+                            <Setter Property="Spacing" Value="4" />
+                            <Style Selector="^ &gt; PathIcon">
+                                <Setter Property="Width" Value="36" />
+                            </Style>
+                        </Style>
+                    </TabStrip.Styles>
+
+                    <TabStrip.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Spacing="12" />
+                        </ItemsPanelTemplate>
+                    </TabStrip.ItemsPanel>
+
+                    <TabStripItem>
+                        <StackPanel Classes="tabContainer">
+                            <PathIcon Data="{StaticResource SemiIconHome}" />
+                            <TextBlock Text="Take Order" />
+                        </StackPanel>
+                    </TabStripItem>
+
+                    <TabStripItem>
+                        <StackPanel Classes="tabContainer">
+                            <PathIcon Data="{StaticResource SemiIconCheckList}" />
+                            <TextBlock Text="Orders" />
+                        </StackPanel>
+                    </TabStripItem>
+
+                    <TabStripItem IsVisible="{Binding Role, Converter={StaticResource equalsConverter}, ConverterParameter='Admin'}">
+                        <StackPanel Classes="tabContainer">
+                            <PathIcon Data="{StaticResource SemiIconBox}" />
+                            <TextBlock Text="Products" />
+                        </StackPanel>
+                    </TabStripItem>
+                </TabStrip>
+
+                <DropDownButton
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Bottom"
+                    HorizontalContentAlignment="Left"
+                    Theme="{StaticResource BorderlessDropDownButton}">
+                    <AccessText Text="{Binding Role}" />
+                    <Button.Flyout>
+                        <MenuFlyout>
+                            <MenuItem Click="OnClickLogout" Header="Logout" />
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </DropDownButton>
+            </DockPanel>
+        </Border>
+
+        <TabControl
+            Grid.Column="1"
+            Padding="0"
+            SelectedIndex="{Binding #homeTabStrip.SelectedIndex}"
+            TabStripPlacement="Left"
+            Theme="{StaticResource ButtonTabControl}">
+            <TabControl.Styles>
+                <Style Selector="TabItem">
+                    <Setter Property="IsVisible" Value="False" />
+                </Style>
+            </TabControl.Styles>
+
+            <TabItem>
+                <waitStaff:WaitStaffView />
+            </TabItem>
+            <TabItem>
+                <reports:ReportsView />
+            </TabItem>
+            <TabItem>
+                <products:ProductsView />
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>

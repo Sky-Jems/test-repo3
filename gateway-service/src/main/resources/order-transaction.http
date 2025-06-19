@@ -1,0 +1,11 @@
+### Test for getOrderTransactionById endpoint
+### This test verifies if the endpoint is receiving values correctly and returning the expected response
+### The endpoint should return an OrderTransactionResponseDto with enriched order details
+
+### Get order transaction by ID
+GET http://localhost:8081/order-transaction/1
+Accept: application/json
+
+### You can test with different IDs by changing the number in the URL
+### For example:
+### GET http://localhost:8081/order-transaction/2

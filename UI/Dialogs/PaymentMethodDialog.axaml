@@ -1,0 +1,73 @@
+<UserControl
+    x:Class="Pos.Dialogs.PaymentMethodDialog"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Padding="{StaticResource SemiThicknessBase}"
+    ClipToBounds="True"
+    CornerRadius="{StaticResource SemiBorderRadiusMedium}"
+    mc:Ignorable="d">
+
+    <UserControl.Styles>
+        <Style Selector="RadioButton">
+            <Setter Property="Height" Value="150" />
+            <Setter Property="Width" Value="150" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+
+            <Style Selector="^ &gt; StackPanel">
+                <Setter Property="Spacing" Value="8" />
+            </Style>
+
+            <Style Selector="^ Svg">
+                <Setter Property="Height" Value="48" />
+            </Style>
+
+            <Style Selector="^ AccessText">
+                <Setter Property="HorizontalAlignment" Value="Center" />
+            </Style>
+
+            <Style Selector="^:disabled Svg">
+                <Setter Property="(Svg.Css)" Value="* { fill: #F9F9F9; opacity: 0.35; }" />
+            </Style>
+        </Style>
+    </UserControl.Styles>
+
+    <StackPanel Spacing="16">
+        <Label
+            HorizontalAlignment="Center"
+            Classes="H5"
+            Content="Choose your payment method"
+            Theme="{StaticResource TitleLabel}" />
+
+        <StackPanel Orientation="Horizontal" Spacing="12">
+            <RadioButton
+                Checked="PaymentMethodRadioButton_Checked"
+                Tag="cash"
+                Theme="{DynamicResource PureCardRadioButton}">
+                <StackPanel>
+                    <Svg Path="avares://pos/Assets/Images/cash.svg" />
+                    <AccessText Text="Cash" />
+                </StackPanel>
+            </RadioButton>
+            <RadioButton
+                Checked="PaymentMethodRadioButton_Checked"
+                Tag="card"
+                IsEnabled="False"
+                Theme="{DynamicResource PureCardRadioButton}">
+                <StackPanel>
+                    <Svg Path="avares://pos/Assets/Images/card.svg" />
+                    <AccessText Text="Card" />
+                </StackPanel>
+            </RadioButton>
+        </StackPanel>
+
+        <Button
+            Name="confirmButton"
+            HorizontalAlignment="Stretch"
+            Classes="Large"
+            Click="ConfirmButton_Click"
+            Content="CONFIRM"
+            IsEnabled="False" />
+    </StackPanel>
+</UserControl>

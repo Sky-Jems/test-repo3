@@ -1,0 +1,16 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <!-- <x:Double x:Key="ComboBoxDefaultHeight">52</x:Double> -->
+  <!-- <StaticResource x:Key="ComboBoxSelectorBorderBrush" ResourceKey="SemiColorPrimary" />
+  <SolidColorBrush x:Key="ComboBoxSelectorBackground" Color="Transparent" />
+  <SolidColorBrush x:Key="ComboBoxSelectorPlaceHolderForeground" Color="#FFE9C1" />-->
+  <!-- <SolidColorBrush x:Key="ComboBoxForeground" Color="#FFE9C1" /> -->
+  <!--  pointerover  -->
+  <!-- <StaticResource x:Key="ComboBoxSelectorPointeroverBorderBrush" ResourceKey="SemiColorPrimary" />
+  <SolidColorBrush x:Key="ComboBoxSelectorPointeroverBackground" Color="Transparent" />-->
+  <!--  pressed  -->
+  <!-- <StaticResource x:Key="ComboBoxSelectorPressedBorderBrush" ResourceKey="SemiColorPrimary" />
+  <SolidColorBrush x:Key="ComboBoxSelectorPressedBackground" Color="Transparent" />-->
+  <!--  focus  -->
+  <!-- <StaticResource x:Key="ComboBoxSelectorFocusBorderBrush" ResourceKey="SemiColorPrimary" />
+  <SolidColorBrush x:Key="ComboBoxSelectorFocusBackground" Color="Transparent" />-->
+</ResourceDictionary>

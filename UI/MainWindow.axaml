@@ -1,99 +1,71 @@
-<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:Pos.ViewModels"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="Pos.Views.MainWindow"
-        x:DataType="vm:MainWindowViewModel"
-        xmlns:page="clr-namespace:Pos.Pages.Home"
-        xmlns:app="clr-namespace:Pos"
-        Title="Pos">
-
-    <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:MainWindowViewModel/>
-    </Design.DataContext>
-
-    <TabControl Padding="0" TabStripPlacement="Left" SelectedIndex="1">
-        <TabControl.Styles>
-            <Style Selector="TabControl /template/ ItemsPresenter#PART_ItemsPresenter > StackPanel">
-                <Setter Property="Background" Value="#101C24"/>
-            </Style>
-
-            <Style Selector="TabItem">
-                <Setter Property="CornerRadius" Value="12"/>
-                <Setter Property="Padding" Value="12"/>
-                <Setter Property="HorizontalAlignment" Value="Center"/>
-
-                <Style Selector="^:selected">
-                    <Setter Property="Foreground" Value="#FFD700"/>
-
-                    <Style Selector="^ Svg">
-                        <Setter Property="(Svg.Css)" Value="* { fill: #FFD700; }"/>
-                    </Style>
-
-                    <Style Selector="^/template/ Border#PART_SelectedPipe">
-                        <Setter Property="IsVisible" Value="False"/>
-                    </Style>
-                </Style>
-
-                <Style Selector="^:not(:selected)">
-                    <Style Selector="^ Svg">
-                        <Setter Property="(Svg.Css)" Value="* { fill: #FFFFFF; }"/>
-                    </Style>
-                </Style>
-
-                <Style Selector="^:selected /template/ Border#PART_LayoutRoot, ^:pointerover /template/ Border#PART_LayoutRoot">
-                    <Setter Property="Background" Value="#4DFFD700"/>
-                </Style>
-                
-                <Style Selector="^[TabStripPlacement=Left] /template/ ContentPresenter#PART_ContentPresenter">
-                    <Setter Property="Margin" Value="0"/>
-                </Style>
-            </Style>
-
-            <Style Selector=".tabContainer">
-                <Style Selector="^ > Svg">
-                    <Setter Property="Width" Value="60"/>
-                </Style>
-                <Style Selector="^ > Label">
-                    <Setter Property="HorizontalAlignment" Value="Center"/>
-                    <Setter Property="FontSize" Value="16"/>
-                </Style>
-            </Style>
-        </TabControl.Styles>
-
-        <TabControl.ItemsPanel>
-            <ItemsPanelTemplate>
-                <StackPanel Spacing="12"/>
-            </ItemsPanelTemplate>
-        </TabControl.ItemsPanel>
-
-        <TabItem IsEnabled="False">
-            <TabItem.Header>
-                <Image Name="skybarLogo" Width="90">
-                    <Image.Source>
-                        <SvgImage Source="avares://pos/Assets/skybar-logo.svg"/>
-                    </Image.Source>
-                </Image>
-            </TabItem.Header>
-        </TabItem>
-        <TabItem>
-            <TabItem.Header>
-                <StackPanel Classes="tabContainer">
-                    <Svg Path="avares://pos/Assets/Images/home.svg"/>
-                    <Label Content="Home" />
+<Window
+    x:Class="Pos.MainWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:app="using:Pos"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dialogs="using:AvaloniaDialogs.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:rxui="http://reactiveui.net"
+    Title="POS"
+    x:DataType="app:MainWindowViewModel"
+    Background="{StaticResource SemiBackground0Color}"
+    mc:Ignorable="d">
+    <Panel>
+        <rxui:RoutedViewHost Router="{Binding Router}">
+            <rxui:RoutedViewHost.DefaultContent>
+                <StackPanel
+                    MaxWidth="350"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center"
+                    Spacing="16">
+                    <Image
+                        Height="56"
+                        Margin="0,0,0,36"
+                        Source="avares://Pos/Assets/logo.png" />
+                    <TextBox Classes="Large" x:Name="UsernameTextBox" Watermark="Enter username" />
+                    <TextBox
+                        Margin="0,0,0,8"
+                        Classes="Large RevealPasswordButton"
+                        Watermark="Enter password" 
+                        x:Name="PasswordTextBox"/>
+                    <TextBlock x:Name="ErrorTextBlock"
+                        Foreground="Red"
+                        FontWeight="Bold"
+                        IsVisible="False"
+                        TextWrapping="Wrap" />
+                    <Button
+                        HorizontalAlignment="Stretch"
+                        Classes="Large"
+                        Click="onClickLogin"
+                        Content="LOGIN"
+                        Theme="{StaticResource SolidButton}">
+                        <!--  TODO: delete when user role is included  -->
+                        <!-- <SplitButton.Flyout>
+                            <MenuFlyout Placement="BottomEdgeAlignedRight">
+                                <MenuItem
+                                    Command="{Binding LoginCommand}"
+                                    CommandParameter="admin"
+                                    Header="Login as Admin" />
+                                <MenuItem
+                                    Command="{Binding LoginCommand}"
+                                    CommandParameter="staff"
+                                    Header="Login as Staff" />
+                            </MenuFlyout>
+                        </SplitButton.Flyout> -->
+                    </Button>
                 </StackPanel>
-            </TabItem.Header>
-            <page:Home/>
-        </TabItem>
-        <TabItem Header="Tab 2">
-            <TextBlock Margin="5">This is tab 2 content</TextBlock>
-        </TabItem>
-        <TabItem Header="Tab 3">
-            <TextBlock Margin="5">This is tab 3 content</TextBlock>
-        </TabItem>
-    </TabControl>
+            </rxui:RoutedViewHost.DefaultContent>
+            <rxui:RoutedViewHost.ViewLocator>
+                <app:MainWindowViewLocator />
+            </rxui:RoutedViewHost.ViewLocator>
+        </rxui:RoutedViewHost>
+
+        <dialogs:ReactiveDialogHost
+            Background="{StaticResource SemiBackground1Color}"
+            CloseOnClickAway="True"
+            CornerRadius="24">
+            <!-- <dialogs:Snackbar Name="Snackbar" Background="{StaticResource SemiColorBackground0}" /> -->
+        </dialogs:ReactiveDialogHost>
+    </Panel>
 </Window>

@@ -1,15 +1,45 @@
-<Application xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="Pos.App"
-             xmlns:local="using:Pos"
-             RequestedThemeVariant="Default">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+<Application
+    x:Class="Pos.App"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:dialogHostAvalonia="using:DialogHostAvalonia"
+    xmlns:local="using:Pos"
+    xmlns:semi="https://irihi.tech/semi"
+    RequestedThemeVariant="Light">
+    <!--  "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options.  -->
 
-    <Application.DataTemplates>
-        <local:ViewLocator/>
-    </Application.DataTemplates>
-  
     <Application.Styles>
-        <FluentTheme />
+        <semi:SemiTheme Locale="en-us" />
+        <semi:DataGridSemiTheme />
+
+        <dialogHostAvalonia:DialogHostStyles />
+
+        <StyleInclude Source="avares://pos/Styles/DataGrid.axaml" />
+        <!-- <StyleInclude Source="avares://pos/Styles/Button.axaml" />
+        <StyleInclude Source="avares://pos/Styles/TextBox.axaml" />
+        <StyleInclude Source="avares://pos/Styles/ComboBox.axaml" />-->
     </Application.Styles>
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://Semi.Avalonia/Themes/Light/_index.axaml" />
+                <ResourceInclude Source="avares://pos/ThemeOverrides/Colors.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://Semi.Avalonia/Themes/Shared/_index.axaml" />
+                <ResourceInclude Source="avares://pos/ThemeOverrides/Variables.axaml" />
+                <!-- <ResourceInclude Source="avares://pos/ThemeOverrides/Controls/Button.axaml" /> -->
+                <!-- <ResourceInclude Source="avares://pos/ThemeOverrides/Controls/ComboBox.axaml" /> -->
+                <ResourceInclude Source="avares://pos/ThemeOverrides/Controls/DataGrid.axaml" />
+                <ResourceInclude Source="avares://pos/ThemeOverrides/Controls/RadioButton.axaml" />
+                <ResourceInclude Source="avares://pos/ThemeOverrides/Controls/TextBox.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://pos/Controls/Breadcrumb.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
 </Application>

@@ -1,0 +1,213 @@
+<UserControl
+    x:Class="Pos.Controls.OrderCartPanel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:Pos.Controls"
+    x:Name="root"
+    x:DataType="vm:OrderCartPanelViewModel"
+    mc:Ignorable="d">
+
+    <Grid Grid.Column="0" RowDefinitions="auto * auto">
+        <!--  header  -->
+        <Border Grid.Row="0" Padding="24,24,24,0">
+            <Grid ColumnDefinitions="* auto">
+                <Label
+                    Grid.Column="0"
+                    VerticalAlignment="Center"
+                    Classes="H3"
+                    Content="Order Items"
+                    Theme="{StaticResource TitleLabel}" />
+                <Button
+                    Grid.Column="1"
+                    Classes="Large Danger"
+                    Click="OnClearButtonClick"
+                    Content="CLEAR"
+                    IsVisible="{Binding IsEditable, ElementName=root}" />
+            </Grid>
+        </Border>
+
+        <!--  order list  -->
+        <Border
+            Grid.Row="1"
+            Margin="24"
+            ClipToBounds="True"
+            CornerRadius="4">
+            <ScrollViewer>
+                <ListBox
+                    IsHitTestVisible="{Binding IsEditable, ElementName=root}"
+                    ItemsSource="{Binding OrderList}"
+                    SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                    Theme="{StaticResource PureCardRadioGroupListBox}">
+                    <ListBox.Styles>
+                        <Style Selector="ListBoxItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        </Style>
+                    </ListBox.Styles>
+
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel HorizontalAlignment="Stretch" Spacing="12">
+                                <Grid
+                                    HorizontalAlignment="Stretch"
+                                    ColumnDefinitions="auto * auto"
+                                    ColumnSpacing="8"
+                                    RowDefinitions="auto auto"
+                                    RowSpacing="12">
+                                    <Label
+                                        Grid.Row="0"
+                                        Grid.Column="0"
+                                        Classes="Circle Indigo"
+                                        Content="{Binding Quantity, StringFormat={}{0}x}"
+                                        Theme="{StaticResource TagLabel}" />
+                                    <Label
+                                        Grid.Row="0"
+                                        Grid.Column="1"
+                                        Classes="H6"
+                                        Theme="{StaticResource TitleLabel}">
+                                        <Label.Content>
+                                            <MultiBinding StringFormat="{}{0} - {1}">
+                                                <Binding Path="Sku" />
+                                                <Binding Path="Variant.Product.Name" />
+                                            </MultiBinding>
+                                        </Label.Content>
+                                    </Label>
+                                    <Label Grid.Column="2" Content="{Binding Price, StringFormat=₱{0:N2}}" />
+
+                                     <ItemsControl
+                                         Grid.Row="1"
+                                         Grid.ColumnSpan="3"
+                                         ItemsSource="{Binding Variant.VariantCombinations}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                     <Grid
+                                                         HorizontalAlignment="Stretch"
+                                                         ColumnDefinitions="* auto"
+                                                         ColumnSpacing="8">
+                                                         <Label
+                                                             Grid.Column="0"
+                                                             Classes="Circle Indigo"
+                                                             Content="{Binding VariantOption.Name}" />
+                                                         <TextBlock
+                                                             Grid.Column="1"
+                                                             xml:space="preserve"
+                                                             Classes="H6"
+                                                             Theme="{StaticResource TitleTextBlock}"><Run Text="{Binding Value}" /></TextBlock>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </Grid>
+
+                                <Rectangle
+                                    Stroke="{DynamicResource SemiColorFill2}"
+                                    StrokeDashArray="2,6"
+                                    StrokeThickness="1" />
+
+                                <Label
+                                    Grid.Column="2"
+                                    HorizontalContentAlignment="Right"
+                                    Classes="H6"
+                                    Content="{Binding ItemTotal, StringFormat=₱{0:N2}}"
+                                    Theme="{StaticResource TitleLabel}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Vertical" Spacing="12" />
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                </ListBox>
+            </ScrollViewer>
+        </Border>
+
+        <!--  summary  -->
+        <Border
+            Grid.Row="2"
+            Padding="24"
+            Background="{StaticResource SemiColorPrimaryLight}"
+            CornerRadius="6 6 0 0">
+            <StackPanel>
+                <StackPanel.Styles>
+                    <Style Selector="Label">
+                        <Style Selector="^.price">
+                            <Setter Property="HorizontalContentAlignment" Value="Right" />
+                        </Style>
+                    </Style>
+                </StackPanel.Styles>
+
+                <Button
+                    HorizontalAlignment="Stretch"
+                    Click="ApplyDiscountButton_Click"
+                    IsVisible="{Binding IsEditable, ElementName=root}">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <PathIcon Data="{StaticResource SemiIconPlus}" Theme="{StaticResource InnerPathIcon}" />
+                        <AccessText Text="APPLY DISCOUNT" />
+                    </StackPanel>
+                </Button>
+
+                <Rectangle
+                    Margin="0,16"
+                    IsVisible="{Binding IsEditable, ElementName=root}"
+                    Stroke="{StaticResource SemiColorFill2}"
+                    StrokeDashArray="2,6"
+                    StrokeThickness="1" />
+
+                <UniformGrid Columns="2" RowSpacing="16">
+                    <Label Content="Subtotal" />
+                    <Label Classes="price" Content="{Binding CartTotal, StringFormat='₱{0:N2}'}" />
+
+                    <Label Content="Discount" />
+                    <Label Classes="price" Content="₱0.00" />
+
+                    <!-- <Label Content="Tax %10" />
+                    <Label Classes="price" Content="₱0.00" />
+
+                    <Label Content="Additional" />
+                    <Label Classes="price" Content="₱0.00" />-->
+                </UniformGrid>
+
+                <Rectangle
+                    Margin="0,16"
+                    Stroke="{StaticResource SemiColorFill2}"
+                    StrokeDashArray="2,6"
+                    StrokeThickness="1" />
+
+                <UniformGrid Margin="0,0,0,24" Rows="1">
+                    <Label
+                        HorizontalAlignment="Stretch"
+                        Classes="H4"
+                        Content="Total"
+                        Theme="{StaticResource TitleLabel}" />
+                    <Label
+                        Classes="price H4"
+                        Content="{Binding CartTotal, StringFormat='₱{0:N2}'}"
+                        Theme="{StaticResource TitleLabel}" />
+                </UniformGrid>
+
+                <UniformGrid
+                    HorizontalAlignment="Stretch"
+                    ColumnSpacing="12"
+                    Rows="1">
+                    <Button
+                        HorizontalAlignment="Stretch"
+                        Classes="Large"
+                        Command="{Binding SummaryButtonCommand, ElementName=root}"
+                        Content="{Binding SummaryButtonText, ElementName=root}"
+                        IsEnabled="{Binding CanPay}"
+                        Theme="{StaticResource SolidButton}" />
+                    <Button
+                        HorizontalAlignment="Stretch"
+                        Classes="Large"
+                        Click="OnPayLaterButtonClick"
+                        Content="PAY LATER"
+                        IsEnabled="{Binding CanPay}"
+                        IsVisible="{Binding IsEditable, ElementName=root}"
+                        Theme="{StaticResource SolidButton}" />
+                </UniformGrid>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

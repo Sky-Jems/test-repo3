@@ -1,0 +1,14 @@
+services:
+  order-orchestrator-service-db:
+    image: postgres:latest
+    container_name: order-orchestrator-service-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: order_orchestrator_service_db
+    ports:
+      - "5434:5432"
+    volumes:
+      - order-orchestrator-service-db-data:/var/lib/postgresql/data
+volumes:
+  order-orchestrator-service-db-data:

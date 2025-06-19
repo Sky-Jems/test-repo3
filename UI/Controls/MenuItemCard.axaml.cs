@@ -2,14 +2,24 @@ using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Pos.Models;
 
 namespace Pos.Controls;
 
 public partial class MenuItemCard : UserControl
 {
+    public static readonly StyledProperty<Product> ProductProperty =
+        AvaloniaProperty.Register<MenuItemCard, Product>(nameof(Product));
+
+    public Product Product
+    {
+        get => GetValue(ProductProperty);
+        set => SetValue(ProductProperty, value);
+    }
+
     public static readonly StyledProperty<Models.MenuItem> MenuItemProperty =
         AvaloniaProperty.Register<MenuItemCard, Models.MenuItem>(nameof(MenuItem));
-
+    
     public Models.MenuItem MenuItem
     {
         get => GetValue(MenuItemProperty);
@@ -32,9 +42,9 @@ public partial class MenuItemCard : UserControl
 
     private void OnButtonClick(object? sender, RoutedEventArgs e)
     {
-        if (MenuItemCommand?.CanExecute(MenuItem) == true)
+        if (MenuItemCommand?.CanExecute(Product) == true)
         {
-            MenuItemCommand.Execute(MenuItem);
+            MenuItemCommand.Execute(Product);
         }
     }
 }

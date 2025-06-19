@@ -4,38 +4,28 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    d:DesignHeight="450"
-    d:DesignWidth="800"
     x:CompileBindings="False"
     mc:Ignorable="d">
     <Button
-        Padding="12"
+        Padding="24"
         HorizontalAlignment="Stretch"
         VerticalAlignment="Stretch"
-        Background="{Binding BgColor}"
         Click="OnButtonClick"
-        CornerRadius="6">
+        Theme="{StaticResource SolidButton}">
         <Button.DataContext>
-            <Binding Path="$parent.MenuItem" />
+            <Binding Path="$parent.Product" />
         </Button.DataContext>
-        <Button.Styles>
-            <Style Selector="Button:not(:pressed) /template/ ContentPresenter#PART_ContentPresenter">
-                <Setter Property="Background" Value="{Binding BgColor}" />
-            </Style>
-        </Button.Styles>
 
         <Viewbox HorizontalAlignment="Center">
             <StackPanel HorizontalAlignment="Center">
-                <Label
+                <AccessText
                     HorizontalAlignment="Center"
-                    Content="{Binding Name}"
                     FontSize="16"
-                    Foreground="{Binding FgColor}" />
-                <Label
+                    Text="{Binding Name}" />
+                <AccessText
                     HorizontalAlignment="Center"
-                    Content="{Binding Price}"
-                    FontSize="16"
-                    Foreground="{Binding FgColor}" />
+                    FontSize="12"
+                    Text="{Binding Description}" />
             </StackPanel>
         </Viewbox>
     </Button>

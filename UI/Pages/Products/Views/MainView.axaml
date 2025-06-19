@@ -1,0 +1,173 @@
+<UserControl
+    x:Class="Pos.Pages.Products.MainView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:app="using:Pos.Pages.Products"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Margin="12,0,0,0"
+    x:DataType="app:MainViewModel"
+    Background="{StaticResource SemiBackground1Color}"
+    mc:Ignorable="d">
+
+    <Border Padding="32">
+        <DockPanel>
+            <Grid
+                Margin="0,0,0,24"
+                ColumnDefinitions="* auto"
+                DockPanel.Dock="Top">
+                <TextBlock
+                    Grid.Column="0"
+                    VerticalAlignment="Center"
+                    Classes="H3"
+                    Text="{Binding ProductCountText}"
+                    Theme="{StaticResource TitleTextBlock}" />
+
+                <Grid
+                    Grid.Column="1"
+                    ColumnDefinitions="auto auto auto"
+                    ColumnSpacing="16">
+                    <TextBox
+                        Name="search_box"
+                        Grid.Column="0"
+                        MinWidth="200"
+                        Classes="Large Bordered"
+                        Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        Watermark="Search...">
+                        <TextBox.InnerRightContent>
+                            <PathIcon
+                                Height="16"
+                                Data="{StaticResource SemiIconSearch}"
+                                Theme="{StaticResource InnerPathIcon}" />
+                        </TextBox.InnerRightContent>
+                    </TextBox>
+                    <ComboBox
+                        Grid.Column="1"
+                        MinWidth="200"
+                        Classes="Large Bordered"
+                        ItemsSource="{Binding ComboBoxItems}"
+                        PlaceholderText="Select category"
+                        SelectedItem="{Binding SelectedComboBoxItem, Mode=TwoWay}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Button
+                        Grid.Column="2"
+                        HorizontalAlignment="Stretch"
+                        Classes="Large"
+                        Command="{Binding NavigateToCreateProduct}"
+                        CommandParameter="{Binding}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <PathIcon Data="{StaticResource SemiIconPlus}" Theme="{StaticResource InnerPathIcon}" />
+                            <AccessText Text="ADD NEW ITEM" />
+                        </StackPanel>
+                    </Button>
+                </Grid>
+            </Grid>
+
+
+            <DataGrid
+                CanUserResizeColumns="False"
+                CanUserSortColumns="True"
+                ClipToBounds="False"
+                GridLinesVisibility="None"
+                ItemsSource="{Binding Products}">
+                <DataGrid.Columns>
+                    <!-- <DataGridTemplateColumn Width="75">
+                    <DataGridTemplateColumn.HeaderTemplate>
+                        <DataTemplate>
+                            <CheckBox />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.HeaderTemplate>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>-->
+
+                    <DataGridTemplateColumn Width="*" Header="Product Name">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <!-- <Image Width="42" Height="42">
+                                        <Image.Source>
+                                            <SvgImage />
+                                        </Image.Source>
+                                    </Image>-->
+                                    <TextBlock VerticalAlignment="Center" Text="{Binding Name}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <!-- <DataGridTemplateColumn Width="auto" Header="Status"> -->
+                    <!--     <DataGridTemplateColumn.CellTemplate> -->
+                    <!--         <DataTemplate> -->
+                    <!--             <Label Classes="Green Large Circle" Theme="{StaticResource TagLabel}"> -->
+                    <!--                 <StackPanel Orientation="Horizontal" Spacing="6"> -->
+                    <!--                     <Ellipse -->
+                    <!--                         Width="6" -->
+                    <!--                         Height="6" -->
+                    <!--                         Fill="{StaticResource SemiColorSuccess}" /> -->
+                    <!--                     <AccessText Text="Active" /> -->
+                    <!--                 </StackPanel> -->
+                    <!--             </Label> -->
+                    <!--         </DataTemplate> -->
+                    <!--     </DataGridTemplateColumn.CellTemplate> -->
+                    <!-- </DataGridTemplateColumn> -->
+
+                    <DataGridTextColumn
+                        Width="*"
+                        Binding="{Binding Description}"
+                        Header="Description" />
+
+                    <DataGridTextColumn
+                        Width="*"
+                        Binding="{Binding CategoryNames}"
+                        Header="Category" />
+
+                    <DataGridTemplateColumn Tag="Actions">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel
+                                    HorizontalAlignment="Center"
+                                    Orientation="Horizontal"
+                                    Spacing="8">
+                                    <Button
+                                        Width="32"
+                                        Height="32"
+                                        Classes="Tertiary"
+                                        Click="EditButton_Click"
+                                        Tag="{Binding}"
+                                        Theme="{StaticResource BorderlessButton}">
+                                        <PathIcon
+                                            Height="16"
+                                            Data="{StaticResource SemiIconEdit}"
+                                            Theme="{StaticResource InnerPathIcon}" />
+                                    </Button>
+                                    <Button
+                                        Width="32"
+                                        Height="32"
+                                        Classes="Danger"
+                                        Click="DeleteButton_Click"
+                                        CommandParameter="{Binding}"
+                                        Tag="{Binding Id}"
+                                        Theme="{StaticResource BorderlessButton}">
+                                        <PathIcon
+                                            Height="16"
+                                            Data="{StaticResource SemiIconDelete}"
+                                            Theme="{StaticResource InnerPathIcon}" />
+                                    </Button>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </DockPanel>
+    </Border>
+</UserControl>

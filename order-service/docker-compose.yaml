@@ -1,0 +1,14 @@
+services:
+  product-service-db:
+    image: postgres:latest
+    container_name: order-service-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: order_service_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - order-service-db-data:/var/lib/postgresql/data
+volumes:
+  order-service-db-data:

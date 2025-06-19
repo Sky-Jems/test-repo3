@@ -1,12 +1,11 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Data.Core;
 using Avalonia.Data.Core.Plugins;
 using System.Linq;
+using Pos.Pages;
 using Avalonia.Markup.Xaml;
-using Pos.ViewModels;
-using Pos.Views;
-using HotAvalonia;
+using Microsoft.Extensions.DependencyInjection;
+using pos.Extensions;
 
 namespace Pos;
 
@@ -14,21 +13,29 @@ public partial class App : Application
 {
     public override void Initialize()
     {
-        this.EnableHotReload();
         AvaloniaXamlLoader.Load(this);
-        Resources["TabItemController"] = new TabItemController();
     }
 
     public override void OnFrameworkInitializationCompleted()
     {
+        // Register all the services needed for the application to run
+        var collection = new ServiceCollection();
+        collection.AddCommonServices();
+        
+        // Creates a ServiceProvider containing services from the provided IServiceCollection
+        var services = collection.BuildServiceProvider();
+        
+        ServiceLocator.Services = services;
+        
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            Resources["TabItemController"] = new TabItemController();
             // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
             // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
             DisableAvaloniaDataAnnotationValidation();
-            desktop.MainWindow = new MainWindow
+            desktop.MainWindow = new MainWindow();
             {
-                DataContext = new MainWindowViewModel(),
+                DataContext = new MainWindowViewModel();
             };
         }
 

@@ -1,0 +1,14 @@
+services:
+  product-service-db:
+    image: postgres:latest
+    container_name: discount-service-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: discount_service_db
+    ports:
+      - "5438:5432"
+    volumes:
+      - discount-service-db-data:/var/lib/postgresql/data
+volumes:
+  discount-service-db-data:

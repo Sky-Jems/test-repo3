@@ -1,0 +1,11 @@
+POST http://localhost:8081/variant-options
+Content-Type: application/json
+
+{
+  "name": "size",
+  "product_id": 80
+}
+
+###
+DELETE http://localhost:8081/variant-options/23
+Content-Type: application/json

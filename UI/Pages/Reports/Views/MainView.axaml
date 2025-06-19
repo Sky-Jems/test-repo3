@@ -1,0 +1,235 @@
+<UserControl
+    x:Class="Pos.Pages.Reports.MainView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:app="using:Pos.Pages.Reports"
+    xmlns:controls="using:Pos.Controls"
+    xmlns:converters="using:Pos.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:system="clr-namespace:System;assembly=netstandard"
+    Margin="12,0,0,0"
+    x:DataType="app:MainViewModel"
+    Background="{StaticResource SemiBackground1Color}"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <converters:DateTimeConverter x:Key="dateTimeConverter" />
+    </UserControl.Resources>
+
+    <SplitView
+        Name="orderDetailsPane"
+        OpenPaneLength="400"
+        PaneBackground="{StaticResource SemiBackground1Color}"
+        PanePlacement="Right">
+        <SplitView.Pane>
+            <!--  OrderCartPanel Width prevents contents inside the pane from getting squished  -->
+            <!--  as the pane resizes when appearing, not moving  -->
+            <controls:OrderCartPanel
+                Width="{Binding $parent.OpenPaneLength}"
+                DataContext="{Binding OrderCartPanelViewModel}"
+                SummaryButtonCommand="{Binding $parent.DataContext.SummaryButtonCommand}"
+                SummaryButtonText="EDIT DETAILS" />
+        </SplitView.Pane>
+
+        <Border Padding="32">
+            <DockPanel>
+                <Grid
+                    Margin="0,0,0,24"
+                    ColumnDefinitions="* auto"
+                    DockPanel.Dock="Top">
+                    <Label
+                        Grid.Column="0"
+                        Classes="H2"
+                        Theme="{StaticResource TitleLabel}">
+                        Orders
+                    </Label>
+
+                    <Button
+                        Name="dateRangeFlyoutButton"
+                        Grid.Column="1"
+                        Classes="Large">
+                        <StackPanel Orientation="Horizontal">
+                            <PathIcon
+                                Margin="0,0,6,0"
+                                Data="{StaticResource SemiIconCalendar}"
+                                Theme="{StaticResource InnerPathIcon}" />
+                            <AccessText Name="startRangeText" Text="Start range" />
+                            <AccessText Margin="6,0" Text="–" />
+                            <AccessText Name="endRangeText" Text="End range" />
+                        </StackPanel>
+                        <Button.Flyout>
+                            <Flyout Opened="DateRangeFlyOut_Opened" Placement="BottomEdgeAlignedRight">
+                                <Border Padding="12">
+                                    <StackPanel Spacing="12">
+                                        <StackPanel Spacing="6">
+                                            <Label Content="From" />
+                                            <DatePicker Name="startDatePicker" SelectedDate="{Binding StartDate}" />
+                                        </StackPanel>
+
+                                        <StackPanel Spacing="6">
+                                            <Label Content="To" />
+                                            <DatePicker
+                                                Name="endDatePicker"
+                                                IsEnabled="{Binding #startDatePicker.SelectedDate, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                SelectedDate="{Binding EndDate}" />
+                                        </StackPanel>
+
+                                        <Button
+                                            HorizontalAlignment="Stretch"
+                                            Classes="Large"
+                                            Click="ApplyDateFilterButton_Click"
+                                            Content="Apply"
+                                            IsEnabled="{Binding IsDateFilterable}"
+                                            Theme="{StaticResource SolidButton}" />
+                                    </StackPanel>
+                                </Border>
+                            </Flyout>
+                        </Button.Flyout>
+                    </Button>
+                </Grid>
+
+                <Grid
+                    ColumnDefinitions="* *"
+                    ColumnSpacing="24"
+                    RowDefinitions="auto *"
+                    RowSpacing="24">
+                    <Grid.Styles>
+                        <Style Selector="Border.reportCard">
+                            <Setter Property="Margin" Value="0" />
+                            <Setter Property="Theme" Value="{StaticResource CardBorder}" />
+
+                            <Style Selector="^ &gt; StackPanel">
+                                <Setter Property="Spacing" Value="16" />
+                                <Setter Property="Orientation" Value="Horizontal" />
+                            </Style>
+
+                            <Style Selector="^ Label.reportCardTitle">
+                                <Setter Property="FontSize" Value="12" />
+                                <Setter Property="Foreground" Value="{StaticResource SemiColorText2}" />
+                            </Style>
+
+                            <Style Selector="^ Label.reportCardDescription">
+                                <Setter Property="FontSize" Value="24" />
+                                <Setter Property="FontWeight" Value="500" />
+                            </Style>
+                        </Style>
+
+                        <Style Selector="Border.cardIcon">
+                            <Setter Property="Background" Value="{StaticResource SemiColorPrimaryLight}" />
+                            <Setter Property="Width" Value="48" />
+                            <Setter Property="Height" Value="48" />
+                            <Setter Property="Padding" Value="6" />
+                            <Setter Property="CornerRadius" Value="6" />
+                            <Setter Property="HorizontalAlignment" Value="Center" />
+                            <Setter Property="VerticalAlignment" Value="Center" />
+
+                            <Style Selector="^ PathIcon">
+                                <Setter Property="Foreground" Value="{StaticResource SemiColorPrimary}" />
+                                <Setter Property="Width" Value="16" />
+                            </Style>
+                        </Style>
+                    </Grid.Styles>
+
+                    <Border Grid.Column="0" Classes="reportCard">
+                        <StackPanel>
+                            <Border Classes="cardIcon">
+                                <PathIcon Data="{StaticResource SemiIconCheckList}" />
+                            </Border>
+
+                            <StackPanel>
+                                <Label Classes="reportCardTitle" Content="TOTAL ORDERS" />
+                                <Label Classes="reportCardDescription" Content="{Binding OrderReports.TotalOrders}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="1" Classes="reportCard">
+                        <StackPanel>
+                            <Border Classes="cardIcon">
+                                <PathIcon Data="{StaticResource SemiIconLineChartStroked}" />
+                            </Border>
+
+                            <StackPanel>
+                                <Label Classes="reportCardTitle" Content="TOTAL SALES" />
+                                <Label Classes="reportCardDescription" Content="{Binding OrderReports.AmountOfSales, StringFormat='₱{0}'}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <DataGrid
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        CellPointerPressed="DataGrid_CellPointerPressed"
+                        IsReadOnly="True"
+                        ItemsSource="{Binding OrderReports.Orders}"
+                        PointerReleased="DataGrid_PointerReleased">
+                        <DataGrid.Styles>
+                            <Style Selector="DataGridRow:pointerover">
+                                <Setter Property="Cursor" Value="Hand" />
+                            </Style>
+                        </DataGrid.Styles>
+
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Binding="{Binding Id}" Header="No." />
+                            <DataGridTextColumn
+                                Width="2*"
+                                Binding="{Binding Customer}"
+                                Header="Name" />
+                            <DataGridTextColumn
+                                Width="2*"
+                                Binding="{Binding LineItems.Count}"
+                                Header="Items" />
+                            <DataGridTextColumn
+                                Width="2*"
+                                Binding="{Binding Total, StringFormat='₱{0}'}"
+                                Header="Amount" />
+                            <DataGridTextColumn
+                                Width="2*"
+                                Binding="{Binding CreatedAt, Converter={StaticResource dateTimeConverter}, Mode=OneWay}"
+                                Header="Date" />
+                            <DataGridTemplateColumn Header="Status">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Label
+                                            Classes="Large Indigo Circle"
+                                            Content="ongoing"
+                                            Theme="{StaticResource TagLabel}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Tag="Actions">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button
+                                            Width="32"
+                                            Height="32"
+                                            HorizontalAlignment="Right"
+                                            Classes="Tertiary"
+                                            Theme="{StaticResource BorderlessButton}">
+                                            <PathIcon Data="{StaticResource SemiIconMore}" Theme="{StaticResource InnerPathIcon}" />
+
+                                            <Button.Flyout>
+                                                <MenuFlyout>
+                                                    <MenuItem Header="Edit" />
+                                                    <MenuItem Header="Checkout" />
+                                                    <Separator />
+                                                    <MenuItem>
+                                                        <MenuItem.Header>
+                                                            <Label Classes="Danger" Content="Cancel" />
+                                                        </MenuItem.Header>
+                                                    </MenuItem>
+                                                </MenuFlyout>
+                                            </Button.Flyout>
+                                        </Button>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </DockPanel>
+        </Border>
+    </SplitView>
+</UserControl>

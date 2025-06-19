@@ -1,0 +1,14 @@
+services:
+  billing-service-db:
+    image: postgres:latest
+    container_name: billing-service-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: billing_service_db
+    ports:
+      - "5487:5432"
+    volumes:
+      - billing-service-db-data:/var/lib/postgresql/data
+volumes:
+  billing-service-db-data:

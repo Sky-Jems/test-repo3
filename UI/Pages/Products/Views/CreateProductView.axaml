@@ -1,0 +1,370 @@
+<UserControl
+    x:Class="Pos.Pages.Products.CreateProductView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:app="using:Pos.Pages.Products"
+    xmlns:controls="using:Pos.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Margin="12,0,0,0"
+    x:DataType="app:CreateProductViewModel"
+    Background="{StaticResource SemiBackground1Color}"
+    mc:Ignorable="d">
+
+    <DockPanel>
+        <Border Padding="24,24,24,0" DockPanel.Dock="Top">
+            <Grid ColumnDefinitions="auto * auto" ColumnSpacing="16">
+                <Button
+                    Grid.Column="0"
+                    Width="40"
+                    Height="40"
+                    Command="{Binding GoBack}">
+                    <PathIcon
+                        Width="16"
+                        Data="{StaticResource SemiIconArrowLeft}"
+                        Theme="{DynamicResource InnerPathIcon}" />
+                </Button>
+
+                <!--  breadcrumbs  -->
+                <StackPanel
+                    x:Name="breadcrumbNavigationPanel"
+                    Grid.Column="1"
+                    Orientation="Horizontal">
+                    <!--  content  -->
+                </StackPanel>
+                <Button
+                    x:Name="NextButton"
+                    Grid.Column="2"
+                    MinWidth="86"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    Classes="Large"
+                    Click="NextButton_Click"
+                    Content="NEXT"
+                    CornerRadius="6" />
+            </Grid>
+        </Border>
+
+        <Carousel
+            Name="createProductPagination"
+            Grid.Row="1"
+            Padding="24"
+            SelectionChanged="CreateProductPagination_SelectionChanged">
+            <Carousel.PageTransition>
+                <CompositePageTransition>
+                    <PageSlide
+                        Orientation="Horizontal"
+                        SlideInEasing="SineEaseOut"
+                        SlideOutEasing="SineEaseOut"
+                        Duration="0.25" />
+                </CompositePageTransition>
+            </Carousel.PageTransition>
+
+            <Carousel.Items>
+                <!--  product details  -->
+                <StackPanel Orientation="Vertical" Spacing="12">
+
+                    <StackPanel Orientation="Vertical" Spacing="4">
+                        <Label Content="Name" />
+                        <TextBox
+                            x:Name="ProductName"
+                            Classes="Large Bordered"
+                            Text="{Binding ProductName, Mode=TwoWay}"
+                            Watermark="Enter product name" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Vertical" Spacing="4">
+                        <Label Content="Description" />
+                        <TextBox
+                            x:Name="DescriptionName"
+                            Height="100"
+                            AcceptsReturn="True"
+                            Classes="TextArea Bordered"
+                            Text="{Binding DescriptionName, Mode=TwoWay}"
+                            TextWrapping="Wrap"
+                            Watermark="Enter description name" />
+                    </StackPanel>
+
+                    <!-- <StackPanel Orientation="Vertical" Spacing="4">
+						<Label Content="Media" />
+						<Button
+							Padding="32"
+							HorizontalAlignment="Stretch"
+							HorizontalContentAlignment="Center"
+							VerticalContentAlignment="Center"
+							Classes="Primary"
+							Click="UploadImageButton_Clicked"
+							Theme="{StaticResource OutlineButton}">
+							<StackPanel Spacing="6">
+								<Svg
+									Width="52"
+									Css="* { fill: #FFFFFF; }"
+									Path="avares://pos/Assets/Images/add_image.svg" />
+								<Label FontSize="12">Upload an image</Label>
+							</StackPanel>
+						</Button>
+					</StackPanel>-->
+
+                    <StackPanel Orientation="Vertical" Spacing="4">
+                        <Label Content="Category" />
+
+                        <!--  TODO: convert as custom control  -->
+                        <Button
+                            Padding="4,0"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Left"
+                            Classes="Large"
+                            Theme="{StaticResource OutlineButton}">
+                            <ItemsControl x:Name="selectedCategoriesItemsControl" ItemsSource="{Binding SelectedCategoryList}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" Spacing="4" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button
+                                            Classes="Primary"
+                                            Command="{Binding $parent[UserControl].DataContext.RemoveCategoryFromListCommand}"
+                                            CommandParameter="{Binding .}"
+                                            Theme="{StaticResource SolidButton}">
+                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <AccessText Text="{Binding Name}" />
+                                                <PathIcon
+                                                    Height="16"
+                                                    Data="{StaticResource SemiIconClear}"
+                                                    Theme="{StaticResource InnerPathIcon}" />
+                                            </StackPanel>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <Button.Flyout>
+                                <Flyout Placement="BottomEdgeAlignedLeft">
+                                    <ListBox
+                                        ItemsSource="{Binding CategoryList}"
+                                        SelectedItems="{Binding SelectedCategoryList}"
+                                        SelectionMode="Multiple,Toggle">
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <Label Content="{Binding Name}" />
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                </Flyout>
+                            </Button.Flyout>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+
+                <!--  variants  -->
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+
+                        <!--  Variant Groups  -->
+                        <ItemsControl ItemsSource="{Binding ProductOptions}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Vertical" Spacing="12">
+                                        <Label Content="Variants" />
+                                        <!--  Variant Group Name Editor  -->
+                                        <StackPanel Orientation="Vertical" Spacing="4">
+                                            <Grid ColumnDefinitions="* auto">
+                                                <TextBox
+                                                    Grid.Column="0"
+                                                    Margin="0,0,8,0"
+                                                    HorizontalAlignment="Stretch"
+                                                    Classes="Large Bordered"
+                                                    Text="{Binding Name}"
+                                                    Watermark="Enter variant name" />
+                                                <Button
+                                                    Grid.Column="1"
+                                                    Width="40"
+                                                    Height="40"
+                                                    Classes="Danger"
+                                                    Click="OnDeleteVariantGroupClick"
+                                                    Tag="{Binding}">
+                                                    <PathIcon
+                                                        Height="16"
+                                                        Data="{DynamicResource SemiIconDelete}"
+                                                        Theme="{StaticResource InnerPathIcon}" />
+                                                </Button>
+                                            </Grid>
+                                        </StackPanel>
+
+                                        <StackPanel Orientation="Vertical" Spacing="4">
+                                            <Label Content="Attributes" />
+
+                                            <TextBox
+                                                Padding="4,0"
+                                                Classes="Large Bordered"
+                                                KeyDown="InsideTextBoxKeyDown"
+                                                Tag="{Binding tableId}">
+                                                <TextBox.InnerLeftContent>
+                                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                                        <ItemsControl ItemsSource="{Binding Values}">
+                                                            <ItemsControl.ItemsPanel>
+                                                                <ItemsPanelTemplate>
+                                                                    <StackPanel Orientation="Horizontal" Spacing="6" />
+                                                                </ItemsPanelTemplate>
+                                                            </ItemsControl.ItemsPanel>
+
+                                                            <ItemsControl.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <Button
+                                                                        Classes="Primary"
+                                                                        Command="{Binding $parent[UserControl].DataContext.RemoveOptionItemCommand}"
+                                                                        CommandParameter="{Binding}"
+                                                                        Theme="{StaticResource SolidButton}">
+                                                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                                                            <AccessText Text="{Binding Value}" />
+                                                                            <PathIcon
+                                                                                Height="16"
+                                                                                Data="{StaticResource SemiIconClear}"
+                                                                                IsVisible="{Binding $parent[UserControl].DataContext.ShowClearIcon}"
+                                                                                Theme="{StaticResource InnerPathIcon}" />
+                                                                        </StackPanel>
+                                                                    </Button>
+                                                                </DataTemplate>
+                                                            </ItemsControl.ItemTemplate>
+                                                        </ItemsControl>
+                                                    </StackPanel>
+                                                </TextBox.InnerLeftContent>
+                                            </TextBox>
+                                        </StackPanel>
+
+                                        <!--  Divider  -->
+                                        <Rectangle
+                                            Margin="0,12,0,24"
+                                            Stroke="{DynamicResource SemiColorFill2}"
+                                            StrokeDashArray="2,6"
+                                            StrokeThickness="1" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <Button
+                            HorizontalAlignment="Stretch"
+                            Classes="Large"
+                            Command="{Binding AddVariantGroupCommand}">
+                            <StackPanel
+                                HorizontalAlignment="Center"
+                                Orientation="Horizontal"
+                                Spacing="8">
+                                <PathIcon
+                                    Height="16"
+                                    Data="{DynamicResource SemiIconPlusCircle}"
+                                    Foreground="{StaticResource SemiColorText0}"
+                                    Theme="{StaticResource InnerPathIcon}" />
+                                <Label>Add new variant</Label>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!--  combination details  -->
+                <Grid Margin="10,0,20,10" RowDefinitions="Auto,Auto,*">
+                    <Grid Grid.Row="0" ColumnDefinitions="* auto">
+                        <Label
+                            Grid.Column="0"
+                            VerticalAlignment="Center"
+                            Classes="H3"
+                            Content="Filter"
+                            Theme="{StaticResource TitleLabel}" />
+
+                        <StackPanel
+                            Grid.Column="1"
+                            Orientation="Horizontal"
+                            Spacing="6">
+                            <ComboBox
+                                x:Name="VariantGroupComboBox"
+                                MinWidth="200"
+                                Classes="Large"
+                                ItemsSource="{Binding ProductOptions}"
+                                PlaceholderText="Select Variants"
+                                SelectedItem="{Binding SelectedVariantGroup, Mode=TwoWay}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Name}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+
+                            <ComboBox
+                                MinWidth="200"
+                                Classes="Large"
+                                ItemsSource="{Binding SelectedVariantValues}"
+                                PlaceholderText="Select Options"
+                                SelectedItem="{Binding SelectedVariantValue, Mode=TwoWay}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Value}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBlock
+                        Grid.Row="1"
+                        Margin="0,0,0,10"
+                        FontSize="18"
+                        Text="Variants" />
+
+                    <DataGrid
+                        Grid.Row="2"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        CanUserResizeColumns="False"
+                        CanUserSortColumns="True"
+                        CellEditEnded="VariantCombinationsCellUpdate"
+                        GridLinesVisibility="None"
+                        ItemsSource="{Binding CombinationList}">
+                        <DataGrid.Styles>
+                            <Style Selector="DataGridColumnHeader">
+                                <Setter Property="FontSize" Value="14" />
+                            </Style>
+                        </DataGrid.Styles>
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Width="*" Header="Product Name">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Vertical">
+                                            <TextBlock Text="{Binding ProductName}" />
+                                            <Label
+                                                Classes="Red Circle"
+                                                Content="{Binding VariantSummary}"
+                                                IsVisible="{Binding $parent[UserControl].DataContext.ShowVariantSummary}"
+                                                Theme="{StaticResource TagLabel}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn
+                                Width="*"
+                                Binding="{Binding SKU}"
+                                Header="SKU" />
+                            <DataGridTextColumn
+                                Width="*"
+                                Binding="{Binding CategoryNames}"
+                                Header="Category"
+                                IsReadOnly="True" />
+                            <DataGridTextColumn
+                                Width="*"
+                                Binding="{Binding Price}"
+                                Header="Price" />
+                            <!-- <DataGridTextColumn
+                                Width="*"
+                                Binding="{Binding Stock}"
+                                Header="Stock" />-->
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+
+            </Carousel.Items>
+        </Carousel>
+    </DockPanel>
+</UserControl>

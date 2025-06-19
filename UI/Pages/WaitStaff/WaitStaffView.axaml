@@ -1,0 +1,61 @@
+<UserControl
+    x:Class="Pos.Pages.WaitStaff.WaitStaffView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:app="using:Pos.Pages.WaitStaff"
+    xmlns:controls="using:Pos.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dialogs="using:AvaloniaDialogs.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:page="app:Views.Categories"
+    xmlns:rxui="http://reactiveui.net"
+    Padding="0"
+    x:DataType="app:WaitStaffViewModel"
+    mc:Ignorable="d">
+    <Grid ColumnDefinitions="* 2*" ColumnSpacing="12">
+        <Grid
+            Margin="12,0,0,0"
+            Background="{StaticResource SemiBackground1Color}"
+            RowDefinitions="auto *">
+            <Border Padding="24,24,24,0">
+                <UniformGrid
+                    Grid.Row="0"
+                    HorizontalAlignment="Stretch"
+                    ColumnSpacing="12"
+                    Rows="1">
+                    <TextBox
+                        Classes="Large Bordered"
+                        Text="{Binding CustomerName, Mode=TwoWay}"
+                        Watermark="Customer Name" />
+                    <!--  For Service Provider Management  -->
+                    <!--  <ComboBox  -->
+                    <!--  HorizontalAlignment="Stretch"  -->
+                    <!--  Classes="Large Bordered"  -->
+                    <!--  PlaceholderText="Select table">  -->
+                    <!--     <ComboBoxItem Content="test" /> -->
+                    <!-- </ComboBox> -->
+                </UniformGrid>
+            </Border>
+
+            <controls:OrderCartPanel
+                Grid.Row="1"
+                DataContext="{Binding OrderCartPanelViewModel}"
+                IsEditable="True"
+                SummaryButtonCommand="{Binding $parent.DataContext.SummaryButtonCommand}" />
+        </Grid>
+
+        <ScrollViewer Grid.Column="1" Background="{StaticResource SemiBackground1Color}">
+            <rxui:RoutedViewHost Router="{Binding Router}">
+                <rxui:RoutedViewHost.DefaultContent>
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Text="Default content" />
+                </rxui:RoutedViewHost.DefaultContent>
+                <rxui:RoutedViewHost.ViewLocator>
+                    <app:WaitStaffViewLocator />
+                </rxui:RoutedViewHost.ViewLocator>
+            </rxui:RoutedViewHost>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

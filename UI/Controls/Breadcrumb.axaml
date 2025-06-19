@@ -1,0 +1,50 @@
+<ResourceDictionary
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Pos.Controls">
+
+    <!--
+        Additional resources
+        Using Control Themes:
+        https://docs.avaloniaui.net/docs/basics/user-interface/styling/control-themes
+        Using Theme Variants:
+        https://docs.avaloniaui.net/docs/guides/styles-and-resources/how-to-use-theme-variants
+    -->
+
+    <Design.PreviewWith>
+        <StackPanel Width="400" Spacing="10">
+            <StackPanel Background="{DynamicResource SystemRegionBrush}">
+                <controls:Breadcrumb />
+            </StackPanel>
+        </StackPanel>
+    </Design.PreviewWith>
+
+    <ControlTheme x:Key="{x:Type controls:Breadcrumb}" TargetType="controls:Breadcrumb">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                    <Label
+                        Content="{TemplateBinding Content}"
+                        FontSize="{DynamicResource TextBlockTitleH4FontSize}"
+                        Foreground="{DynamicResource SemiColorText3}" />
+                    <PathIcon
+                        Height="20"
+                        Margin="12,0"
+                        Data="{DynamicResource SemiIconChevronRightStroked}"
+                        Foreground="{StaticResource SemiColorText0}" />
+                </StackPanel>
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^:nth-last-child(1)">
+            <Style Selector="^ Label">
+                <Setter Property="FontSize" Value="{DynamicResource TextBlockTitleH3FontSize}" />
+                <Setter Property="Foreground" Value="{DynamicResource SemiColorText0}" />
+            </Style>
+
+            <Style Selector="^ PathIcon">
+                <Setter Property="IsVisible" Value="False" />
+            </Style>
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>

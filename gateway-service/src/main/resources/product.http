@@ -1,0 +1,6 @@
+POST http://localhost:8081/products
+Content-Type: application/json
+
+{ "name": "burger85"}
+###
+#DELETE http://localhost:8081/products/4

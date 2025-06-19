@@ -1,0 +1,16 @@
+POST http://localhost:8081/cart
+Content-Type: application/json
+
+{
+  "user_id": 1,
+  "order": [
+    {
+      "product_id": 80,
+      "quantity": 2
+    },
+    {
+      "product_id": 81,
+      "quantity": 1
+    }
+  ]
+}

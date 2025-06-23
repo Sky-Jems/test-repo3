@@ -24,4 +24,11 @@ public class DiscountResponseDto {
     String startDateTime;
     @JsonProperty("end_date_time")
     String endDateTime;
+    @JsonProperty("min_spend")
+    Double minSpend;
+    Double cap;
+    @JsonProperty("min_qty")
+    Integer minQty;
+    @JsonProperty("max_qty")
+    Integer maxQty;
 }

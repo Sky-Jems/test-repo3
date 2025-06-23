@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 public class LineItem {
 
     private Long id;
-    private Long variantId;
     private Long productId;
     private Integer quantity;
     private Double price;

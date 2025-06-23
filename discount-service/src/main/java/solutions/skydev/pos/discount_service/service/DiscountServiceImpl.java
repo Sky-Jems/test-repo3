@@ -3,7 +3,6 @@ package solutions.skydev.pos.discount_service.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import solutions.skydev.pos.discount_service.model.entity.*;
-import solutions.skydev.pos.discount_service.producer.DiscountProducer;
 import solutions.skydev.pos.discount_service.repository.DiscountRepository;
 import solutions.skydev.pos.discount_service.service.strategy.DiscountStrategy;
 import solutions.skydev.pos.discount_service.service.strategy.DiscountStrategyResolver;
@@ -42,15 +41,14 @@ public class DiscountServiceImpl implements DiscountService {
             return handleNoDiscount(order);
         }
 
-        List<DiscountVariant> variants = fullDiscount.getVariants();
+        List<DiscountProduct> products = fullDiscount.getProducts();
         DiscountStrategy strategy = strategyResolver.resolve(fullDiscount.getType());
 
-        double discountAmount = strategy.calculateDiscount(order, fullDiscount, variants);
+        double discountAmount = strategy.calculateDiscount(order, fullDiscount, products);
         discountAmount = applyCap(discountAmount, fullDiscount.getCap());
 
         DiscountLineItem discountLineItem = createLineItem(order, fullDiscount, discountAmount);
         return discountLineItemService.save(discountLineItem);
-//        discountProducer.sendDiscountApplied(discountLineItem);
     }
 
     private double applyCap(double discountAmount, double cap) {
@@ -80,11 +78,12 @@ public class DiscountServiceImpl implements DiscountService {
 
     @Override
     public Discount createDiscount(Discount discount) {
-        for (DiscountVariant variant : discount.getVariants()) {
-            variant.setDiscount(discount);
+        if (discount.getProducts() != null) {
+            for (DiscountProduct product : discount.getProducts()) {
+                product.setDiscount(discount);
+            }
         }
         discountRepository.save(discount);
-
         return discount;
     }
 
@@ -124,8 +123,8 @@ public class DiscountServiceImpl implements DiscountService {
     }
 
     @Override
-    public List<DiscountVariant> getVariantsByDiscountId(Long id) {
+    public List<DiscountProduct> getProductsByDiscountId(Long id) {
         Discount discount = findById(id);
-        return discount.getVariants();
+        return discount.getProducts();
     }
 }

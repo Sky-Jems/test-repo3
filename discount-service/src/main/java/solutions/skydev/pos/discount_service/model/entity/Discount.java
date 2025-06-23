@@ -31,10 +31,13 @@ public class Discount {
     private DiscountScope scope; // e.g., "items", "order"
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
-    private double cap; // for 5k capping, this is the maximum discount that can be applied to the order
+    private Double cap; // for 5k capping, this is the maximum discount amount that can be applied to the order
+    private Double minSpend;
+    private Integer minQty;
+    private Integer maxQty;
 
     @OneToMany(mappedBy = "discount", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<DiscountVariant> variants = new ArrayList<>();
+    private List<DiscountProduct> products = new ArrayList<>();
 
     @OneToMany(mappedBy = "discount", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<DiscountOrder> discountOrders = new ArrayList<>();

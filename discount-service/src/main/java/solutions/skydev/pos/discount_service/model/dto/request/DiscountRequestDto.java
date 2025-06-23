@@ -25,6 +25,12 @@ public class DiscountRequestDto {
     @JsonProperty("end_date_time")
     String endDateTime;
     Double cap;
+    @JsonProperty("min_spend")
+    Double minSpend;
+    @JsonProperty("min_qty")
+    Integer minQty;
+    @JsonProperty("max_qty")
+    Integer maxQty;
 
-    List<DiscountVariantRequestDto> variants;
+    List<DiscountProductRequestDto> products;
 }

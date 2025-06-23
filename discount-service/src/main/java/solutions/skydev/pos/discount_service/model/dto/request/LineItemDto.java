@@ -13,8 +13,6 @@ import java.io.Serializable;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class LineItemDto implements Serializable {
-    @JsonProperty("variant_id")
-    String variantId;
     @JsonProperty("product_id")
     String productId;
     @JsonProperty("category_id")

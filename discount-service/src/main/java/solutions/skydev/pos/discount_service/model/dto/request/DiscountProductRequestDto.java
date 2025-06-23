@@ -10,10 +10,10 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class DiscountVariantRequestDto {
+public class DiscountProductRequestDto {
     Long id;
     @JsonProperty("discount_id")
     Long discountId;
-    @JsonProperty("variant_id")
-    Long variantId;
+    @JsonProperty("product_id")
+    Long productId;
 }

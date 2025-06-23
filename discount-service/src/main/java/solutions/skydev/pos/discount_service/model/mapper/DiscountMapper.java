@@ -16,7 +16,6 @@ import java.util.List;
 public interface DiscountMapper {
     @Mapping(source = "discountId", target = "id")
     Discount toEntity(ApplyDiscountRequestDto discountRequestDto);
-    @Mapping(source = "variants", target = "variants")
     Discount toEntity(DiscountRequestDto dto);
 
     default LocalDateTime map(String value) {

@@ -13,12 +13,6 @@ public interface IProductService
     Task<int> AddProduct(ProductDto product);
     Task DeleteProductByIdAsync(int id);
     Task UpdateProductAsync(ProductDto product);
-    Task AddVariantsAsync(List<OptionGroupDto> variants, long? productId);
-    Task UpdateVariantAsync(OptionGroupDto optionValues);
-    Task DeleteVariantByIdAsync(int id);
     Task<List<Variant>> GetVariantsByProductAndOption(long productId, long? optionId = null, string? optionValue = null);
     Task<Product> GetProductByIdAsync(int id);
-    Task UpdateVariantCombinationAsync(long variantId, object variantPayload);
-    Task<List<Combinations>> GetVariantCombinationListAsync(int id);
-    Task<List<Combinations>> GetProductVariantsAsync(long productId, int valueIds);
 }

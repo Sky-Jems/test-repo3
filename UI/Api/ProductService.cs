@@ -18,31 +18,6 @@ public class ProductService : IProductService
        _httpClient = httpClient;
     }
 
-    public async Task AddVariantsAsync(List<OptionGroupDto> variants, long? productId = null)
-    {
-        if (productId != null && variants.Count == 0)
-        {
-            var payload = new
-            {
-                product_id = productId
-            };
-            await _httpClient.PostJsonAsync("variants", payload);
-        }
-        else
-        {
-            var payload = new
-            {
-                variant_options = variants
-            };
-            await _httpClient.PostJsonAsync("variant-options", payload);
-        }
-    }
-
-    public async Task UpdateVariantAsync(OptionGroupDto optionValue)
-    {
-        await _httpClient.PutJsonAsync($"variant-options/{optionValue.Id}", optionValue);
-    }
-
     public async Task<List<Product>> GetProductsByCategoryAsync(Category subCategory)
     {
         var response = await _httpClient.GetJsonAsync<List<Product>>($"categories/{subCategory.Id}/products");
@@ -59,12 +34,21 @@ public class ProductService : IProductService
     {
         var response = await _httpClient.GetJsonAsync<List<OptionItem>>($"variant-options/{variantId}/variant-option-values");
         return response;
+
     }
 
     public async Task<List<Product>> GetAllProducts()
     {
         var response = await _httpClient.GetJsonAsync<List<Product>>("products");
-        return response ?? new List<Product>();
+        var products = response ?? new List<Product>();
+
+        foreach (var product in products)
+        {
+            product.Price = 99.99m;
+        }
+
+        return products;
+
     }
 
     public async Task<int> AddProduct(ProductDto product)
@@ -86,10 +70,6 @@ public class ProductService : IProductService
         await _httpClient.DeleteAsync($"products/{id}");
     }
 
-    public async Task DeleteVariantByIdAsync(int id)
-    {
-        await _httpClient.DeleteAsync($"variant-options/{id}");
-    }
     public async Task UpdateProductAsync(ProductDto product)
     {
         await _httpClient.PutJsonAsync($"products/{product.Id}", product);
@@ -113,20 +93,13 @@ public class ProductService : IProductService
 
     public async Task<Product> GetProductByIdAsync(int id)
     {
-        return await _httpClient.GetJsonAsync<Product>($"products/{id}");
+        var product = await _httpClient.GetJsonAsync<Product>($"products/{id}");
+        if (product != null)
+        {
+            product.Price = 22.99m;
+        }
+
+        return product;
     }
 
-    public async Task UpdateVariantCombinationAsync(long variantId, object variantPayload)
-    {
-        await _httpClient.PutJsonAsync($"variants/{variantId}", variantPayload);
-    }
-
-    public async Task<List<Combinations>> GetVariantCombinationListAsync(int id)
-    {
-        return await _httpClient.GetJsonAsync<List<Combinations>>($"product-variants/{id}");
-    }
-    public async Task<List<Combinations>> GetProductVariantsAsync(long productId, int valueIds)
-    {
-        return await _httpClient.GetJsonAsync<List<Combinations>>($"product-variants/{productId}?valueIds={valueIds}");
-    }
 }

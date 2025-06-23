@@ -130,6 +130,11 @@
                         Binding="{Binding CategoryNames}"
                         Header="Category" />
 
+                    <DataGridTextColumn
+                        Width="*"
+                        Binding="{Binding Price}"
+                        Header="Price" />
+
                     <DataGridTemplateColumn Tag="Actions">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>

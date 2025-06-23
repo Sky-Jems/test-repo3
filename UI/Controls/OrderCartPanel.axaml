@@ -16,12 +16,12 @@
                 <Label
                     Grid.Column="0"
                     VerticalAlignment="Center"
-                    Classes="H3"
+                    Classes="H4"
                     Content="Order Items"
                     Theme="{StaticResource TitleLabel}" />
                 <Button
                     Grid.Column="1"
-                    Classes="Large Danger"
+                    Classes="Danger"
                     Click="OnClearButtonClick"
                     Content="CLEAR"
                     IsVisible="{Binding IsEditable, ElementName=root}" />
@@ -31,7 +31,7 @@
         <!--  order list  -->
         <Border
             Grid.Row="1"
-            Margin="24"
+            Margin="24,16"
             ClipToBounds="True"
             CornerRadius="4">
             <ScrollViewer>
@@ -43,28 +43,23 @@
                     <ListBox.Styles>
                         <Style Selector="ListBoxItem">
                             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            <Setter Property="Padding" Value="16 12 16 12" />
                         </Style>
                     </ListBox.Styles>
 
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel HorizontalAlignment="Stretch" Spacing="12">
+                            <StackPanel HorizontalAlignment="Stretch" Spacing="8">
                                 <Grid
                                     HorizontalAlignment="Stretch"
-                                    ColumnDefinitions="auto * auto"
-                                    ColumnSpacing="8"
-                                    RowDefinitions="auto auto"
-                                    RowSpacing="12">
+                                    ColumnDefinitions="* auto"
+                                    ColumnSpacing="8">
                                     <Label
                                         Grid.Row="0"
                                         Grid.Column="0"
-                                        Classes="Circle Indigo"
-                                        Content="{Binding Quantity, StringFormat={}{0}x}"
-                                        Theme="{StaticResource TagLabel}" />
-                                    <Label
-                                        Grid.Row="0"
-                                        Grid.Column="1"
+                                        VerticalContentAlignment="Center"
                                         Classes="H6"
+                                        FontWeight="Regular"
                                         Theme="{StaticResource TitleLabel}">
                                         <Label.Content>
                                             <MultiBinding StringFormat="{}{0} - {1}">
@@ -73,50 +68,42 @@
                                             </MultiBinding>
                                         </Label.Content>
                                     </Label>
-                                    <Label Grid.Column="2" Content="{Binding Price, StringFormat=₱{0:N2}}" />
-
-                                     <ItemsControl
-                                         Grid.Row="1"
-                                         Grid.ColumnSpan="3"
-                                         ItemsSource="{Binding Variant.VariantCombinations}">
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate>
-                                                     <Grid
-                                                         HorizontalAlignment="Stretch"
-                                                         ColumnDefinitions="* auto"
-                                                         ColumnSpacing="8">
-                                                         <Label
-                                                             Grid.Column="0"
-                                                             Classes="Circle Indigo"
-                                                             Content="{Binding VariantOption.Name}" />
-                                                         <TextBlock
-                                                             Grid.Column="1"
-                                                             xml:space="preserve"
-                                                             Classes="H6"
-                                                             Theme="{StaticResource TitleTextBlock}"><Run Text="{Binding Value}" /></TextBlock>
-                                                    </Grid>
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
+                                    <Button
+                                        Grid.Row="0"
+                                        Grid.Column="1"
+                                        Width="32"
+                                        Margin="0,0,-4,0"
+                                        Classes="Danger"
+                                        Click="OnRemoveLineItemButtonClick"
+                                        IsVisible="{Binding IsEditable, ElementName=root}"
+                                        Tag="{Binding}"
+                                        Theme="{StaticResource BorderlessButton}">
+                                        <PathIcon
+                                            Height="16"
+                                            Data="{StaticResource SemiIconCrossStroked}"
+                                            Theme="{StaticResource InnerPathIcon}" />
+                                    </Button>
                                 </Grid>
 
-                                <Rectangle
-                                    Stroke="{DynamicResource SemiColorFill2}"
-                                    StrokeDashArray="2,6"
-                                    StrokeThickness="1" />
-
-                                <Label
-                                    Grid.Column="2"
-                                    HorizontalContentAlignment="Right"
-                                    Classes="H6"
-                                    Content="{Binding ItemTotal, StringFormat=₱{0:N2}}"
-                                    Theme="{StaticResource TitleLabel}" />
+                                <Grid ColumnDefinitions="* auto" ColumnSpacing="8">
+                                    <Label
+                                        Grid.Column="0"
+                                        Classes="H5"
+                                        Content="{Binding Price, StringFormat='₱{0:N2}'}"
+                                        Theme="{StaticResource TitleLabel}" />
+                                    <Label
+                                        Grid.Column="1"
+                                        HorizontalAlignment="Right"
+                                        Classes="Circle Indigo"
+                                        Content="{Binding Quantity, StringFormat='{}{0}x'}"
+                                        Theme="{StaticResource TagLabel}" />
+                                </Grid>
                             </StackPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <StackPanel Orientation="Vertical" Spacing="12" />
+                            <StackPanel Orientation="Vertical" Spacing="6" />
                         </ItemsPanelTemplate>
                     </ListBox.ItemsPanel>
                 </ListBox>
@@ -155,7 +142,7 @@
                     StrokeDashArray="2,6"
                     StrokeThickness="1" />
 
-                <UniformGrid Columns="2" RowSpacing="16">
+                <UniformGrid Columns="2" RowSpacing="6">
                     <Label Content="Subtotal" />
                     <Label Classes="price" Content="{Binding CartTotal, StringFormat='₱{0:N2}'}" />
 
@@ -175,14 +162,14 @@
                     StrokeDashArray="2,6"
                     StrokeThickness="1" />
 
-                <UniformGrid Margin="0,0,0,24" Rows="1">
+                <UniformGrid Margin="0,0,0,16" Rows="1">
                     <Label
                         HorizontalAlignment="Stretch"
-                        Classes="H4"
+                        Classes="H5"
                         Content="Total"
                         Theme="{StaticResource TitleLabel}" />
                     <Label
-                        Classes="price H4"
+                        Classes="price H5"
                         Content="{Binding CartTotal, StringFormat='₱{0:N2}'}"
                         Theme="{StaticResource TitleLabel}" />
                 </UniformGrid>

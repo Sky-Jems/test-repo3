@@ -32,6 +32,7 @@
                 <ResourceInclude Source="avares://pos/ThemeOverrides/Variables.axaml" />
                 <!-- <ResourceInclude Source="avares://pos/ThemeOverrides/Controls/Button.axaml" /> -->
                 <!-- <ResourceInclude Source="avares://pos/ThemeOverrides/Controls/ComboBox.axaml" /> -->
+                <ResourceInclude Source="avares://pos/ThemeOverrides/Controls/ListBox.axaml" />
                 <ResourceInclude Source="avares://pos/ThemeOverrides/Controls/DataGrid.axaml" />
                 <ResourceInclude Source="avares://pos/ThemeOverrides/Controls/RadioButton.axaml" />
                 <ResourceInclude Source="avares://pos/ThemeOverrides/Controls/TextBox.axaml" />

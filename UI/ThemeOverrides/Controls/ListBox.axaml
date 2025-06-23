@@ -1,0 +1,61 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ControlTheme x:Key="PureCardRadioGroupListBoxItem" TargetType="ListBoxItem">
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Padding" Value="{DynamicResource RadioButtonCardPadding}" />
+        <Setter Property="FontSize" Value="{DynamicResource RadioButtonFontSize}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource RadioButtonCardCornerRadius}" />
+        <Setter Property="Background" Value="{DynamicResource RadioButtonCardDefaultBackground}" />
+        <!--  exposed BorderBrush for restyling  -->
+        <Setter Property="BorderBrush" Value="{DynamicResource RadioButtonCardDefaultBorderBrush}" />
+        <Setter Property="BorderThickness" Value="{DynamicResource RadioButtonBorderThickness}" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <ControlTemplate TargetType="ListBoxItem">
+                <ContentPresenter
+                    Name="PART_ContentPresenter"
+                    Padding="{TemplateBinding Padding}"
+                    HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                    VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    Content="{TemplateBinding Content}"
+                    ContentTemplate="{TemplateBinding ContentTemplate}"
+                    CornerRadius="{TemplateBinding CornerRadius}"
+                    Foreground="{TemplateBinding Foreground}"
+                    RecognizesAccessKey="True"
+                    TextWrapping="Wrap"
+                    UseLayoutRounding="False" />
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^">
+            <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{DynamicResource RadioButtonCardUncheckPointeroverBackground}" />
+            </Style>
+            <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{DynamicResource RadioButtonCardUncheckPressedBackground}" />
+            </Style>
+            <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Foreground" Value="{DynamicResource RadioButtonDisabledForeground}" />
+            </Style>
+        </Style>
+        <Style Selector="^:selected">
+            <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{DynamicResource RadioButtonCardCheckedBackground}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource RadioButtonCardCheckDefaultBorderBrush}" />
+            </Style>
+            <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="BorderBrush" Value="{DynamicResource RadioButtonCardCheckPointeroverBorderBrush}" />
+            </Style>
+            <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="BorderBrush" Value="{DynamicResource RadioButtonCardCheckPressedBorderBrush}" />
+            </Style>
+            <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="BorderBrush" Value="{DynamicResource RadioButtonCheckIconDisabledBackground}" />
+                <Setter Property="Background" Value="{DynamicResource RadioButtonCardCheckedBackground}" />
+                <Setter Property="Foreground" Value="{DynamicResource RadioButtonDisabledForeground}" />
+            </Style>
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>

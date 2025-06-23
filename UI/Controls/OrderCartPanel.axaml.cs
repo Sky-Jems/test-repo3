@@ -59,6 +59,13 @@ public partial class OrderCartPanel : UserControl
         await dialog.ShowAsync();
     }
 
+    private void OnRemoveLineItemButtonClick(object? sender, RoutedEventArgs e)
+    {
+        var cartService = ServiceLocator.Services.GetRequiredService<ICartService>();
+        // TODO: use batch remove item instead
+        cartService.RemoveItem((e.Source as Button).Tag as LineItem);
+    }
+
     private void OnClearButtonClick(object? sender, RoutedEventArgs e)
     {
         var cartService = ServiceLocator.Services.GetRequiredService<ICartService>();

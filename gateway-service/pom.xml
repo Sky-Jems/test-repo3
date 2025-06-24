@@ -76,6 +76,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>solutions.skydev.pos</groupId>
+			<artifactId>common</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>
@@ -113,6 +118,9 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+					<jvmArguments>
+						--enable-native-access=ALL-UNNAMED
+					</jvmArguments>
 				</configuration>
 			</plugin>
 		</plugins>

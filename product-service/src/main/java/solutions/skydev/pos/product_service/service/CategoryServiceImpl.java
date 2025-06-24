@@ -61,9 +61,9 @@ public class CategoryServiceImpl implements CategoryService {
         category.getProducts().add(product);
         this.categoryRepository.save(category);
 
-        product.getCategories().add(category);
-        this.productRepository.save(product);
-        // save category to persist the changes
+//        product.getCategories().add(category);
+//        this.productRepository.save(product);
+//        // save category to persist the changes
         return product;
     }
 

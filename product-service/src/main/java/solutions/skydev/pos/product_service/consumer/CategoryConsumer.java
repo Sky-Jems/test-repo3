@@ -8,11 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Component;
-import solutions.skydev.pos.product_service.model.dto.request.CategoryProductRequestDto;
-import solutions.skydev.pos.product_service.model.dto.request.CategoryRequestDto;
-import solutions.skydev.pos.product_service.model.dto.response.CategoryResponseDto;
+import solutions.skydev.pos.common.product_service.dto.request.CategoryRequestDto;
+import solutions.skydev.pos.common.product_service.dto.response.CategoryResponseDto;
 import solutions.skydev.pos.product_service.model.entity.Category;
-import solutions.skydev.pos.product_service.model.entity.Product;
 import solutions.skydev.pos.product_service.model.mapper.CategoryMapper;
 import solutions.skydev.pos.product_service.model.mapper.ProductMapper;
 import solutions.skydev.pos.product_service.service.CategoryService;
@@ -31,14 +29,8 @@ public class CategoryConsumer {
         this.productMapper = productMapper;
     }
 
-    @KafkaListener(topics = "create-category-command", properties = {
-            "spring.json.value.default.type=solutions.skydev.pos.product_service.model.dto.request.CategoryRequestDto"
-    })
-    @AsyncListener(operation = @AsyncOperation(
-            channelName = "create-category-command",
-            description = "Create category command",
-            payloadType = Category.class
-    ))
+    @KafkaListener(topics = "create-category-command")
+    @AsyncListener(operation = @AsyncOperation( channelName = "create-category-command", description = "Create category command" ))
     @KafkaAsyncOperationBinding
     @SendTo("category.created")
     public CategoryResponseDto createCategoryCommand(ConsumerRecord<String, CategoryRequestDto> record) {
@@ -48,9 +40,7 @@ public class CategoryConsumer {
         return this.categoryMapper.toResponseDto(category);
     }
 
-    @KafkaListener(topics = "update-category-command", properties = {
-            "spring.json.value.default.type=solutions.skydev.pos.product_service.model.dto.request.CategoryRequestDto"
-    })
+    @KafkaListener(topics = "update-category-command")
     @AsyncListener(operation = @AsyncOperation(
             channelName = "update-category-command",
             description = "Update category command",
@@ -80,20 +70,18 @@ public class CategoryConsumer {
         return "Category with ID " + categoryId + " deleted successfully";
     }
 
-    @KafkaListener(topics = "create-category-product-command", properties = {
-            "spring.json.value.default.type=solutions.skydev.pos.product_service.model.dto.request.CategoryProductRequestDto"
-    })
-    @AsyncListener(operation = @AsyncOperation(
-            channelName = "create-category-product-command",
-            description = "Create category product command",
-            payloadType = Category.class
-    ))
-    @KafkaAsyncOperationBinding
-    public void createCategoryProductCommand(ConsumerRecord<String, CategoryProductRequestDto> record) {
-        CategoryProductRequestDto categoryProductRequestDto = record.value();
-        Category category = this.categoryMapper.toEntity(categoryProductRequestDto);
-        Product product = this.productMapper.toEntity(categoryProductRequestDto);
-        categoryService.addProduct(category, product);
-        // submit event change state using correlation id
-    }
+//    @KafkaListener(topics = "create-category-product-command")
+//    @AsyncListener(operation = @AsyncOperation(
+//            channelName = "create-category-product-command",
+//            description = "Create category product command",
+//            payloadType = Category.class
+//    ))
+//    @KafkaAsyncOperationBinding
+//    public void createCategoryProductCommand(ConsumerRecord<String, CategoryProductRequestDto> record) {
+//        CategoryProductRequestDto categoryProductRequestDto = record.value();
+//        Category category = this.categoryMapper.toEntity(categoryProductRequestDto);
+//        Product product = this.productMapper.toEntity(categoryProductRequestDto);
+//        categoryService.addProduct(category, product);
+//        // submit event change state using correlation id
+//    }
 }

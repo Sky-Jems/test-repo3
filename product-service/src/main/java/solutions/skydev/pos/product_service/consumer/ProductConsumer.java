@@ -8,8 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Component;
-import solutions.skydev.pos.product_service.model.dto.request.ProductRequestDto;
-import solutions.skydev.pos.product_service.model.dto.response.ProductResponseDto;
+import org.springframework.transaction.annotation.Transactional;
+import solutions.skydev.pos.common.product_service.dto.request.ProductRequestDto;
+import solutions.skydev.pos.common.product_service.dto.response.ProductResponseDto;
 import solutions.skydev.pos.product_service.model.entity.Product;
 import solutions.skydev.pos.product_service.model.mapper.ProductMapper;
 import solutions.skydev.pos.product_service.service.ProductService;
@@ -26,32 +27,26 @@ public class ProductConsumer {
         this.productMapper = productMapper;
     }
 
-    @KafkaListener(topics = "create-product-command", properties = {
-            "spring.json.value.default.type=solutions.skydev.pos.product_service.model.dto.request.ProductRequestDto"
-    })
+    @KafkaListener(topics = "create-product-command")
     @AsyncListener(operation = @AsyncOperation(channelName = "create-product-command",
-            description = "Create product command", payloadType = ProductRequestDto.class))
+            description = "Create product command"))
     @KafkaAsyncOperationBinding
     @SendTo("product.created")
     public ProductResponseDto createProductCommand(ConsumerRecord<String, ProductRequestDto> record) {
         ProductRequestDto productRequestDto = record.value();
         Product product = this.productMapper.toEntity(productRequestDto);
-        productService.save(product);
-        return this.productMapper.toResponseDto(product);
+        Product createdProduct = productService.save(product);
+        return this.productMapper.toResponseDto(createdProduct);
     }
 
-    @KafkaListener(topics = "update-product-command", properties = {
-            "spring.json.value.default.type=solutions.skydev.pos.product_service.model.dto.request.ProductRequestDto"
-    })
+    @KafkaListener(topics = "update-product-command")
     @AsyncListener(operation = @AsyncOperation(channelName = "update-product-command",
             description = "Update product command", payloadType = ProductRequestDto.class))
     @KafkaAsyncOperationBinding
     @SendTo("product.updated")
     public ProductResponseDto updateProductCommand(ConsumerRecord<String, ProductRequestDto> record) {
-        Long productId = Long.valueOf(record.key());
-        ProductRequestDto productRequestDto = record.value();
-        Product product = this.productMapper.toEntity(productRequestDto);
-        Product updatedProduct = productService.update(productId, product);
+        Product product = this.productMapper.toEntity(record.value());
+        Product updatedProduct = productService.update(product);
         return this.productMapper.toResponseDto(updatedProduct);
     }
 
@@ -59,16 +54,10 @@ public class ProductConsumer {
     @AsyncListener(operation = @AsyncOperation(channelName = "delete-product-command", description = "Delete product command"))
     @KafkaAsyncOperationBinding
     @SendTo("product.deleted")
-    public String deleteProductCommand(ConsumerRecord<String, String> record) {
-        String id = record.key();
-        Long productId = null;
-        try {
-            productId = Long.valueOf(id);
-        } catch (Exception e) {
-            // submit event to product.deleted.error topic
-            return "Error: " + e.getMessage();
-        }
-        productService.deleteById(productId);
-        return "Product with ID " + id + " deleted successfully";
+    @Transactional
+    public ProductResponseDto deleteProductCommand(ConsumerRecord<String, ProductRequestDto> record) {
+        Product product = this.productMapper.toEntity(record.value());
+        Product deletedProduct =  productService.deleteById(product.getId());
+        return this.productMapper.toResponseDto(deletedProduct);
     }
 }

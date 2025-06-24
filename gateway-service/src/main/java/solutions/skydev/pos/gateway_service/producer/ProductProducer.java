@@ -7,6 +7,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 import org.springframework.kafka.requestreply.RequestReplyFuture;
 import org.springframework.stereotype.Component;
+import solutions.skydev.pos.common.product_service.dto.request.ProductRequestDto;
+import solutions.skydev.pos.common.product_service.dto.response.ProductResponseDto;
 import solutions.skydev.pos.gateway_service.config.KafkaConfig;
 
 import java.time.Duration;
@@ -17,13 +19,13 @@ import java.util.concurrent.TimeoutException;
 @Component
 public class ProductProducer {
     // TODO make this to a factory or singleton bean
-    private final ReplyingKafkaTemplate<String, String, String> replyingKafkaTemplateProductCreated;
-    private final ReplyingKafkaTemplate<String, String, String> replyingKafkaTemplateProductUpdated;
-    private final ReplyingKafkaTemplate<String, String, String> replyingKafkaTemplateProductDeleted;
+    private final ReplyingKafkaTemplate<String, Object, Object> replyingKafkaTemplateProductCreated;
+    private final ReplyingKafkaTemplate<String, Object, Object> replyingKafkaTemplateProductUpdated;
+    private final ReplyingKafkaTemplate<String, Object, Object> replyingKafkaTemplateProductDeleted;
 
 
     @Autowired
-    public ProductProducer(KafkaTemplate<String, String> kafkaTemplate,
+    public ProductProducer(KafkaTemplate<String, Object> kafkaTemplate,
                           KafkaConfig kafkaConfig) {
         // Assumes topic partition offset is set by spring-kafka
         this.replyingKafkaTemplateProductCreated = kafkaConfig.createReplyingKafkaTemplate("product.created");
@@ -39,33 +41,33 @@ public class ProductProducer {
         this.replyingKafkaTemplateProductDeleted.start();
     }
 
-    public String sendProductCreateCommand(String requestBody) throws ExecutionException, InterruptedException, TimeoutException {
+    public ProductResponseDto sendProductCreateCommand(ProductRequestDto requestBody) throws ExecutionException, InterruptedException, TimeoutException {
         if (!this.replyingKafkaTemplateProductCreated.waitForAssignment(Duration.ofSeconds(10))) {
             throw new IllegalStateException("Reply container did not initialize");
         }
-        ProducerRecord<String, String> record = new ProducerRecord<>("create-product-command", requestBody);
-        RequestReplyFuture<String, String, String> future = this.replyingKafkaTemplateProductCreated.sendAndReceive(record);
-        ConsumerRecord<String, String> response = future.get(10, TimeUnit.SECONDS);
-        return response.value();
+        ProducerRecord<String, Object> record = new ProducerRecord<>("create-product-command", requestBody);
+        RequestReplyFuture<String, Object, Object> future = this.replyingKafkaTemplateProductCreated.sendAndReceive(record);
+        ConsumerRecord<String, Object> response = future.get(10, TimeUnit.SECONDS);
+        return (ProductResponseDto) response.value();
     }
 
-    public String sendProductUpdateCommand(String id, String requestBody) throws ExecutionException, InterruptedException, TimeoutException {
+    public ProductResponseDto sendProductUpdateCommand(ProductRequestDto requestBody) throws ExecutionException, InterruptedException, TimeoutException {
         if (!this.replyingKafkaTemplateProductUpdated.waitForAssignment(Duration.ofSeconds(10))) {
             throw new IllegalStateException("Reply container did not initialize");
         }
-        ProducerRecord<String, String> record = new ProducerRecord<>("update-product-command", id, requestBody);
-        RequestReplyFuture<String, String, String> future = this.replyingKafkaTemplateProductUpdated.sendAndReceive(record);
-        ConsumerRecord<String, String> response = future.get(10, TimeUnit.SECONDS);
-        return response.value();
+        ProducerRecord<String, Object> record = new ProducerRecord<>("update-product-command", requestBody);
+        RequestReplyFuture<String, Object, Object> future = this.replyingKafkaTemplateProductUpdated.sendAndReceive(record);
+        ConsumerRecord<String, Object> response = future.get(10, TimeUnit.SECONDS);
+        return (ProductResponseDto) response.value();
     }
 
-    public String sendProductDeleteCommand(String id) throws ExecutionException, InterruptedException, TimeoutException {
+    public ProductResponseDto sendProductDeleteCommand(String id) throws ExecutionException, InterruptedException, TimeoutException {
         if (!this.replyingKafkaTemplateProductDeleted.waitForAssignment(Duration.ofSeconds(10))) {
             throw new IllegalStateException("Reply container did not initialize");
         }
-        ProducerRecord<String, String> record = new ProducerRecord<>("delete-product-command", id, null);
-        RequestReplyFuture<String, String, String> future = this.replyingKafkaTemplateProductDeleted.sendAndReceive(record);
-        ConsumerRecord<String, String> response = future.get(10, TimeUnit.SECONDS);
-        return response.value();
+        ProducerRecord<String, Object> record = new ProducerRecord<>("delete-product-command",ProductRequestDto.builder().id(Long.valueOf(id)).build());
+        RequestReplyFuture<String, Object, Object> future = this.replyingKafkaTemplateProductDeleted.sendAndReceive(record);
+        ConsumerRecord<String, Object> response = future.get(10, TimeUnit.SECONDS);
+        return (ProductResponseDto) response.value();
     }
 }

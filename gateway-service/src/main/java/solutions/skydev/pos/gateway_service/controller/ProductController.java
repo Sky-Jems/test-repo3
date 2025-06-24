@@ -6,6 +6,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import solutions.skydev.pos.common.product_service.dto.request.ProductRequestDto;
+import solutions.skydev.pos.common.product_service.dto.response.ProductResponseDto;
 import solutions.skydev.pos.gateway_service.producer.ProductProducer;
 
 import java.util.concurrent.ExecutionException;
@@ -23,32 +25,32 @@ public class ProductController {
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createProduct(@RequestBody String product) {
+    public ResponseEntity<ProductResponseDto> createProduct(@RequestBody ProductRequestDto product) {
         try {
-            String response = productProducer.sendProductCreateCommand(product);
+            ProductResponseDto response = productProducer.sendProductCreateCommand(product);
             return ResponseEntity.ok(response);
         } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating product: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
-    @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> updateProduct(@PathVariable String id, @RequestBody String product) {
+    @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ProductResponseDto> updateProduct(@RequestBody ProductRequestDto product) {
         try {
-            String response = productProducer.sendProductUpdateCommand(id, product);
+            ProductResponseDto response = productProducer.sendProductUpdateCommand(product);
             return ResponseEntity.ok(response);
         } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating product: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteProduct(@PathVariable String id) {
+    public ResponseEntity<ProductResponseDto> deleteProduct(@PathVariable String id) {
         try {
-            String response = productProducer.sendProductDeleteCommand(id);
+            ProductResponseDto response = productProducer.sendProductDeleteCommand(id);
             return ResponseEntity.ok(response);
         } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting product: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }

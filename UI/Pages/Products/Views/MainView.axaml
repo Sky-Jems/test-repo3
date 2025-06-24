@@ -5,9 +5,7 @@
     xmlns:app="using:Pos.Pages.Products"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Margin="12,0,0,0"
     x:DataType="app:MainViewModel"
-    Background="{StaticResource SemiBackground1Color}"
     mc:Ignorable="d">
 
     <Border Padding="32">
@@ -16,12 +14,12 @@
                 Margin="0,0,0,24"
                 ColumnDefinitions="* auto"
                 DockPanel.Dock="Top">
-                <TextBlock
+                <Label
                     Grid.Column="0"
                     VerticalAlignment="Center"
-                    Classes="H3"
-                    Text="{Binding ProductCountText}"
-                    Theme="{StaticResource TitleTextBlock}" />
+                    Classes="H2"
+                    Content="{Binding ProductCountText}"
+                    Theme="{StaticResource TitleLabel}" />
 
                 <Grid
                     Grid.Column="1"
@@ -50,7 +48,7 @@
                         SelectedItem="{Binding SelectedComboBoxItem, Mode=TwoWay}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Name}"/>
+                                <TextBlock Text="{Binding Name}" />
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
@@ -59,10 +57,11 @@
                         HorizontalAlignment="Stretch"
                         Classes="Large"
                         Command="{Binding NavigateToCreateProduct}"
-                        CommandParameter="{Binding}">
-                        <StackPanel Orientation="Horizontal" Spacing="6">
+                        CommandParameter="{Binding}"
+                        Theme="{StaticResource SolidButton}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
                             <PathIcon Data="{StaticResource SemiIconPlus}" Theme="{StaticResource InnerPathIcon}" />
-                            <AccessText Text="ADD NEW ITEM" />
+                            <AccessText Text="Add Product" />
                         </StackPanel>
                     </Button>
                 </Grid>
@@ -103,22 +102,6 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-
-                    <!-- <DataGridTemplateColumn Width="auto" Header="Status"> -->
-                    <!--     <DataGridTemplateColumn.CellTemplate> -->
-                    <!--         <DataTemplate> -->
-                    <!--             <Label Classes="Green Large Circle" Theme="{StaticResource TagLabel}"> -->
-                    <!--                 <StackPanel Orientation="Horizontal" Spacing="6"> -->
-                    <!--                     <Ellipse -->
-                    <!--                         Width="6" -->
-                    <!--                         Height="6" -->
-                    <!--                         Fill="{StaticResource SemiColorSuccess}" /> -->
-                    <!--                     <AccessText Text="Active" /> -->
-                    <!--                 </StackPanel> -->
-                    <!--             </Label> -->
-                    <!--         </DataTemplate> -->
-                    <!--     </DataGridTemplateColumn.CellTemplate> -->
-                    <!-- </DataGridTemplateColumn> -->
 
                     <DataGridTextColumn
                         Width="*"

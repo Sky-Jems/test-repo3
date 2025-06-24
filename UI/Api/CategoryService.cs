@@ -18,4 +18,19 @@ public class CategoryService : ICategoryService
     {
         return await _httpClient.GetJsonAsync<List<Category>>("categories");
     }
+
+    public async Task CreateCategory(Category category)
+    {
+        await _httpClient.PostJsonAsync("categories", category);
+    }
+
+    public async Task UpdateCategory(long id, Category category)
+    {
+        await _httpClient.PutJsonAsync($"categories/{id}", category);
+    }
+
+    public async Task DeleteCategory(long id)
+    {
+        await _httpClient.DeleteAsync($"categories/{id}");
+    }
 }

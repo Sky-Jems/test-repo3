@@ -15,9 +15,7 @@
         <dialogHostAvalonia:DialogHostStyles />
 
         <StyleInclude Source="avares://pos/Styles/DataGrid.axaml" />
-        <!-- <StyleInclude Source="avares://pos/Styles/Button.axaml" />
-        <StyleInclude Source="avares://pos/Styles/TextBox.axaml" />
-        <StyleInclude Source="avares://pos/Styles/ComboBox.axaml" />-->
+        <StyleInclude Source="avares://pos/Styles/Dialog.axaml" />
     </Application.Styles>
 
     <Application.Resources>
@@ -30,8 +28,8 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="avares://Semi.Avalonia/Themes/Shared/_index.axaml" />
                 <ResourceInclude Source="avares://pos/ThemeOverrides/Variables.axaml" />
-                <!-- <ResourceInclude Source="avares://pos/ThemeOverrides/Controls/Button.axaml" /> -->
-                <!-- <ResourceInclude Source="avares://pos/ThemeOverrides/Controls/ComboBox.axaml" /> -->
+                <ResourceInclude Source="avares://pos/ThemeOverrides/Controls/Border.axaml" />
+                <ResourceInclude Source="avares://pos/ThemeOverrides/Controls/Button.axaml" />
                 <ResourceInclude Source="avares://pos/ThemeOverrides/Controls/ListBox.axaml" />
                 <ResourceInclude Source="avares://pos/ThemeOverrides/Controls/DataGrid.axaml" />
                 <ResourceInclude Source="avares://pos/ThemeOverrides/Controls/RadioButton.axaml" />

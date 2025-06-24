@@ -8,9 +8,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:system="clr-namespace:System;assembly=netstandard"
-    Margin="12,0,0,0"
     x:DataType="app:MainViewModel"
-    Background="{StaticResource SemiBackground1Color}"
     mc:Ignorable="d">
 
     <UserControl.Resources>
@@ -20,7 +18,7 @@
     <SplitView
         Name="orderDetailsPane"
         OpenPaneLength="400"
-        PaneBackground="{StaticResource SemiBackground1Color}"
+        PaneBackground="{StaticResource SemiBackground4Color}"
         PanePlacement="Right">
         <SplitView.Pane>
             <!--  OrderCartPanel Width prevents contents inside the pane from getting squished  -->
@@ -29,7 +27,7 @@
                 Width="{Binding $parent.OpenPaneLength}"
                 DataContext="{Binding OrderCartPanelViewModel}"
                 SummaryButtonCommand="{Binding $parent.DataContext.SummaryButtonCommand}"
-                SummaryButtonText="EDIT DETAILS" />
+                SummaryButtonText="Edit Details" />
         </SplitView.Pane>
 
         <Border Padding="32">
@@ -48,10 +46,11 @@
                     <Button
                         Name="dateRangeFlyoutButton"
                         Grid.Column="1"
-                        Classes="Large">
+                        Classes="Large"
+                        Theme="{StaticResource SolidButton}">
                         <StackPanel Orientation="Horizontal">
                             <PathIcon
-                                Margin="0,0,6,0"
+                                Margin="0,0,8,0"
                                 Data="{StaticResource SemiIconCalendar}"
                                 Theme="{StaticResource InnerPathIcon}" />
                             <AccessText Name="startRangeText" Text="Start range" />

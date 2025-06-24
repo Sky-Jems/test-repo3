@@ -2,6 +2,7 @@ package solutions.skydev.pos.product_service.service;
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import solutions.skydev.pos.product_service.model.entity.Category;
 import solutions.skydev.pos.product_service.model.entity.Product;
@@ -48,7 +49,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
     
     public List<Category> findAll() {
-        return this.categoryRepository.findAll();
+        return this.categoryRepository.findAll(Sort.by("name").ascending());
     }
 
     @Transactional

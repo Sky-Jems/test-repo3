@@ -23,8 +23,9 @@
                     Grid.Column="1"
                     Classes="Danger"
                     Click="OnClearButtonClick"
-                    Content="CLEAR"
-                    IsVisible="{Binding IsEditable, ElementName=root}" />
+                    Content="Clear"
+                    IsVisible="{Binding IsEditable, ElementName=root}"
+                    Theme="{StaticResource OutlineButton}" />
             </Grid>
         </Border>
 
@@ -92,9 +93,9 @@
                                     <Grid ColumnDefinitions="* auto" ColumnSpacing="8">
                                         <Label
                                             Grid.Column="0"
+                                            Content="{Binding Price, StringFormat='₱{0:N2}'}"
                                             FontSize="12"
                                             Opacity="0.6"
-                                            Content="{Binding Price, StringFormat='₱{0:N2}'}"
                                             Theme="{StaticResource TitleLabel}" />
                                         <Label
                                             Grid.Column="1"
@@ -109,7 +110,7 @@
                     </ListBox.ItemTemplate>
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <StackPanel Orientation="Vertical" Spacing="6" />
+                            <StackPanel Orientation="Vertical" Spacing="8" />
                         </ItemsPanelTemplate>
                     </ListBox.ItemsPanel>
                 </ListBox>
@@ -134,10 +135,11 @@
                 <Button
                     HorizontalAlignment="Stretch"
                     Click="ApplyDiscountButton_Click"
-                    IsVisible="{Binding IsEditable, ElementName=root}">
+                    IsVisible="{Binding IsEditable, ElementName=root}"
+                    Theme="{StaticResource OutlineButton}">
                     <StackPanel Orientation="Horizontal" Spacing="6">
                         <PathIcon Data="{StaticResource SemiIconPlus}" Theme="{StaticResource InnerPathIcon}" />
-                        <AccessText Text="APPLY DISCOUNT" />
+                        <AccessText Text="Apply Discount" />
                     </StackPanel>
                 </Button>
 
@@ -188,7 +190,8 @@
                         HorizontalAlignment="Stretch"
                         Classes="Large"
                         Click="OnPayLaterButtonClick"
-                        Content="PAY LATER"
+                        Content="Pay Later"
+                        IsEnabled="{Binding CanPay}"
                         IsVisible="{Binding IsEditable, ElementName=root}"
                         Theme="{StaticResource SolidButton}" />
                 </UniformGrid>

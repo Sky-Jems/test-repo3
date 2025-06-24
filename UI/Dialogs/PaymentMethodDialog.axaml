@@ -4,7 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Padding="{StaticResource SemiThicknessBase}"
+    Padding="{StaticResource SemiThicknessLoose}"
+    Background="{StaticResource SemiColorBackground4}"
     ClipToBounds="True"
     CornerRadius="{StaticResource SemiBorderRadiusMedium}"
     mc:Ignorable="d">
@@ -21,6 +22,7 @@
 
             <Style Selector="^ Svg">
                 <Setter Property="Height" Value="48" />
+                <Setter Property="(Svg.Css)" Value="* { fill: #1C1F23 }" />
             </Style>
 
             <Style Selector="^ AccessText">
@@ -28,7 +30,7 @@
             </Style>
 
             <Style Selector="^:disabled Svg">
-                <Setter Property="(Svg.Css)" Value="* { fill: #F9F9F9; opacity: 0.35; }" />
+                <Setter Property="(Svg.Css)" Value="* { fill: #1C1F23; opacity: 0.35; }" />
             </Style>
         </Style>
     </UserControl.Styles>
@@ -52,8 +54,8 @@
             </RadioButton>
             <RadioButton
                 Checked="PaymentMethodRadioButton_Checked"
-                Tag="card"
                 IsEnabled="False"
+                Tag="card"
                 Theme="{DynamicResource PureCardRadioButton}">
                 <StackPanel>
                     <Svg Path="avares://pos/Assets/Images/card.svg" />

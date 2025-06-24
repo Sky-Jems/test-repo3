@@ -1,0 +1,96 @@
+<UserControl
+    x:Class="Pos.Pages.Categories.CategoriesView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:app="using:Pos.Pages.Categories"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    x:DataType="app:CategoriesViewModel"
+    mc:Ignorable="d">
+
+    <Border Padding="32">
+        <DockPanel>
+            <Grid
+                Margin="0,0,0,24"
+                ColumnDefinitions="* auto"
+                DockPanel.Dock="Top">
+                <Label
+                    Grid.Column="0"
+                    Classes="H2"
+                    Content="Categories"
+                    Theme="{StaticResource TitleLabel}" />
+
+                <StackPanel
+                    Grid.Column="1"
+                    VerticalAlignment="Top"
+                    Orientation="Horizontal"
+                    Spacing="16">
+                    <TextBox
+                        Name="search_box"
+                        MinWidth="200"
+                        Classes="Large Bordered"
+                        Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        Watermark="Search...">
+                        <TextBox.InnerRightContent>
+                            <PathIcon
+                                Height="16"
+                                Data="{StaticResource SemiIconSearch}"
+                                Theme="{StaticResource InnerPathIcon}" />
+                        </TextBox.InnerRightContent>
+                    </TextBox>
+                    <Button
+                        Classes="Large"
+                        Click="AddNewItemButton_Click"
+                        Theme="{StaticResource SolidButton}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <PathIcon Data="{StaticResource SemiIconPlus}" Theme="{StaticResource InnerPathIcon}" />
+                            <AccessText Text="Add Category" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+            <DataGrid
+                CanUserResizeColumns="False"
+                CanUserSortColumns="True"
+                ClipToBounds="False"
+                GridLinesVisibility="None"
+                IsReadOnly="True"
+                ItemsSource="{Binding Categories}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn
+                        Width="*"
+                        Binding="{Binding Name}"
+                        Header="Name" />
+                    <DataGridTemplateColumn Tag="Actions">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Button
+                                        Width="32"
+                                        Height="32"
+                                        Classes="Tertiary"
+                                        Click="UpdateButton_Click"
+                                        CommandParameter="{Binding}"
+                                        Tag="{Binding Id}"
+                                        Theme="{StaticResource BorderlessButton}">
+                                        <PathIcon Data="{StaticResource SemiIconEdit}" Theme="{StaticResource InnerPathIcon}" />
+                                    </Button>
+                                    <Button
+                                        Width="32"
+                                        Height="32"
+                                        Classes="Danger"
+                                        Click="DeleteButton_Click"
+                                        CommandParameter="{Binding}"
+                                        Tag="{Binding Id}"
+                                        Theme="{StaticResource BorderlessButton}">
+                                        <PathIcon Data="{StaticResource SemiIconDelete}" Theme="{StaticResource InnerPathIcon}" />
+                                    </Button>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </DockPanel>
+    </Border>
+</UserControl>

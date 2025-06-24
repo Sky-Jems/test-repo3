@@ -9,10 +9,11 @@
     x:DataType="app:MenuViewModel"
     mc:Ignorable="d">
 
-    <Border Padding="32" Background="{StaticResource SemiBackground1Color}">
+    <Border Padding="32">
         <StackPanel Spacing="12">
             <DockPanel LastChildFill="False">
                 <StackPanel
+                    Margin="0,0,0,12"
                     VerticalAlignment="Center"
                     DockPanel.Dock="Left"
                     Orientation="Horizontal"
@@ -60,6 +61,7 @@
                     </Button>
                 </StackPanel>
             </DockPanel>
+
             <ItemsRepeater
                 Margin="0,0,0,20"
                 VerticalAlignment="Top"
@@ -67,10 +69,10 @@
                 <ItemsRepeater.Layout>
                     <UniformGridLayout
                         ItemsStretch="Uniform"
-                        MinColumnSpacing="16"
+                        MinColumnSpacing="12"
                         MinItemHeight="100"
                         MinItemWidth="160"
-                        MinRowSpacing="16" />
+                        MinRowSpacing="12" />
                 </ItemsRepeater.Layout>
 
                 <ItemsRepeater.ItemTemplate>

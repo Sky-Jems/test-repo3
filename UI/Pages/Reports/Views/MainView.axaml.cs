@@ -5,32 +5,28 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
 using Pos.Models;
-using ReactiveUI;
 
 namespace Pos.Pages.Reports;
 
 public partial class MainView : ReactiveUserControl<MainViewModel>
 {
-    public MainViewModel viewModel;
-
     public MainView()
     {
         InitializeComponent();
-        this.WhenActivated(disposables => viewModel = (MainViewModel)DataContext!);
     }
 
     private void DateRangeFlyOut_Opened(object sender, EventArgs e)
     {
         // make errors reappear
-        if (viewModel.StartDate != null)
+        if (ViewModel!.StartDate != null)
         {
-            DateTimeOffset startDate = (DateTimeOffset)viewModel.StartDate;
+            DateTimeOffset startDate = (DateTimeOffset)ViewModel.StartDate;
             startDatePicker.SelectedDate = null;
             startDatePicker.SelectedDate = startDate;
         }
-        if (viewModel.EndDate != null)
+        if (ViewModel.EndDate != null)
         {
-            DateTimeOffset endDate = (DateTimeOffset)viewModel.EndDate;
+            DateTimeOffset endDate = (DateTimeOffset)ViewModel.EndDate;
             endDatePicker.SelectedDate = null;
             endDatePicker.SelectedDate = endDate;
         }
@@ -38,8 +34,8 @@ public partial class MainView : ReactiveUserControl<MainViewModel>
 
     private void ApplyDateFilterButton_Click(object sender, RoutedEventArgs args)
     {
-        startRangeText.Text = viewModel.StartDate!.Value.ToString("MMM d, yyyy");
-        endRangeText.Text = viewModel.EndDate!.Value.ToString("MMM d, yyyy");
+        startRangeText.Text = ViewModel!.StartDate!.Value.ToString("MMM d, yyyy");
+        endRangeText.Text = ViewModel.EndDate!.Value.ToString("MMM d, yyyy");
         dateRangeFlyoutButton.Flyout!.Hide();
         ViewModel.FilteredOrderCommand.Execute();
     }
@@ -64,11 +60,11 @@ public partial class MainView : ReactiveUserControl<MainViewModel>
 
         OrderReport CurrentRowData = (OrderReport)args.Row.DataContext!;
         List<LineItemDto> lineItems = CurrentRowData.LineItems;
-        viewModel.OrderCartPanelViewModel.OrderList.Clear();
+        ViewModel!.OrderCartPanelViewModel.OrderList.Clear();
         foreach (LineItemDto lineItem in lineItems)
         {
             // update SKU with the data coming from the order service
-            viewModel.OrderCartPanelViewModel.OrderList.Add(new LineItem
+            ViewModel.OrderCartPanelViewModel.OrderList.Add(new LineItem
             {
                 ProductId = lineItem.ProductId,
                 // Sku = "test",
@@ -76,6 +72,6 @@ public partial class MainView : ReactiveUserControl<MainViewModel>
                 Price = lineItem.Price
             });
         }
-        // viewModel.OrderCartPanelViewModel.CartTotal = CurrentRowData.Total;
+        // ViewModel.OrderCartPanelViewModel.CartTotal = CurrentRowData.Total;
     }
 }

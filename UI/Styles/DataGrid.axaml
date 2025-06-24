@@ -11,7 +11,8 @@
 
     <Style Selector="DataGridColumnHeader">
         <Setter Property="SeparatorBrush" Value="Transparent" />
-        <Setter Property="FontSize" Value="{StaticResource SemiFontSizeHeader6}" />
+        <Setter Property="FontSize" Value="{StaticResource SemiFontSizeRegular}" />
+        <Setter Property="Margin" Value="0 0 0 1" />
     </Style>
 
     <Style Selector="DataGridColumnHeader:sortascending /template/ PathIcon#SortIcon, DataGridColumnHeader:sortdescending /template/ PathIcon#SortIcon">

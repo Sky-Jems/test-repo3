@@ -1,3 +1,5 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <StaticResource x:Key="ButtonSolidForeground" ResourceKey="SemiColorBlack" />
+    <!--  Outline  -->
+    <StaticResource x:Key="ButtonOutlineBorderBrush" ResourceKey="SemiColorPrimary" />
+    <!--  end Outline  -->
 </ResourceDictionary>

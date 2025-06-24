@@ -6,13 +6,11 @@
     xmlns:controls="using:Pos.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Margin="12,0,0,0"
     x:DataType="app:CreateProductViewModel"
-    Background="{StaticResource SemiBackground1Color}"
     mc:Ignorable="d">
 
     <DockPanel>
-        <Border Padding="24,24,24,0" DockPanel.Dock="Top">
+        <Border Padding="32,32,32,0" DockPanel.Dock="Top">
             <Grid ColumnDefinitions="auto * auto" ColumnSpacing="16">
                 <Button
                     Grid.Column="0"
@@ -37,8 +35,9 @@
                     VerticalContentAlignment="Center"
                     Classes="Large"
                     Click="NextButton_Click"
-                    Content="SUBMIT"
-                    CornerRadius="6" />
+                    Content="Submit"
+                    CornerRadius="6"
+                    Theme="{StaticResource SolidButton}" />
             </Grid>
         </Border>
 
@@ -159,7 +158,7 @@
                             Classes="Large Bordered"
                             Text="{Binding Price}"
                             TextInput="PriceTextBox_TextInput"
-                            Watermark="Enter Price" />
+                            Watermark="Enter price" />
                     </StackPanel>
                 </StackPanel>
             </Carousel.Items>

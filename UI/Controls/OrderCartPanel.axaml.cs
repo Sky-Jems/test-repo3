@@ -25,7 +25,7 @@ public partial class OrderCartPanel : UserControl
     }
 
     public static readonly StyledProperty<string> SummaryButtonTextProperty =
-        AvaloniaProperty.Register<CategoryCard, string>(nameof(SummaryButtonText), "PAY ORDER");
+        AvaloniaProperty.Register<CategoryCard, string>(nameof(SummaryButtonText), "Pay Order");
 
     public string SummaryButtonText
     {

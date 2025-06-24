@@ -1,0 +1,31 @@
+<UserControl
+    x:Class="Pos.Pages.Categories.Dialogs.CategoryDialog"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Width="300"
+    Padding="{StaticResource SemiThicknessLoose}"
+    Background="{StaticResource SemiColorBackground4}"
+    CornerRadius="{StaticResource SemiBorderRadiusMedium}"
+    mc:Ignorable="d">
+    <StackPanel Spacing="12">
+        <Label
+            x:Name="DialogTitle"
+            Margin="0,0,0,4"
+            HorizontalAlignment="Center"
+            Classes="H5"
+            Theme="{StaticResource TitleLabel}" />
+        <TextBox
+            Name="categoryTextBox"
+            Classes="Large"
+            Watermark="Enter category name" />
+        <Button
+            HorizontalAlignment="Stretch"
+            Classes="Large"
+            Click="SaveButton_Click"
+            Theme="{StaticResource SolidButton}">
+            Save
+        </Button>
+    </StackPanel>
+</UserControl>

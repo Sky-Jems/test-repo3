@@ -1,10 +1,12 @@
 package solutions.skydev.pos.product_service.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 import solutions.skydev.pos.common.product_service.dto.response.CategoryResponseDto;
 import solutions.skydev.pos.common.product_service.dto.response.ProductResponseDto;
 import solutions.skydev.pos.product_service.model.entity.Category;
@@ -29,7 +31,13 @@ public class CategoryController {
         this.categoryMapper = categoryMapper;
         this.productMapper = productMapper;
     }
-    
+
+    @GetMapping("/{id}")
+    public CategoryResponseDto getCategory(@PathVariable Long id) {
+        Category category = categoryService.getCategoryById(id);
+        if (category == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found");
+        return categoryMapper.toResponseDto(category);
+    }
     
     @GetMapping
     public List<CategoryResponseDto> getAllCategories() {

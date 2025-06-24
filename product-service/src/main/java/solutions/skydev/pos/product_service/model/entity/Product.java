@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -14,11 +16,13 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
+@SQLDelete(sql = "UPDATE product SET deleted = true WHERE id=?")
+@SQLRestriction("deleted=false")
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @Column(precision =  5, scale = 2)
     private BigDecimal price;
 
@@ -31,4 +35,7 @@ public class Product {
             inverseJoinColumns = @JoinColumn(name = "category_id")
     )
     private Set<Category> categories = new HashSet<>();
+
+    @Column(columnDefinition = "BOOLEAN DEFAULT false")
+    private Boolean deleted = Boolean.FALSE;
 }

@@ -8,7 +8,7 @@
     Width="500"
     Padding="{StaticResource SemiThicknessLoose}"
     x:DataType="vm:DiscountDialogViewModel"
-    Background="{StaticResource SemiColorBackground1}"
+    Background="{StaticResource SemiColorBackground4}"
     ClipToBounds="True"
     CornerRadius="{StaticResource SemiBorderRadiusMedium}"
     mc:Ignorable="d">
@@ -38,8 +38,8 @@
 
                                 <Button
                                     Grid.Column="1"
-                                    Content="APPLY"
-                                    Theme="{DynamicResource BorderlessButton}" />
+                                    Content="Apply"
+                                    Theme="{StaticResource OutlineButton}" />
                             </Grid>
                         </Border>
                     </DataTemplate>

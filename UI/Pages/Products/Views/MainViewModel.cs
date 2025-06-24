@@ -27,7 +27,7 @@ public partial class MainViewModel : ReactiveObject, IRoutableViewModel
     public ObservableCollection<Product> Products { get; } = new();
     private List<Product> _allProducts = new();
     public ObservableCollection<Category> ComboBoxItems { get; } = new();
-    public string ProductCountText => $"PRODUCTS ( {Products.Count} )";
+    public string ProductCountText => $"Products ( {Products.Count} )";
     private Category? _selectedComboBoxItem = new Category { };
     public Category? SelectedComboBoxItem
     {

@@ -8,12 +8,9 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     x:DataType="app:CategoriesViewModel"
     mc:Ignorable="d">
-    <Border Padding="32" Background="{StaticResource SemiBackground1Color}">
-        <StackPanel Spacing="12">
-            <Label
-                Margin="0,0,0,12"
-                Classes="H2"
-                Theme="{StaticResource TitleLabel}">
+    <Border Padding="32">
+        <StackPanel Spacing="24">
+            <Label Classes="H2" Theme="{StaticResource TitleLabel}">
                 Services
             </Label>
 
@@ -24,10 +21,10 @@
                 <ItemsRepeater.Layout>
                     <UniformGridLayout
                         ItemsStretch="Uniform"
-                        MinColumnSpacing="16"
+                        MinColumnSpacing="12"
                         MinItemHeight="100"
                         MinItemWidth="160"
-                        MinRowSpacing="16" />
+                        MinRowSpacing="12" />
                 </ItemsRepeater.Layout>
 
                 <ItemsRepeater.ItemTemplate>

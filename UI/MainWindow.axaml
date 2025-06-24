@@ -4,12 +4,15 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:app="using:Pos"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dialogHost="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
     xmlns:dialogs="using:AvaloniaDialogs.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:rxui="http://reactiveui.net"
     Title="POS"
+    Width="1280"
+    Height="800"
     x:DataType="app:MainWindowViewModel"
-    Background="{StaticResource SemiBackground0Color}"
+    Background="{StaticResource SemiBackground4Color}"
     mc:Ignorable="d">
     <Panel>
         <rxui:RoutedViewHost Router="{Binding Router}">
@@ -23,36 +26,27 @@
                         Height="56"
                         Margin="0,0,0,36"
                         Source="avares://Pos/Assets/logo.png" />
-                    <TextBox Classes="Large" x:Name="UsernameTextBox" Watermark="Enter username" />
                     <TextBox
+                        x:Name="UsernameTextBox"
+                        Classes="Large Bordered"
+                        Watermark="Enter username" />
+                    <TextBox
+                        x:Name="PasswordTextBox"
                         Margin="0,0,0,8"
-                        Classes="Large RevealPasswordButton"
-                        Watermark="Enter password" 
-                        x:Name="PasswordTextBox"/>
-                    <TextBlock x:Name="ErrorTextBlock"
-                        Foreground="Red"
+                        Classes="Large Bordered RevealPasswordButton"
+                        Watermark="Enter password" />
+                    <TextBlock
+                        x:Name="ErrorTextBlock"
                         FontWeight="Bold"
+                        Foreground="Red"
                         IsVisible="False"
                         TextWrapping="Wrap" />
                     <Button
                         HorizontalAlignment="Stretch"
                         Classes="Large"
                         Click="onClickLogin"
-                        Content="LOGIN"
+                        Content="Login"
                         Theme="{StaticResource SolidButton}">
-                        <!--  TODO: delete when user role is included  -->
-                        <!-- <SplitButton.Flyout>
-                            <MenuFlyout Placement="BottomEdgeAlignedRight">
-                                <MenuItem
-                                    Command="{Binding LoginCommand}"
-                                    CommandParameter="admin"
-                                    Header="Login as Admin" />
-                                <MenuItem
-                                    Command="{Binding LoginCommand}"
-                                    CommandParameter="staff"
-                                    Header="Login as Staff" />
-                            </MenuFlyout>
-                        </SplitButton.Flyout> -->
                     </Button>
                 </StackPanel>
             </rxui:RoutedViewHost.DefaultContent>
@@ -61,10 +55,24 @@
             </rxui:RoutedViewHost.ViewLocator>
         </rxui:RoutedViewHost>
 
-        <dialogs:ReactiveDialogHost
-            Background="{StaticResource SemiBackground1Color}"
-            CloseOnClickAway="True"
-            CornerRadius="24">
+        <dialogs:ReactiveDialogHost CloseOnClickAway="True">
+            <dialogs:ReactiveDialogHost.Styles>
+                <Style Selector="dialogHost|DialogHost">
+                    <Setter Property="PopupTemplate">
+                        <ControlTemplate>
+                            <VisualLayerManager Name="PART_DialogPopupRoot" IsPopup="True">
+                                <Border Name="PART_ContentBackground">
+                                    <ContentPresenter
+                                        Name="PART_ContentPresenter"
+                                        Padding="{TemplateBinding Padding}"
+                                        Content="{TemplateBinding Content}"
+                                        ContentTemplate="{TemplateBinding ContentTemplate}" />
+                                </Border>
+                            </VisualLayerManager>
+                        </ControlTemplate>
+                    </Setter>
+                </Style>
+            </dialogs:ReactiveDialogHost.Styles>
             <!-- <dialogs:Snackbar Name="Snackbar" Background="{StaticResource SemiColorBackground0}" /> -->
         </dialogs:ReactiveDialogHost>
     </Panel>

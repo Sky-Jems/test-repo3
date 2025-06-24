@@ -32,6 +32,6 @@ namespace Pos.Models
 
     public class ProductDto : ProductBase
     {
-       public List<long>? Categories { get; set; }
+        public List<long?>? Categories { get; set; }
     }
 }

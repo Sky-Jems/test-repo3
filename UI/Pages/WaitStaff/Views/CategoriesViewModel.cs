@@ -4,30 +4,30 @@ using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Microsoft.Extensions.DependencyInjection;
 using pos.Api;
+using pos.Extensions;
 using Pos.Models;
 using ReactiveUI;
 
 namespace Pos.Pages.WaitStaff;
 
-public partial class CategoriesViewModel : ReactiveObject, IRoutableViewModel
+public class CategoriesViewModel : ReactiveObject, IRoutableViewModel
 {
     public string? UrlPathSegment => throw new NotImplementedException();
     public IScreen HostScreen { get; }
-    public ICommand CategoryCardClickedCommand { get; }
     private readonly ICategoryService _categoryService;
-    private readonly IProductService _productService;
-    public ObservableCollection<Category> Categories { get; } = new ObservableCollection<Category>();
-    public ReactiveCommand<Unit, Unit> LoadCategoriesCommand { get; }
+    public ObservableCollection<Category> Categories { get; } = new ();
+    private ReactiveCommand<Unit, Unit> LoadCategoriesCommand { get; }
+    public ICommand CategoryCardClickedCommand { get; }
 
-    public CategoriesViewModel(IScreen screen, ICategoryService categoryService, IProductService productService)
+    public CategoriesViewModel(IScreen screen)
     {
-        this.HostScreen = screen;
-        this.CategoryCardClickedCommand = ReactiveCommand.Create<Category>(HandleClickCategory);
+        HostScreen = screen;
+        _categoryService = ServiceLocator.Services.GetRequiredService<ICategoryService>();
 
-        this._categoryService = categoryService;
-        this._productService = productService;
         LoadCategoriesCommand = ReactiveCommand.CreateFromTask(LoadCategoriesAsync);
+        CategoryCardClickedCommand = ReactiveCommand.Create<Category>(HandleClickCategory);
         LoadCategoriesCommand.Execute().Subscribe();
     }
 
@@ -35,15 +35,11 @@ public partial class CategoriesViewModel : ReactiveObject, IRoutableViewModel
     {
         try
         {
-            Console.WriteLine($"Loading categories...{_categoryService}");
             var categories = await _categoryService.GetAllCategoriesAsync();
-            if (categories.Any())
+            Categories.Clear();
+            foreach (var category in categories)
             {
-                Categories.Clear();
-                foreach (var category in categories)
-                {
-                    Categories.Add(category);
-                }
+                Categories.Add(category);
             }
         }
         catch (Exception e)
@@ -53,8 +49,8 @@ public partial class CategoriesViewModel : ReactiveObject, IRoutableViewModel
         }
     }
 
-    public void HandleClickCategory(Category item)
+    private void HandleClickCategory(Category category)
     {
-        this.HostScreen.Router.Navigate.Execute(new MenuViewModel(this.HostScreen, item, _productService));
+        HostScreen.Router.Navigate.Execute(new MenuViewModel(HostScreen, category));
     }
 }

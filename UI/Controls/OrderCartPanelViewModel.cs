@@ -1,3 +1,4 @@
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
@@ -13,14 +14,10 @@ namespace Pos.Controls;
 
 public class OrderCartPanelViewModel : ReactiveObject
 {
-    public ObservableCollection<LineItem> OrderList { get; set; } = [];
-    private decimal _cartTotal;
-    public decimal CartTotal
-    {
-        get => _cartTotal;
-        set => this.RaiseAndSetIfChanged(ref _cartTotal, value);
-    }
     private readonly ICartService _cartService;
+    public ObservableCollection<LineItem> OrderList => _cartService.Items;
+    private readonly ObservableAsPropertyHelper<decimal> _cartTotal;
+    public decimal CartTotal => _cartTotal.Value;
     private LineItem _selectedItem;
     public LineItem SelectedItem
     {
@@ -33,12 +30,17 @@ public class OrderCartPanelViewModel : ReactiveObject
     }
     private readonly ObservableAsPropertyHelper<bool> _canPay;
     public bool CanPay => _canPay.Value;
-
+    public event Action<LineItem>? CartItemClicked;
+    public ReactiveCommand<LineItem, Unit> NavigateToMenuCommand { get; }
 
     public OrderCartPanelViewModel()
     {
         _cartService = ServiceLocator.Services.GetRequiredService<ICartService>();
-        OrderList = _cartService.Items;
+        
+        _cartService
+            .WhenAnyValue(x => x.Total)
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .ToProperty(this, x => x.CartTotal, out _cartTotal);
         
         // Sync from service to viewmodel
         _cartService.WhenAnyValue(x => x.SelectedItem)
@@ -54,5 +56,12 @@ public class OrderCartPanelViewModel : ReactiveObject
             .Merge(itemsChanged)
             .Select(_ => _cartService.PaymentStatus == PaymentStatus.Pending && _cartService.Items.Any())
             .ToProperty(this, x => x.CanPay, out _canPay);
+
+        NavigateToMenuCommand = ReactiveCommand.Create<LineItem>(HandleClickLineItem);
+    }
+
+    private void HandleClickLineItem(LineItem lineItem)
+    {
+        CartItemClicked?.Invoke(lineItem);
     }
 }

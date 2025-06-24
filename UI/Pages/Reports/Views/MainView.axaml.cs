@@ -71,11 +71,11 @@ public partial class MainView : ReactiveUserControl<MainViewModel>
             viewModel.OrderCartPanelViewModel.OrderList.Add(new LineItem
             {
                 ProductId = lineItem.ProductId,
-                Sku = "test",
+                // Sku = "test",
                 Quantity = lineItem.Quantity,
                 Price = lineItem.Price
             });
         }
-        viewModel.OrderCartPanelViewModel.CartTotal = CurrentRowData.Total;
+        // viewModel.OrderCartPanelViewModel.CartTotal = CurrentRowData.Total;
     }
 }

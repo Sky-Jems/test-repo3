@@ -6,31 +6,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     x:CompileBindings="False"
     mc:Ignorable="d">
-    <!--  <Button  -->
-    <!--  Background="{Binding BgColor}"  -->
-    <!--  VerticalAlignment="Stretch"  -->
-    <!--  HorizontalAlignment="Stretch"  -->
-    <!--  Padding="12"  -->
-    <!--  Click="OnButtonClick"  -->
-    <!--  CornerRadius="6">  -->
-    <!--     <Button.DataContext> -->
-    <!--         <Binding Path="$parent.Category"/> -->
-    <!--     </Button.DataContext> -->
-    <!--    -->
-    <!--     <Viewbox HorizontalAlignment="Left"> -->
-    <!--         <StackPanel HorizontalAlignment="Left"> -->
-    <!--  <Svg  -->
-    <!--  Css="{Binding IconColor}"  -->
-    <!--  MaxHeight="30"  -->
-    <!--  HorizontalAlignment="Left"  -->
-    <!--  Path="{Binding Icon}" />  -->
-    <!--  <Label  -->
-    <!--  Foreground="{Binding FgColor}"  -->
-    <!--  FontSize="16"  -->
-    <!--  Content="{Binding Name}"/>  -->
-    <!--         </StackPanel> -->
-    <!--     </Viewbox> -->
-    <!-- </Button> -->
     <Button
         Padding="24"
         HorizontalAlignment="Stretch"
@@ -38,7 +13,7 @@
         Click="OnButtonClick"
         Theme="{StaticResource SolidButton}">
         <Button.DataContext>
-            <Binding Path="$parent.SubCategory" />
+            <Binding Path="$parent.Category" />
         </Button.DataContext>
 
         <Viewbox HorizontalAlignment="Left">

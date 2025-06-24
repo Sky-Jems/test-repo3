@@ -3,12 +3,8 @@ using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Notifications;
-using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
 using Avalonia.Threading;
-using Microsoft.Extensions.DependencyInjection;
-using pos.Api;
-using pos.Extensions;
 using pos.Models.EventArgs;
 using Pos.Models;
 
@@ -36,16 +32,10 @@ public partial class WaitStaffView : ReactiveUserControl<WaitStaffViewModel>
 
     private WindowNotificationManager? _manager;
 
-    // Default constructor (required for XAML)
-    // Todo: This can also be done through Dependency Injection > preferred for MVVM
-    public WaitStaffView() : this(ServiceLocator.Services.GetRequiredService<ICategoryService>(), ServiceLocator.Services.GetRequiredService<IProductService>())
-    {
-    }
-
-    public WaitStaffView(ICategoryService categoryService, IProductService productService)
+    public WaitStaffView()
     {
         InitializeComponent();
-        DataContext = new WaitStaffViewModel(categoryService, productService);
+        DataContext = new WaitStaffViewModel();
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
@@ -72,26 +62,4 @@ public partial class WaitStaffView : ReactiveUserControl<WaitStaffViewModel>
             classes: args.Classes
         );
     }
-
-
-    // public async void PlaceOrderButton_Click(object sender, RoutedEventArgs args)
-    // {
-    //     PaymentMethodDialog dialog = new();
-    //     string selectedPaymentMethod = (await dialog.ShowAsync()).GetValueOrDefault();
-    //     if (!string.IsNullOrEmpty(selectedPaymentMethod))
-    //     {
-    //         var viewModel = DataContext as HomeViewModel;
-    //         await viewModel!.PlaceOrderAsync(selectedPaymentMethod);
-    //         _manager!.Show(new Notification(
-    //             "",
-    //             "Order has been placed."),
-    //             type: NotificationType.Success,
-    //             classes: ["Light"]
-    //         );
-    //     }
-    // }
-    // public void LogoutMenuItem_Click(object sender, RoutedEventArgs args)
-    // {
-
-    // }
 }

@@ -1,6 +1,8 @@
+using System;
 using System.Reactive;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Microsoft.Extensions.DependencyInjection;
 using pos.Api;
@@ -77,5 +79,14 @@ public partial class OrderCartPanel : UserControl
         var cartService = ServiceLocator.Services.GetRequiredService<ICartService>();
         cartService.ClearItems();
         cartService.OrderId = null;
+    }
+
+    private void CartItem_PointerPressed(object sender, PointerPressedEventArgs e)
+    {
+        if (sender is Border border && border.Tag is LineItem lineItem)
+        {
+            var vm = DataContext as OrderCartPanelViewModel;
+            vm?.NavigateToMenuCommand?.Execute(lineItem)?.Subscribe();
+        }
     }
 }

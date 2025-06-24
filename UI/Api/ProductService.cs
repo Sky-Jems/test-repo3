@@ -18,10 +18,9 @@ public class ProductService : IProductService
        _httpClient = httpClient;
     }
 
-    public async Task<List<Product>> GetProductsByCategoryAsync(Category subCategory)
+    public async Task<List<Product>> GetProductsByCategoryAsync(Category category)
     {
-        var response = await _httpClient.GetJsonAsync<List<Product>>($"categories/{subCategory.Id}/products");
-        return response ?? new List<Product>();
+        return await _httpClient.GetJsonAsync<List<Product>>($"categories/{category.Id}/products");
     }
 
     public async Task<List<OptionGroupDto>> GetProductOptionsAsync(long productId)
@@ -44,7 +43,7 @@ public class ProductService : IProductService
 
         foreach (var product in products)
         {
-            product.Price = 99.99m;
+            product.Price = (double)99.99m;
         }
 
         return products;
@@ -96,7 +95,7 @@ public class ProductService : IProductService
         var product = await _httpClient.GetJsonAsync<Product>($"products/{id}");
         if (product != null)
         {
-            product.Price = 22.99m;
+            product.Price = (double)22.99m;
         }
 
         return product;

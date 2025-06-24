@@ -11,25 +11,55 @@
 
     <Border Padding="32" Background="{StaticResource SemiBackground1Color}">
         <StackPanel Spacing="12">
-            <StackPanel
-                Margin="0,0,0,12"
-                VerticalAlignment="Center"
-                Orientation="Horizontal"
-                Spacing="16">
-                <Button
-                    Width="40"
-                    Height="40"
-                    Command="{Binding GoBack}">
-                    <PathIcon
-                        Width="16"
-                        Data="{StaticResource SemiIconArrowLeft}"
-                        Theme="{DynamicResource InnerPathIcon}" />
-                </Button>
-                <Label Classes="H2" Theme="{StaticResource TitleLabel}">
-                    Products
-                </Label>
-            </StackPanel>
-
+            <DockPanel LastChildFill="False">
+                <StackPanel
+                    VerticalAlignment="Center"
+                    DockPanel.Dock="Left"
+                    Orientation="Horizontal"
+                    Spacing="16">
+                    <Button
+                        Width="40"
+                        Height="40"
+                        Command="{Binding GoBack}">
+                        <PathIcon
+                            Width="16"
+                            Data="{StaticResource SemiIconArrowLeft}"
+                            Theme="{DynamicResource InnerPathIcon}" />
+                    </Button>
+                    <Label Classes="H2" Theme="{StaticResource TitleLabel}">
+                        Products
+                    </Label>
+                </StackPanel>
+                <StackPanel
+                    VerticalAlignment="Center"
+                    DockPanel.Dock="Right"
+                    Orientation="Horizontal"
+                    Spacing="12">
+                    <Button
+                        Width="40"
+                        Height="40"
+                        Command="{Binding ClickMinusCommand}">
+                        <PathIcon
+                            Width="16"
+                            Data="{StaticResource SemiIconMinus}"
+                            Theme="{DynamicResource InnerPathIcon}" />
+                    </Button>
+                    <Label
+                        VerticalContentAlignment="Center"
+                        Classes="H5"
+                        Content="{Binding SelectedItemQuantityDisplay}"
+                        Theme="{StaticResource TitleLabel}" />
+                    <Button
+                        Width="40"
+                        Height="40"
+                        Command="{Binding ClickPlusCommand}">
+                        <PathIcon
+                            Width="16"
+                            Data="{StaticResource SemiIconPlus}"
+                            Theme="{DynamicResource InnerPathIcon}" />
+                    </Button>
+                </StackPanel>
+            </DockPanel>
             <ItemsRepeater
                 Margin="0,0,0,20"
                 VerticalAlignment="Top"
@@ -45,7 +75,7 @@
 
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate>
-                        <controls:MenuItemCard MenuItemCommand="{Binding $parent[ItemsRepeater].((app:MenuViewModel)DataContext).MenuItemClickedCommand}" Product="{Binding}" />
+                        <controls:MenuItemCard MenuItemCommand="{Binding $parent[ItemsRepeater].((app:MenuViewModel)DataContext).ProductCardClickedCommand}" Product="{Binding}" />
                     </DataTemplate>
                 </ItemsRepeater.ItemTemplate>
             </ItemsRepeater>

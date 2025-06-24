@@ -6,7 +6,9 @@ namespace Pos.Models;
 public class LineItem : ReactiveObject
 {
     public long ProductId { get; set; }
-    public string Sku { get; set; }
+    public string ProductName { get; set; }
+    public string ProductDescription { get; set; }
+    public Category Category { get; set; }
     private int _quantity;
     private decimal _price;
     private bool _isSelected;
@@ -46,8 +48,6 @@ public class LineItem : ReactiveObject
     {
         ItemTotal = Quantity * Price;
     }
-    
-    public VariantDto Variant { get; set; }
 }
 
 public class LineItemDto
@@ -81,11 +81,10 @@ public static class LineItemMapper
     {
         return new LineItem
         {
-            Sku = dto.Variant.Sku,
             ProductId = dto.ProductId,
+            ProductName = dto.ProductName,
             Price = dto.Price,
             Quantity = dto.Quantity,
-            Variant = dto.Variant,
             ItemTotal = dto.SubTotal
         };
     }

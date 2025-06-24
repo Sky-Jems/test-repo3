@@ -32,82 +32,10 @@
 
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate>
-                        <controls:CategoryCard SubCategory="{Binding}" SubCategoryCommand="{Binding $parent[ItemsRepeater].((app:CategoriesViewModel)DataContext).CategoryCardClickedCommand}" />
-                    </DataTemplate>
-                </ItemsRepeater.ItemTemplate>
-            </ItemsRepeater>
-
-            <!-- <Label FontSize="24" Padding="0" Foreground="#FFE9C1">
-                Regular
-            </Label>
-
-            <ItemsRepeater
-                ItemsSource="{Binding Regulars}"
-                VerticalAlignment="Top"
-                Margin="0 0 0 20">
-                <ItemsRepeater.Layout>
-                    <UniformGridLayout
-                    MinItemWidth="160"
-                        MinItemHeight="100"
-                        ItemsStretch="Uniform"
-                        MinRowSpacing="16"
-                        MinColumnSpacing="16"/>
-                </ItemsRepeater.Layout>
-                <ItemsRepeater.ItemTemplate>
-                    <DataTemplate>
                         <controls:CategoryCard Category="{Binding}" CategoryCommand="{Binding $parent[ItemsRepeater].((app:CategoriesViewModel)DataContext).CategoryCardClickedCommand}" />
                     </DataTemplate>
                 </ItemsRepeater.ItemTemplate>
             </ItemsRepeater>
-
-            <Grid ColumnDefinitions="* 16 *" RowDefinitions="Auto 16 Auto">
-                <Label Grid.Column="0" Grid.Row="0" FontSize="24" Padding="0" Foreground="#FFE9C1">
-                    Special
-                </Label>
-
-                <Label Grid.Column="2" Grid.Row="0" FontSize="24" Padding="0" Foreground="#FFE9C1">
-                    Seasonal
-                </Label>
-
-                <ItemsRepeater
-                    Grid.Column="0" Grid.Row="2"
-                    ItemsSource="{Binding Specials}"
-                    VerticalAlignment="Top">
-                    <ItemsRepeater.Layout>
-                        <UniformGridLayout
-                            MinItemWidth="160"
-                            MinItemHeight="100"
-                            ItemsStretch="Uniform"
-                            MinRowSpacing="16"
-                            MinColumnSpacing="16"/>
-                    </ItemsRepeater.Layout>
-                    <ItemsRepeater.ItemTemplate>
-                        <DataTemplate>
-                            <controls:CategoryCard Category="{Binding}" CategoryCommand="{Binding $parent[ItemsRepeater].((app:CategoriesViewModel)DataContext).CategoryCardClickedCommand}"/>
-                        </DataTemplate>
-                    </ItemsRepeater.ItemTemplate>
-                </ItemsRepeater>
-
-                <ItemsRepeater
-                    Grid.Column="2" Grid.Row="2"
-                    ItemsSource="{Binding Seasonals}"
-                    VerticalAlignment="Top">
-                    <ItemsRepeater.Layout>
-                        <UniformGridLayout
-                            MinItemWidth="160"
-                            MinItemHeight="100"
-                            ItemsStretch="Uniform"
-                            MinRowSpacing="16"
-                            MinColumnSpacing="16"/>
-                    </ItemsRepeater.Layout>
-
-                    <ItemsRepeater.ItemTemplate>
-                        <DataTemplate>
-                            <controls:CategoryCard Category="{Binding}" CategoryCommand="{Binding $parent[ItemsRepeater].((app:CategoriesViewModel)DataContext).CategoryCardClickedCommand}"/>
-                        </DataTemplate>
-                    </ItemsRepeater.ItemTemplate>
-                </ItemsRepeater>
-            </Grid>-->
         </StackPanel>
     </Border>
 </UserControl>

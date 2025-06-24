@@ -9,7 +9,6 @@ public class WaitStaffViewLocator : IViewLocator
     {
         CategoriesViewModel context => new CategoriesView { },
         MenuViewModel context => new MenuView { },
-        OptionsViewModel context => new OptionsView { },
         _ => throw new ArgumentOutOfRangeException(nameof(viewModel))
     };
 }

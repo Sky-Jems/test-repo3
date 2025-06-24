@@ -1,5 +1,5 @@
 using System;
-using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,45 +14,57 @@ using ReactiveUI;
 
 namespace Pos.Pages.WaitStaff;
 
-public partial class WaitStaffViewModel : ReactiveObject, IScreen
+public class WaitStaffViewModel : ReactiveObject, IScreen
 {
-    public string? UrlPathSegment => throw new NotImplementedException();
-    public RoutingState Router { get; } = new RoutingState();
-    private readonly ICategoryService categoryService;
-    private readonly IProductService productService;
+    public RoutingState Router { get; } = new ();
+
     private readonly ICartService _cartService;
     private readonly IOrderService _orderService;
-    public ObservableCollection<LineItem> CartItems => _cartService.Items;
-    public decimal CartTotal => _cartService.Total;
+
     public string CustomerName
     {
         get => _cartService.CustomerName;
         set => _cartService.CustomerName = value;
     }
 
-    public OrderCartPanelViewModel OrderCartPanelViewModel { get; set; } = new OrderCartPanelViewModel();
+    public OrderCartPanelViewModel OrderCartPanelViewModel { get; set; } = new ();
     public ReactiveCommand<Unit, Unit> SummaryButtonCommand { get; }
-
     public event EventHandler<NotificationEventArgs> TriggerNotif;
 
-    public WaitStaffViewModel(ICategoryService categoryService, IProductService productService)
+    public WaitStaffViewModel()
     {
         _cartService = ServiceLocator.Services.GetRequiredService<ICartService>();
-        _cartService.Items.CollectionChanged += (_, _) => this.RaisePropertyChanged(nameof(CartTotal));
-        _cartService.WhenAnyValue(x => x.Total)
-            .Subscribe(total => OrderCartPanelViewModel.CartTotal = total);
+        _orderService = ServiceLocator.Services.GetRequiredService<IOrderService>();
+        
+        Router.Navigate.Execute(new CategoriesViewModel(this));
+        SummaryButtonCommand = ReactiveCommand.CreateFromTask(PayOrder);
 
+        InitializeCartBindings();
+        
+        OrderCartPanelViewModel.CartItemClicked += HandleCartItemClicked;
+    }
+
+    private void InitializeCartBindings()
+    {
         _cartService.WhenAnyValue(x => x.CustomerName)
             .Subscribe(_ => this.RaisePropertyChanged(nameof(CustomerName)));
-
-        this.categoryService = categoryService;
-        this.productService = productService;
-        _orderService = ServiceLocator.Services.GetRequiredService<IOrderService>();
-        Router.Navigate.Execute(new CategoriesViewModel(this, this.categoryService, this.productService));
-
-        OrderCartPanelViewModel.OrderList = CartItems;
-        SummaryButtonCommand = ReactiveCommand.CreateFromTask(PayOrder);
     }
+    
+    private void HandleCartItemClicked(LineItem lineItem)
+    {
+        var currentMenuVm = Router.NavigationStack.LastOrDefault() as MenuViewModel;
+
+        if (currentMenuVm is null)
+        {
+            var newMenuVm = new MenuViewModel(this, lineItem.Category);
+            Router.Navigate.Execute(newMenuVm).Subscribe();
+        }
+        else
+        {
+            currentMenuVm.UpdateCategory(lineItem.Category);
+        }
+    }
+
 
     private async Task PayOrder()
     {

@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using pos.Handlers;
 using pos.Handlers.Interfaces;
 using Pos.Models;
 
@@ -18,8 +16,6 @@ public class CategoryService : ICategoryService
 
     public async Task<List<Category>> GetAllCategoriesAsync()
     {
-        Console.WriteLine("Getting all categories...");
-        var response = await _httpClient.GetJsonAsync<List<Category>>("categories");
-        return response ?? new List<Category>();
+        return await _httpClient.GetJsonAsync<List<Category>>("categories");
     }
 }

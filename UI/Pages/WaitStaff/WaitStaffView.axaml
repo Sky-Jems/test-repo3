@@ -27,13 +27,6 @@
                         Classes="Large Bordered"
                         Text="{Binding CustomerName, Mode=TwoWay}"
                         Watermark="Customer Name" />
-                    <!--  For Service Provider Management  -->
-                    <!--  <ComboBox  -->
-                    <!--  HorizontalAlignment="Stretch"  -->
-                    <!--  Classes="Large Bordered"  -->
-                    <!--  PlaceholderText="Select table">  -->
-                    <!--     <ComboBoxItem Content="test" /> -->
-                    <!-- </ComboBox> -->
                 </UniformGrid>
             </Border>
 

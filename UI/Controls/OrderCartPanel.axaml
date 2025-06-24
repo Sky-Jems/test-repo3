@@ -49,56 +49,62 @@
 
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel HorizontalAlignment="Stretch" Spacing="8">
-                                <Grid
-                                    HorizontalAlignment="Stretch"
-                                    ColumnDefinitions="* auto"
-                                    ColumnSpacing="8">
-                                    <Label
-                                        Grid.Row="0"
-                                        Grid.Column="0"
-                                        VerticalContentAlignment="Center"
-                                        Classes="H6"
-                                        FontWeight="Regular"
-                                        Theme="{StaticResource TitleLabel}">
-                                        <Label.Content>
-                                            <MultiBinding StringFormat="{}{0} - {1}">
-                                                <Binding Path="Sku" />
-                                                <Binding Path="Variant.Product.Name" />
-                                            </MultiBinding>
-                                        </Label.Content>
-                                    </Label>
-                                    <Button
-                                        Grid.Row="0"
-                                        Grid.Column="1"
-                                        Width="32"
-                                        Margin="0,0,-4,0"
-                                        Classes="Danger"
-                                        Click="OnRemoveLineItemButtonClick"
-                                        IsVisible="{Binding IsEditable, ElementName=root}"
-                                        Tag="{Binding}"
-                                        Theme="{StaticResource BorderlessButton}">
-                                        <PathIcon
-                                            Height="16"
-                                            Data="{StaticResource SemiIconCrossStroked}"
-                                            Theme="{StaticResource InnerPathIcon}" />
-                                    </Button>
-                                </Grid>
+                            <Border
+                                Background="Transparent"
+                                PointerPressed="CartItem_PointerPressed"
+                                Tag="{Binding}">
+                                <StackPanel HorizontalAlignment="Stretch" Spacing="8">
+                                    <Grid
+                                        HorizontalAlignment="Stretch"
+                                        ColumnDefinitions="* auto"
+                                        ColumnSpacing="8">
+                                        <Label
+                                            Grid.Row="0"
+                                            Grid.Column="0"
+                                            VerticalContentAlignment="Center"
+                                            FontSize="12"
+                                            FontWeight="Regular"
+                                            Theme="{StaticResource TitleLabel}">
+                                            <Label.Content>
+                                                <MultiBinding StringFormat="{}{0} - {1}">
+                                                    <Binding Path="ProductName" />
+                                                    <Binding Path="ProductDescription" />
+                                                </MultiBinding>
+                                            </Label.Content>
+                                        </Label>
+                                        <Button
+                                            Grid.Row="0"
+                                            Grid.Column="1"
+                                            Width="32"
+                                            Margin="0,0,-4,0"
+                                            Classes="Danger"
+                                            Click="OnRemoveLineItemButtonClick"
+                                            IsVisible="{Binding IsEditable, ElementName=root}"
+                                            Tag="{Binding}"
+                                            Theme="{StaticResource BorderlessButton}">
+                                            <PathIcon
+                                                Height="16"
+                                                Data="{StaticResource SemiIconCrossStroked}"
+                                                Theme="{StaticResource InnerPathIcon}" />
+                                        </Button>
+                                    </Grid>
 
-                                <Grid ColumnDefinitions="* auto" ColumnSpacing="8">
-                                    <Label
-                                        Grid.Column="0"
-                                        Classes="H5"
-                                        Content="{Binding Price, StringFormat='₱{0:N2}'}"
-                                        Theme="{StaticResource TitleLabel}" />
-                                    <Label
-                                        Grid.Column="1"
-                                        HorizontalAlignment="Right"
-                                        Classes="Circle Indigo"
-                                        Content="{Binding Quantity, StringFormat='{}{0}x'}"
-                                        Theme="{StaticResource TagLabel}" />
-                                </Grid>
-                            </StackPanel>
+                                    <Grid ColumnDefinitions="* auto" ColumnSpacing="8">
+                                        <Label
+                                            Grid.Column="0"
+                                            FontSize="12"
+                                            Opacity="0.6"
+                                            Content="{Binding Price, StringFormat='₱{0:N2}'}"
+                                            Theme="{StaticResource TitleLabel}" />
+                                        <Label
+                                            Grid.Column="1"
+                                            HorizontalAlignment="Right"
+                                            Classes="Circle Indigo"
+                                            Content="{Binding Quantity, StringFormat='{}{0}x'}"
+                                            Theme="{StaticResource TagLabel}" />
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                     <ListBox.ItemsPanel>
@@ -148,12 +154,6 @@
 
                     <Label Content="Discount" />
                     <Label Classes="price" Content="₱0.00" />
-
-                    <!-- <Label Content="Tax %10" />
-                    <Label Classes="price" Content="₱0.00" />
-
-                    <Label Content="Additional" />
-                    <Label Classes="price" Content="₱0.00" />-->
                 </UniformGrid>
 
                 <Rectangle
@@ -183,14 +183,12 @@
                         Classes="Large"
                         Command="{Binding SummaryButtonCommand, ElementName=root}"
                         Content="{Binding SummaryButtonText, ElementName=root}"
-                        IsEnabled="{Binding CanPay}"
                         Theme="{StaticResource SolidButton}" />
                     <Button
                         HorizontalAlignment="Stretch"
                         Classes="Large"
                         Click="OnPayLaterButtonClick"
                         Content="PAY LATER"
-                        IsEnabled="{Binding CanPay}"
                         IsVisible="{Binding IsEditable, ElementName=root}"
                         Theme="{StaticResource SolidButton}" />
                 </UniformGrid>

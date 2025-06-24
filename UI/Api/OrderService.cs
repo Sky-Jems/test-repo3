@@ -19,14 +19,40 @@ public class OrderService : IOrderService
 
     public async Task<GetOrderResponseDto> AddOrder(Order order)
     {
-        var response = await _httpClient.PostJsonAsync("order-transaction", order);
-        return await _httpClient.ReadJsonResponseAsync<GetOrderResponseDto>(response);
+        // var response = await _httpClient.PostJsonAsync("order-transaction", order);
+        // return await _httpClient.ReadJsonResponseAsync<GetOrderResponseDto>(response);
+        var guid = Guid.NewGuid();
+        var guidBytes = guid.ToByteArray();
+        long tempId = BitConverter.ToInt64(guidBytes, 0);
+        var responseDto = new GetOrderResponseDto
+        {
+            Id = tempId,
+            OrderId = tempId,
+            Order = new OrderDto
+            {
+                Id = tempId
+            }
+        };
+        return responseDto;
     }
 
     public async Task<GetOrderResponseDto> AddLineItem(LineItemDto lineItemDto)
     {
-        var response = await _httpClient.PostJsonAsync("order-transaction/line-item", lineItemDto);
-        return await _httpClient.ReadJsonResponseAsync<GetOrderResponseDto>(response);
+        // var response = await _httpClient.PostJsonAsync("order-transaction/line-item", lineItemDto);
+        // return await _httpClient.ReadJsonResponseAsync<GetOrderResponseDto>(response);
+        var guid = Guid.NewGuid();
+        var guidBytes = guid.ToByteArray();
+        long tempId = BitConverter.ToInt64(guidBytes, 0);
+        var responseDto = new GetOrderResponseDto
+        {
+            Id = tempId,
+            OrderId = tempId,
+            Order = new OrderDto
+            {
+                Id = tempId
+            }
+        };
+        return responseDto;
     }
 
     public async Task<OrderResponseDto> RemoveItem(long orderId, long productId)

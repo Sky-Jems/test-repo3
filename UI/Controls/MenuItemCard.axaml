@@ -4,29 +4,51 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converters="using:Pos.Converters"
     x:CompileBindings="False"
     mc:Ignorable="d">
-    <Button
-        Padding="24"
-        HorizontalAlignment="Stretch"
-        VerticalAlignment="Stretch"
-        Click="OnButtonClick"
-        Theme="{StaticResource SolidButton}">
-        <Button.DataContext>
+    
+    <UserControl.Resources>
+        <converters:BoolToBrushConverter x:Key="boolToBrushConverter" />
+    </UserControl.Resources>
+    
+    <Border
+        x:Name="CardBorder"
+        CornerRadius="8"
+        BorderThickness="2"
+        Padding="2"
+        BorderBrush="{Binding IsSelected, Converter={StaticResource boolToBrushConverter}}">
+        <Border.DataContext>
             <Binding Path="$parent.Product" />
-        </Button.DataContext>
-
-        <Viewbox HorizontalAlignment="Center">
-            <StackPanel HorizontalAlignment="Center">
-                <AccessText
-                    HorizontalAlignment="Center"
-                    FontSize="16"
-                    Text="{Binding Name}" />
-                <AccessText
-                    HorizontalAlignment="Center"
-                    FontSize="12"
-                    Text="{Binding Description}" />
-            </StackPanel>
-        </Viewbox>
-    </Button>
+        </Border.DataContext>
+        <Button
+            Padding="24"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            Click="OnButtonClick"
+            Theme="{StaticResource SolidButton}">
+            <Viewbox HorizontalAlignment="Center">
+                <StackPanel HorizontalAlignment="Center">
+                    <AccessText
+                        HorizontalAlignment="Center"
+                        FontSize="24"
+                        FontWeight="Bold"
+                        Text="{Binding Name}" />
+                    <AccessText
+                        HorizontalAlignment="Center"
+                        FontSize="20"
+                        Text="{Binding Description}" />
+                    <Label
+                        Margin="0,8,0,0"
+                        HorizontalAlignment="Center"
+                        Classes="Circle White Ghost"
+                        FontSize="20"
+                        FontWeight="Bold"
+                        Padding="12,4"
+                        Content="{Binding Price, StringFormat=₱{0:F2}}"
+                        Theme="{StaticResource TagLabel}" />
+                </StackPanel>
+            </Viewbox>
+        </Button>
+    </Border>
 </UserControl>

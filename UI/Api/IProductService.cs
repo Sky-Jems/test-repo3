@@ -8,7 +8,7 @@ public interface IProductService
 {
     Task<List<OptionGroupDto>> GetProductOptionsAsync(long productId);
     Task<List<OptionItem>> GetProductOptionValuesAsync(int variantId);
-    Task<List<Product>> GetProductsByCategoryAsync(Category subCategory);
+    Task<List<Product>> GetProductsByCategoryAsync(Category category);
     Task<List<Product>> GetAllProducts();
     Task<int> AddProduct(ProductDto product);
     Task DeleteProductByIdAsync(int id);

@@ -25,6 +25,6 @@ public class LineItemResponseDto implements Serializable {
     @JsonProperty("order_id")
     Long orderId;
 
-    VariantResponseDto variant;
+//    VariantResponseDto variant;
 }
 

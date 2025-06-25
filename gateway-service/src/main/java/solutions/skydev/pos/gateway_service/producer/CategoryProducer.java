@@ -7,7 +7,9 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 import org.springframework.kafka.requestreply.RequestReplyFuture;
 import org.springframework.stereotype.Component;
+import solutions.skydev.pos.common.product_service.dto.request.CategoryRequestDto;
 import solutions.skydev.pos.gateway_service.config.KafkaConfig;
+import solutions.skydev.pos.common.product_service.dto.response.CategoryResponseDto;
 
 import java.time.Duration;
 import java.util.concurrent.ExecutionException;
@@ -39,39 +41,39 @@ public class CategoryProducer {
         this.replyingKafkaTemplateDeleted.start();
 
     }
-//    
-//    public String sendCategoryCreateCommand(String requestBody) throws ExecutionException, InterruptedException, TimeoutException {
-//        if (!this.replyingKafkaTemplateCreated.waitForAssignment(Duration.ofSeconds(10))) {
-//            throw new IllegalStateException("Reply container did not initialize");
-//        }
-//        ProducerRecord<String, String> record = new ProducerRecord<>("create-category-command", requestBody);
-//        RequestReplyFuture<String, String, String> future = this.replyingKafkaTemplateCreated.sendAndReceive(record);
-//        ConsumerRecord<String, String> response = future.get(10, TimeUnit.SECONDS);
-//        return response.value();
-//    }
-//
-//    public String sendCategoryUpdateCommand(String id, String requestBody) throws ExecutionException, InterruptedException, TimeoutException {
-//        if (!this.replyingKafkaTemplateUpdated.waitForAssignment(Duration.ofSeconds(10))) {
-//            throw new IllegalStateException("Reply container did not initialize");
-//        }
-//        ProducerRecord<String, String> record = new ProducerRecord<>("update-category-command", id, requestBody);
-//        RequestReplyFuture<String, String, String> future = this.replyingKafkaTemplateUpdated.sendAndReceive(record);
-//        ConsumerRecord<String, String> response = future.get(10, TimeUnit.SECONDS);
-//        return response.value();
-//    }
-//
-//    public String sendCategoryDeleteCommand(String id) throws ExecutionException, InterruptedException, TimeoutException {
-//        if (!this.replyingKafkaTemplateDeleted.waitForAssignment(Duration.ofSeconds(10))) {
-//            throw new IllegalStateException("Reply container did not initialize");
-//        }
-//        ProducerRecord<String, String> record = new ProducerRecord<>("delete-category-command", id, null);
-//        RequestReplyFuture<String, String, String> future = this.replyingKafkaTemplateDeleted.sendAndReceive(record);
-//        ConsumerRecord<String, String> response = future.get(10, TimeUnit.SECONDS);
-//        return response.value();
-//    }
-//    
-//    public void sendCategoryProductCreateCommand(String requestBody) {
-//        // create correlation id
-//        this.kafkaTemplate.send("create-category-product-command", requestBody);
-//    }
+
+    public CategoryResponseDto sendCategoryCreateCommand(CategoryRequestDto requestBody) throws ExecutionException, InterruptedException, TimeoutException {
+        if (!this.replyingKafkaTemplateCreated.waitForAssignment(Duration.ofSeconds(10))) {
+            throw new IllegalStateException("Reply container did not initialize");
+        }
+        ProducerRecord<String, Object> record = new ProducerRecord<>("create-category-command", requestBody);
+        RequestReplyFuture<String, Object, Object> future = this.replyingKafkaTemplateCreated.sendAndReceive(record);
+        ConsumerRecord<String, Object> response = future.get(10, TimeUnit.SECONDS);
+        return (CategoryResponseDto) response.value();
+    }
+
+    public CategoryResponseDto sendCategoryUpdateCommand(String id, CategoryRequestDto requestBody) throws ExecutionException, InterruptedException, TimeoutException {
+        if (!this.replyingKafkaTemplateUpdated.waitForAssignment(Duration.ofSeconds(10))) {
+            throw new IllegalStateException("Reply container did not initialize");
+        }
+        ProducerRecord<String, Object> record = new ProducerRecord<>("update-category-command", id, requestBody);
+        RequestReplyFuture<String, Object, Object> future = this.replyingKafkaTemplateUpdated.sendAndReceive(record);
+        ConsumerRecord<String, Object> response = future.get(10, TimeUnit.SECONDS);
+        return (CategoryResponseDto) response.value();
+    }
+
+    public CategoryResponseDto sendCategoryDeleteCommand(String id) throws ExecutionException, InterruptedException, TimeoutException {
+        if (!this.replyingKafkaTemplateDeleted.waitForAssignment(Duration.ofSeconds(10))) {
+            throw new IllegalStateException("Reply container did not initialize");
+        }
+        ProducerRecord<String, Object> record = new ProducerRecord<>("delete-category-command", id, null);
+        RequestReplyFuture<String, Object, Object> future = this.replyingKafkaTemplateDeleted.sendAndReceive(record);
+        ConsumerRecord<String, Object> response = future.get(10, TimeUnit.SECONDS);
+        return (CategoryResponseDto) response.value();
+    }
+
+    public void sendCategoryProductCreateCommand(String requestBody) {
+        // create correlation id
+        this.kafkaTemplate.send("create-category-product-command", requestBody);
+    }
 }

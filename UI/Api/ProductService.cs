@@ -15,7 +15,7 @@ public class ProductService : IProductService
 
     public ProductService(IHttpHandler httpClient)
     {
-       _httpClient = httpClient;
+        _httpClient = httpClient;
     }
 
     public async Task<List<Product>> GetProductsByCategoryAsync(Category category)
@@ -38,19 +38,10 @@ public class ProductService : IProductService
 
     public async Task<List<Product>> GetAllProducts()
     {
-        var response = await _httpClient.GetJsonAsync<List<Product>>("products");
-        var products = response ?? new List<Product>();
-
-        foreach (var product in products)
-        {
-            product.Price = (double)99.99m;
-        }
-
-        return products;
-
+        return await _httpClient.GetJsonAsync<List<Product>>("products");
     }
 
-    public async Task<int> AddProduct(ProductDto product)
+    public async Task<int> AddProduct(Product product)
     {
         var response = await _httpClient.PostJsonAsync("products", product);
         response.EnsureSuccessStatusCode();
@@ -69,9 +60,9 @@ public class ProductService : IProductService
         await _httpClient.DeleteAsync($"products/{id}");
     }
 
-    public async Task UpdateProductAsync(ProductDto product)
+    public async Task UpdateProductAsync(Product product)
     {
-        await _httpClient.PutJsonAsync($"products/{product.Id}", product);
+        await _httpClient.PutJsonAsync($"products", product);
     }
 
     public async Task<List<Variant>> GetVariantsByProductAndOption(long productId, long? optionId = null, string? optionValue = null)
@@ -92,13 +83,7 @@ public class ProductService : IProductService
 
     public async Task<Product> GetProductByIdAsync(int id)
     {
-        var product = await _httpClient.GetJsonAsync<Product>($"products/{id}");
-        if (product != null)
-        {
-            product.Price = (double)22.99m;
-        }
-
-        return product;
+        return await _httpClient.GetJsonAsync<Product>($"products/{id}");
     }
 
 }

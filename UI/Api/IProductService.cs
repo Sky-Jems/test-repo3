@@ -10,9 +10,9 @@ public interface IProductService
     Task<List<OptionItem>> GetProductOptionValuesAsync(int variantId);
     Task<List<Product>> GetProductsByCategoryAsync(Category category);
     Task<List<Product>> GetAllProducts();
-    Task<int> AddProduct(ProductDto product);
+    Task<int> AddProduct(Product product);
     Task DeleteProductByIdAsync(int id);
-    Task UpdateProductAsync(ProductDto product);
+    Task UpdateProductAsync(Product product);
     Task<List<Variant>> GetVariantsByProductAndOption(long productId, long? optionId = null, string? optionValue = null);
     Task<Product> GetProductByIdAsync(int id);
 }

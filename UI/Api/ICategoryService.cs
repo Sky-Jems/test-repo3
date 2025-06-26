@@ -10,4 +10,5 @@ public interface ICategoryService
     Task CreateCategory(Category category);
     Task UpdateCategory(long id, Category category);
     Task DeleteCategory(long id);
+    Task<Category> GetCategoryByIdAsync(int id);
 }

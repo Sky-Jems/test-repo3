@@ -33,4 +33,9 @@ public class CategoryService : ICategoryService
     {
         await _httpClient.DeleteAsync($"categories/{id}");
     }
+
+    public async Task<Category> GetCategoryByIdAsync(int id)
+    {
+        return await _httpClient.GetJsonAsync<Category>($"categories/{id}");
+    }
 }

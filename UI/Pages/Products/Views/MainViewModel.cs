@@ -87,12 +87,34 @@ public partial class MainViewModel : ReactiveObject, IRoutableViewModel
     {
         try
         {
-            var products = await _productService.GetAllProducts();
-            if (products.Any())
+            List<Product> TestProducts = await _productService.GetAllProducts();
+            _allProducts.Clear();
+
+            foreach (var product in TestProducts)
             {
-                _allProducts = products.ToList();
-                FilterProducts();
+                var categoryList = new List<Category>();
+
+                if (product.CategoryIds != null)
+                {
+                    foreach (var id in product.CategoryIds)
+                    {
+                        var category = await _categoryService.GetCategoryByIdAsync((int)id);
+                        if (category != null)
+                        {
+                            categoryList.Add(category);
+                        }
+                    }
+                }
+
+                product.Categories = categoryList;
+                _allProducts.Add(product);
+                _allProducts = _allProducts
+               .GroupBy(p => p.Id)
+               .Select(g => g.First())
+               .ToList();
             }
+
+            FilterProducts();
         }
         catch (Exception)
         {
@@ -142,6 +164,7 @@ public partial class MainViewModel : ReactiveObject, IRoutableViewModel
     }
     public void FilterProducts()
     {
+        _allProducts = _allProducts.Distinct().ToList();
         Products.Clear();
         IEnumerable<Product> filtered;
         if (string.IsNullOrWhiteSpace(SearchText))

@@ -64,7 +64,7 @@ public partial class CreateProductViewModel : ReactiveObject, IRoutableViewModel
     }
     private async Task LoadCategoryAsync()
     {
-        var categories = await _categoryService.GetAllCategoriesAsync();
+        List<Category> categories = await _categoryService.GetAllCategoriesAsync();
         CategoryList.Clear();
         foreach (var category in categories)
         {
@@ -82,10 +82,25 @@ public partial class CreateProductViewModel : ReactiveObject, IRoutableViewModel
         Price = product.Price.ToString();
         SelectedCategoryList.Clear();
 
-        foreach (Category category in product.Categories)
+        var categoryList = new List<Category>();
+
+        if (product.CategoryIds != null)
         {
-            SelectedCategoryList.Add(category);
+            foreach (var id in product.CategoryIds)
+            {
+                if (id != null)
+                {
+                    var category = await _categoryService.GetCategoryByIdAsync((int)id);
+                    if (category != null)
+                    {
+                        categoryList.Add(category);
+                        SelectedCategoryList.Add(category);
+                    }
+                }
+            }
         }
+
+        product.Categories = categoryList;
     }
 
     public async Task<bool> AddOrEditProductAsync()
@@ -110,12 +125,12 @@ public partial class CreateProductViewModel : ReactiveObject, IRoutableViewModel
 
         try
         {
-            var product = new ProductDto
+            var product = new Product
             {
                 Id = _editingProductId,
                 Name = ProductName,
                 Description = DescriptionName,
-                Categories = SelectedCategoryList.Select(p => p.Id).ToList(),
+                CategoryIds = SelectedCategoryList.Select(p => p.Id.GetValueOrDefault()).ToList(),
                 Price = parsedPrice
             };
 

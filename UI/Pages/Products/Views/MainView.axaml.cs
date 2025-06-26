@@ -10,6 +10,7 @@ using Pos.Models;
 using ReactiveUI;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using AvaloniaDialogs.Views;
 
 namespace Pos.Pages.Products;
 
@@ -33,7 +34,18 @@ public partial class MainView : ReactiveUserControl<MainViewModel>
 
     private async void DeleteButton_Click(object sender, RoutedEventArgs e)
     {
-        await ViewModel?.DeleteProductById(Convert.ToInt32(((Button)sender).Tag));
+        TwofoldDialog dialog = new()
+        {
+            Message = "Delete this Product?",
+            PositiveText = "Delete",
+            NegativeText = "Cancel"
+        };
+        dialog.FindControl<Button>("PositiveButton")!.Classes.Add("Danger");
+        if ((await dialog.ShowAsync()).GetValueOrDefault(false))
+        {
+            await ViewModel?.DeleteProductById(Convert.ToInt32(((Button)sender).Tag));
+        }
+
     }
 
     private void EditButton_Click(object sender, RoutedEventArgs e)

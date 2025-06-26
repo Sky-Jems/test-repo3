@@ -3,8 +3,8 @@ package solutions.skydev.pos.order_service.model.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
-import solutions.skydev.pos.order_service.model.dto.request.LineItemRequestDto;
-import solutions.skydev.pos.order_service.model.dto.response.LineItemResponseDto;
+import solutions.skydev.pos.common.order_service.dto.request.LineItemRequestDto;
+import solutions.skydev.pos.common.order_service.dto.response.LineItemResponseDto;
 import solutions.skydev.pos.order_service.model.entity.LineItem;
 
 import java.util.List;

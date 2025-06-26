@@ -9,6 +9,7 @@ public interface OrderService {
     Order createOrder(Order order);
     List<Order> findAllOrders();
     Order getOrderById(Long id);
+    Order clearLineItems(Order order);
     Order updateOrder(Order order);
     void deleteOrder(Long id);
     List<Order> getOrderReports(OffsetDateTime startDate, OffsetDateTime endDate);

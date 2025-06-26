@@ -2,20 +2,18 @@ package solutions.skydev.pos.order_orchestrator_service.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import solutions.skydev.pos.common.order_service.dto.request.LineItemRequestDto;
+import solutions.skydev.pos.common.order_service.dto.request.OrderRequestDto;
 import solutions.skydev.pos.order_orchestrator_service.model.dto.request.ApplyDiscountRequestDto;
 import solutions.skydev.pos.order_orchestrator_service.model.dto.request.DiscountOrderRequestDto;
-import solutions.skydev.pos.order_orchestrator_service.model.dto.request.LineItemRequestDto;
-import solutions.skydev.pos.order_orchestrator_service.model.dto.request.OrderTransactionRequestDto;
 import solutions.skydev.pos.order_orchestrator_service.model.dto.response.ApplyDiscountResponseDto;
 import solutions.skydev.pos.order_orchestrator_service.model.dto.response.DiscountOrderResponseDto;
-import solutions.skydev.pos.order_orchestrator_service.model.dto.response.OrderResponseDto;
-import solutions.skydev.pos.order_orchestrator_service.model.dto.response.OrderTransactionResponseDto;
+import solutions.skydev.pos.common.order_service.dto.response.OrderResponseDto;
 import solutions.skydev.pos.order_orchestrator_service.model.entity.OrderTransaction;
 import solutions.skydev.pos.order_orchestrator_service.repository.OrderTransactionRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 @Service
 public class OrderTransactionServiceImpl implements OrderTransactionService {
@@ -61,18 +59,19 @@ public class OrderTransactionServiceImpl implements OrderTransactionService {
         return updateAmounts(orderTransaction, orderResponseDto.getTotal(), new BigDecimal(discountAmount));
     }
 
-    public OrderTransaction createOrderTransaction(OrderTransactionRequestDto orderTransactionRequestDto)  {
+    public OrderTransaction createOrderTransaction(OrderRequestDto orderRequestDto)  {
         OrderTransaction orderTransaction = orderTransactionRepository.save(new OrderTransaction());
+        // TODO: Validate if could create order
         OrderResponseDto orderResponseDto;
         try {
-            orderResponseDto = orderService.fetchOrderCreated(orderTransactionRequestDto.getOrder());
+            orderResponseDto = orderService.fetchOrderCreated(orderRequestDto);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
         // Apply discount and update order transaction
-        ApplyDiscountResponseDto applyDiscountResponseDto = applyDiscount(orderResponseDto.getId(), orderResponseDto.getTotal().doubleValue());
-        return updateOrderTransactionAmounts(orderTransaction, orderResponseDto, applyDiscountResponseDto.getDiscountAmount());
+//        ApplyDiscountResponseDto applyDiscountResponseDto = applyDiscount(orderResponseDto.getId(), orderResponseDto.getTotal().doubleValue());
+        return updateOrderTransactionAmounts(orderTransaction, orderResponseDto, "0.0");
     }
 
     public OrderTransaction updateLineItem(LineItemRequestDto requestLineItem)  {
@@ -86,8 +85,8 @@ public class OrderTransactionServiceImpl implements OrderTransactionService {
         OrderTransaction orderTransaction = orderTransactionRepository.findByOrderId(orderResponseDto.getId()).get(0);
 
         // Apply discount and update order transaction
-        ApplyDiscountResponseDto applyDiscountResponseDto = applyDiscount(orderResponseDto.getId(), orderResponseDto.getTotal().doubleValue());
-        return updateOrderTransactionAmounts(orderTransaction, orderResponseDto, applyDiscountResponseDto.getDiscountAmount());
+//        ApplyDiscountResponseDto applyDiscountResponseDto = applyDiscount(orderResponseDto.getId(), orderResponseDto.getTotal().doubleValue());
+        return updateOrderTransactionAmounts(orderTransaction, orderResponseDto, "0.0");
     }
 
     public OrderTransaction addLineItem(LineItemRequestDto requestLineItem)  {
@@ -101,8 +100,8 @@ public class OrderTransactionServiceImpl implements OrderTransactionService {
         OrderTransaction orderTransaction = orderTransactionRepository.findByOrderId(orderResponseDto.getId()).get(0);
 
         // Apply discount and update order transaction
-        ApplyDiscountResponseDto applyDiscountResponseDto = applyDiscount(orderResponseDto.getId(), orderResponseDto.getTotal().doubleValue());
-        return updateOrderTransactionAmounts(orderTransaction, orderResponseDto, applyDiscountResponseDto.getDiscountAmount());
+//        ApplyDiscountResponseDto applyDiscountResponseDto = applyDiscount(orderResponseDto.getId(), orderResponseDto.getTotal().doubleValue());
+        return updateOrderTransactionAmounts(orderTransaction, orderResponseDto, "0.0");
     }
 
     public OrderTransaction removeLineItem(LineItemRequestDto requestLineItem)  {
@@ -116,8 +115,22 @@ public class OrderTransactionServiceImpl implements OrderTransactionService {
         OrderTransaction orderTransaction = orderTransactionRepository.findByOrderId(orderResponseDto.getId()).get(0);
 
         // Apply discount and update order transaction
-        ApplyDiscountResponseDto applyDiscountResponseDto = applyDiscount(orderResponseDto.getId(), orderResponseDto.getTotal().doubleValue());
-        return updateOrderTransactionAmounts(orderTransaction, orderResponseDto, applyDiscountResponseDto.getDiscountAmount());
+//        ApplyDiscountResponseDto applyDiscountResponseDto = applyDiscount(orderResponseDto.getId(), orderResponseDto.getTotal().doubleValue());
+        return updateOrderTransactionAmounts(orderTransaction, orderResponseDto, "0.0");
+    }
+    
+    public OrderTransaction clearLineItems(OrderRequestDto orderRequestDto) {
+        OrderResponseDto orderResponseDto;
+        try {
+            orderResponseDto = orderService.clearLineItems(orderRequestDto);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        OrderTransaction orderTransaction = orderTransactionRepository.findByOrderId(orderResponseDto.getId()).get(0);
+
+        // Apply discount and update order transaction
+        return updateOrderTransactionAmounts(orderTransaction, orderResponseDto, "0.0");
     }
     
     public OrderTransaction tagDiscount(DiscountOrderRequestDto discountOrderRequestDto) {

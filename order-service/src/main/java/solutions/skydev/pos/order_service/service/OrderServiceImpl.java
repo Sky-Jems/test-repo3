@@ -57,4 +57,13 @@ public class OrderServiceImpl implements OrderService{
         }
         return orderRepository.findByCreatedAtBetween(startDate, endDate);
     }
+    
+    @Transactional
+    public Order clearLineItems(Order order) {
+        Order qOrder = orderRepository.findById(order.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Order not found with id: " + order.getId()));
+        qOrder.getLineItems().clear();
+        qOrder.calculateTotal();
+        return orderRepository.save(qOrder);
+    }
 }

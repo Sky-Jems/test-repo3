@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import solutions.skydev.pos.order_orchestrator_service.model.dto.response.OrderTransactionResponseDto;
+import solutions.skydev.pos.common.order_orchestrator_service.dto.response.OrderTransactionResponseDto;
 import solutions.skydev.pos.order_orchestrator_service.model.entity.OrderTransaction;
 import solutions.skydev.pos.order_orchestrator_service.model.mapper.OrderTransactionMapper;
 import solutions.skydev.pos.order_orchestrator_service.service.OrderTransactionService;

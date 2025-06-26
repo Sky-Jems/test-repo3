@@ -8,10 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Component;
-import solutions.skydev.pos.order_orchestrator_service.model.dto.request.DiscountOrderRequestDto;
-import solutions.skydev.pos.order_orchestrator_service.model.dto.request.LineItemRequestDto;
-import solutions.skydev.pos.order_orchestrator_service.model.dto.request.OrderTransactionRequestDto;
-import solutions.skydev.pos.order_orchestrator_service.model.dto.response.OrderTransactionResponseDto;
+import solutions.skydev.pos.common.order_service.dto.request.OrderRequestDto;
+import solutions.skydev.pos.common.order_service.dto.request.LineItemRequestDto;
+import solutions.skydev.pos.common.order_orchestrator_service.dto.response.OrderTransactionResponseDto;
 import solutions.skydev.pos.order_orchestrator_service.model.entity.OrderTransaction;
 import solutions.skydev.pos.order_orchestrator_service.model.mapper.OrderTransactionMapper;
 import solutions.skydev.pos.order_orchestrator_service.service.OrderTransactionService;
@@ -27,27 +26,23 @@ public class OrderTransactionConsumer {
         this.orderTransactionMapper = orderTransactionMapper;
     }
 
-    @KafkaListener(topics = "create-order-transaction-command",
-            properties = "spring.json.value.default.type=solutions.skydev.pos.order_orchestrator_service.model.dto.request.OrderTransactionRequestDto")
+    @KafkaListener(topics = "create-order-transaction-command")
     @AsyncListener(operation = @AsyncOperation(
             channelName = "create-order-transaction-command",
-            description = "Create order transaction command",
-            payloadType = OrderTransactionRequestDto.class
+            description = "Create order transaction command"
     ))
     @KafkaAsyncOperationBinding
     @SendTo("order-transaction.created")
-    public OrderTransactionResponseDto createOrderCommand(ConsumerRecord<String, OrderTransactionRequestDto> record) {
-        OrderTransactionRequestDto orderTransactionRequestDto = record.value();
-        OrderTransaction orderTransaction = orderTransactionService.createOrderTransaction(orderTransactionRequestDto);
+    public OrderTransactionResponseDto createOrderCommand(ConsumerRecord<String, OrderRequestDto> record) {
+        OrderRequestDto orderRequestDto = record.value();
+        OrderTransaction orderTransaction = orderTransactionService.createOrderTransaction(orderRequestDto);
         return orderTransactionMapper.toResponseDto(orderTransaction);
     }
 
-    @KafkaListener(topics = "update-order-line-item-command",
-            properties = "spring.json.value.default.type=solutions.skydev.pos.order_orchestrator_service.model.dto.request.LineItemRequestDto")
+    @KafkaListener(topics = "update-order-line-item-command")
     @AsyncListener(operation = @AsyncOperation(
             channelName = "update-order-line-item-command",
-            description = "Update order line item command",
-            payloadType = OrderTransactionRequestDto.class
+            description = "Update order line item command"
     ))
     @KafkaAsyncOperationBinding
     @SendTo("order-transaction.updated")
@@ -56,12 +51,10 @@ public class OrderTransactionConsumer {
         return orderTransactionMapper.toResponseDto(orderTransaction);
     }
 
-    @KafkaListener(topics = "add-order-line-item-command",
-            properties = "spring.json.value.default.type=solutions.skydev.pos.order_orchestrator_service.model.dto.request.LineItemRequestDto")
+    @KafkaListener(topics = "add-order-line-item-command")
     @AsyncListener(operation = @AsyncOperation(
             channelName = "update-order-line-item-command",
-            description = "Update order line item command",
-            payloadType = OrderTransactionRequestDto.class
+            description = "Update order line item command"
     ))
     @KafkaAsyncOperationBinding
     @SendTo("order-transaction.updated")
@@ -70,19 +63,25 @@ public class OrderTransactionConsumer {
         return orderTransactionMapper.toResponseDto(orderTransaction);
     }
 
-    @KafkaListener(topics = "remove-order-line-item-command",
-            properties = "spring.json.value.default.type=solutions.skydev.pos.order_orchestrator_service.model.dto.request.LineItemRequestDto")
+    @KafkaListener(topics = "remove-order-line-item-command")
     @SendTo("order-transaction.updated")
     public OrderTransactionResponseDto removeLineItemCommand(ConsumerRecord<String, LineItemRequestDto> record) {
         OrderTransaction orderTransaction = orderTransactionService.removeLineItem(record.value());
         return orderTransactionMapper.toResponseDto(orderTransaction);
     }
     
-    @KafkaListener(topics = "tag-discount-command",
-            properties = "spring.json.value.default.type=solutions.skydev.pos.order_orchestrator_service.model.dto.request.DiscountOrderRequestDto")
+    @KafkaListener(topics = "clear-order-line-items-command")
     @SendTo("order-transaction.updated")
-    public OrderTransactionResponseDto tagDiscountCommand(ConsumerRecord<String, DiscountOrderRequestDto> record) {
-        OrderTransaction orderTransaction = orderTransactionService.tagDiscount(record.value());
+    public OrderTransactionResponseDto clearLineItemsCommand(ConsumerRecord<String, OrderRequestDto> record) {
+        OrderTransaction orderTransaction = orderTransactionService.clearLineItems(record.value());
         return orderTransactionMapper.toResponseDto(orderTransaction);
     }
+    
+
+//    @KafkaListener(topics = "tag-discount-command")
+//    @SendTo("order-transaction.updated")
+//    public OrderTransactionResponseDto tagDiscountCommand(ConsumerRecord<String, DiscountOrderRequestDto> record) {
+//        OrderTransaction orderTransaction = orderTransactionService.tagDiscount(record.value());
+//        return orderTransactionMapper.toResponseDto(orderTransaction);
+//    }
 }

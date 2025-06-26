@@ -1,16 +1,24 @@
-package solutions.skydev.pos.order_orchestrator_service.model.dto.response;
+package solutions.skydev.pos.common.order_orchestrator_service.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Value;
+import lombok.*;
+import solutions.skydev.pos.common.order_service.dto.response.OrderResponseDto;
 
 import java.math.BigDecimal;
 
-@Value
+@Builder
+@Data
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@AllArgsConstructor
+@NoArgsConstructor
 public class OrderTransactionResponseDto {
     Long id;
     
     @JsonProperty("order_id")
-    String orderId;
+    Long orderId;
     
     @JsonProperty("order_status")
     String orderStatus;
@@ -29,4 +37,7 @@ public class OrderTransactionResponseDto {
     
     @JsonProperty("net_amount")
     BigDecimal netAmount;
+    
+    
+    OrderResponseDto order;
 }

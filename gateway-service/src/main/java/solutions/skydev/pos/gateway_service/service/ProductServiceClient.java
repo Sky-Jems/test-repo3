@@ -1,14 +1,10 @@
 package solutions.skydev.pos.gateway_service.service;
 
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import solutions.skydev.pos.common.product_service.dto.response.CategoryResponseDto;
 import solutions.skydev.pos.common.product_service.dto.response.ProductResponseDto;
-import solutions.skydev.pos.gateway_service.model.dto.response.*;
-
-import java.util.List;
 
 @Service
 public class ProductServiceClient {
@@ -24,6 +20,13 @@ public class ProductServiceClient {
                 .uri("/products/{id}", id)
                 .retrieve()
                 .bodyToMono(ProductResponseDto.class);
+    }
+    
+    public Mono<CategoryResponseDto> getCategoryById(Long id) {
+        return webClient.get()
+                .uri("/categories/{id}", id)
+                .retrieve()
+                .bodyToMono(CategoryResponseDto.class);
     }
 
 }

@@ -1,12 +1,10 @@
 package solutions.skydev.pos.order_service.model.mapper;
 
 import org.mapstruct.*;
-import solutions.skydev.pos.order_service.model.dto.response.LineItemResponseDto;
-import solutions.skydev.pos.order_service.model.dto.response.OrderResponseDto;
-import solutions.skydev.pos.order_service.model.dto.response.OrderReportResponseDto;
-import solutions.skydev.pos.order_service.model.dto.response.OrderResponseDto;
+import solutions.skydev.pos.common.order_service.dto.request.OrderRequestDto;
+import solutions.skydev.pos.common.order_service.dto.response.LineItemResponseDto;
+import solutions.skydev.pos.common.order_service.dto.response.OrderResponseDto;
 import solutions.skydev.pos.order_service.model.entity.Order;
-import solutions.skydev.pos.order_service.model.dto.request.OrderRequestDto;
 
 import java.util.List;
 

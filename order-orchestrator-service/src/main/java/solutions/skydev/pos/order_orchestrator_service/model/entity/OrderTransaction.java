@@ -21,7 +21,7 @@ public class OrderTransaction {
     Long orderId;
     
     @Enumerated(EnumType.STRING)
-    OrderStatus orderStatus = OrderStatus.CREATE_REQUESTED;
+    OrderStatus orderStatus = OrderStatus.PENDING;
 
     @Enumerated(EnumType.STRING)
     DiscountStatus discountStatus = DiscountStatus.PENDING;

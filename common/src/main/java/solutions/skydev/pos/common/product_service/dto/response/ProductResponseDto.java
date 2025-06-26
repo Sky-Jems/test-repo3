@@ -21,4 +21,6 @@ public class ProductResponseDto implements Serializable {
     BigDecimal price;
     @JsonProperty("category_ids")
     List<Long> categoryIds;
+    
+    List<CategoryResponseDto> categories;
 }

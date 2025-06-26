@@ -7,9 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Component;
-import solutions.skydev.pos.order_service.model.dto.request.LineItemRequestDto;
-import solutions.skydev.pos.order_service.model.dto.response.LineItemResponseDto;
-import solutions.skydev.pos.order_service.model.dto.response.OrderResponseDto;
+import solutions.skydev.pos.common.order_service.dto.request.LineItemRequestDto;
+import solutions.skydev.pos.common.order_service.dto.response.OrderResponseDto;
 import solutions.skydev.pos.order_service.model.entity.LineItem;
 import solutions.skydev.pos.order_service.model.entity.Order;
 import solutions.skydev.pos.order_service.model.mapper.LineItemMapper;
@@ -29,13 +28,8 @@ public class LineItemConsumer {
         this.orderMapper =  orderMapper;
     }
 
-    @KafkaListener(topics = "add-line-item-command",
-            properties = "spring.json.value.default.type=solutions.skydev.pos.order_service.model.dto.request.LineItemRequestDto")
-    @AsyncListener(operation = @AsyncOperation(
-            channelName = "add-line-item-command",
-            description = "Add line item command",
-            payloadType = LineItemRequestDto.class
-    ))
+    @KafkaListener(topics = "add-line-item-command")
+    @AsyncListener(operation = @AsyncOperation( channelName = "add-line-item-command", description = "Add line item command" ))
     @KafkaAsyncOperationBinding
     @SendTo("order.updated")
     public OrderResponseDto addLineItemCommand(LineItemRequestDto lineItemRequestDto) {
@@ -44,8 +38,7 @@ public class LineItemConsumer {
         return this.orderMapper.toResponseDto(order);
     }
 
-    @KafkaListener(topics = "update-line-item-command",
-            properties = "spring.json.value.default.type=solutions.skydev.pos.order_service.model.dto.request.LineItemRequestDto")
+    @KafkaListener(topics = "update-line-item-command")
     @AsyncListener(operation = @AsyncOperation(
             channelName = "add-line-item-command",
             description = "Add line item command",
@@ -59,8 +52,7 @@ public class LineItemConsumer {
         return this.orderMapper.toResponseDto(updatedOrder);
     }
 
-    @KafkaListener(topics = "remove-line-item-command",
-            properties = "spring.json.value.default.type=solutions.skydev.pos.order_service.model.dto.request.LineItemRequestDto")
+    @KafkaListener(topics = "remove-line-item-command")
     @SendTo("order.updated")
     @KafkaAsyncOperationBinding
     public OrderResponseDto removeLineItemCommand(LineItemRequestDto lineItemRequestDto) {

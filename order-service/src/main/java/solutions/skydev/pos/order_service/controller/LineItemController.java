@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import solutions.skydev.pos.order_service.model.dto.response.LineItemResponseDto;
+import solutions.skydev.pos.common.order_service.dto.response.LineItemResponseDto;
 import solutions.skydev.pos.order_service.model.mapper.LineItemMapper;
 import solutions.skydev.pos.order_service.service.LineItemService;
 

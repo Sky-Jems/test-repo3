@@ -11,7 +11,7 @@ import solutions.skydev.pos.order_orchestrator_service.model.dto.request.ApplyDi
 import solutions.skydev.pos.order_orchestrator_service.model.dto.request.DiscountOrderRequestDto;
 import solutions.skydev.pos.order_orchestrator_service.model.dto.response.ApplyDiscountResponseDto;
 import solutions.skydev.pos.order_orchestrator_service.model.dto.response.DiscountOrderResponseDto;
-import solutions.skydev.pos.order_orchestrator_service.model.dto.response.OrderResponseDto;
+import solutions.skydev.pos.common.order_service.dto.response.OrderResponseDto;
 
 import java.time.Duration;
 import java.util.concurrent.ExecutionException;

@@ -1,20 +1,20 @@
-package solutions.skydev.pos.order_orchestrator_service.model.dto.request;
+package solutions.skydev.pos.common.order_service.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.extern.jackson.Jacksonized;
 
 import java.io.Serializable;
 
-/**
- * DTO for line item requests
- */
 @Builder
+@Jacksonized
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
 public class LineItemRequestDto implements Serializable {
     Long id;
@@ -24,5 +24,4 @@ public class LineItemRequestDto implements Serializable {
     Double price;
     @JsonProperty("order_id")
     Long orderId;
-
 }

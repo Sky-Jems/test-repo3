@@ -3,7 +3,7 @@ package solutions.skydev.pos.gateway_service.service;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import solutions.skydev.pos.gateway_service.model.dto.response.OrderTransactionResponseDto;
+import solutions.skydev.pos.common.order_orchestrator_service.dto.response.OrderTransactionResponseDto;
 
 @Service
 public class OrderOrchestratorServiceClient {

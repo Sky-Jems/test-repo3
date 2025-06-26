@@ -1,27 +1,29 @@
-package solutions.skydev.pos.gateway_service.model.dto.response;
+package solutions.skydev.pos.common.order_service.dto.response;
 
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
+import lombok.extern.jackson.Jacksonized;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Getter
-@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class OrderResponseDto implements Serializable {
     Long id;
     String customer;
+    BigDecimal total;
+    
     @JsonProperty("table_number")
     String tableNumber;
-    BigDecimal total;
+    
     @JsonProperty("line_items")
     List<LineItemResponseDto> lineItems;
 }

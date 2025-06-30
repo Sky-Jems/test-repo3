@@ -1,4 +1,4 @@
-package solutions.skydev.pos.discount_service.model.dto.request;
+package solutions.skydev.pos.common.discount_service.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -6,20 +6,26 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 
-import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Builder
 @Jacksonized
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ApplyDiscountRequestDto implements Serializable {
-    @JsonProperty("discount_id")
-    Long discountId;
+public class DiscountOrderRequestDto {
+
     @JsonProperty("order_id")
-    Long orderId;
+    private Long orderId;
+
+    @JsonProperty("discount_id")
+    private Long discountId;
+
     @JsonProperty("total_amount")
-    Double totalAmount;
+    BigDecimal totalAmount;
+
     @JsonProperty("line_items")
-    List<LineItemDto> lineItems;
+    private List<DiscountOrderLineItemRequestDto> lineItems;
+
+
 }

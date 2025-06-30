@@ -1,4 +1,4 @@
-package solutions.skydev.pos.discount_service.model.dto.response;
+package solutions.skydev.pos.common.discount_service.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

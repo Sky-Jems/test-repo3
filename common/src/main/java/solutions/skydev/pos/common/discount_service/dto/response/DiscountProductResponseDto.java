@@ -1,4 +1,4 @@
-package solutions.skydev.pos.discount_service.model.dto.request;
+package solutions.skydev.pos.common.discount_service.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -10,10 +10,11 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class DiscountLineItemRequestDto {
-    Long id;
-    @JsonProperty("order_id")
-    Long orderId;
+public class DiscountProductResponseDto {
+    private Long id;
+    @JsonProperty("product_id")
+    private Long productId;
     @JsonProperty("discount_id")
-    Long discountId;
+    private Long discountId;
+    private String type;
 }

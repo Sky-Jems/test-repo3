@@ -7,13 +7,9 @@ import io.github.springwolf.core.asyncapi.annotations.AsyncListener;
 import io.github.springwolf.core.asyncapi.annotations.AsyncOperation;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Component;
-import solutions.skydev.pos.discount_service.model.dto.request.ApplyDiscountRequestDto;
-import solutions.skydev.pos.discount_service.model.dto.request.DiscountRequestDto;
-import solutions.skydev.pos.discount_service.model.dto.response.ApplyDiscountResponseDto;
-import solutions.skydev.pos.discount_service.model.dto.response.DiscountResponseDto;
+import solutions.skydev.pos.common.discount_service.dto.request.DiscountRequestDto;
+import solutions.skydev.pos.common.discount_service.dto.response.DiscountResponseDto;
 import solutions.skydev.pos.discount_service.model.entity.Discount;
-import solutions.skydev.pos.discount_service.model.entity.DiscountLineItem;
-import solutions.skydev.pos.discount_service.model.entity.Order;
 import solutions.skydev.pos.discount_service.model.mapper.DiscountMapper;
 import solutions.skydev.pos.discount_service.service.DiscountService;
 
@@ -28,23 +24,8 @@ public class DiscountConsumer {
         this.discountMapper = discountMapper;
     }
 
-    @KafkaListener(topics = "apply-discount-command",
-    properties = "spring.json.value.default.type=solutions.skydev.pos.discount_service.model.dto.request.ApplyDiscountRequestDto")
-    @AsyncListener(operation = @AsyncOperation(
-            channelName = "apply-discount-command",
-            description = "Apply discount command"
-    ))
-    @KafkaAsyncOperationBinding
-    @SendTo("discount.applied")
-    public ApplyDiscountResponseDto applyDiscountCommand(ApplyDiscountRequestDto applyDiscountRequestDto) {
-        Discount discount = this.discountMapper.toEntity(applyDiscountRequestDto);
-        Order order = this.discountMapper.toOrderEntity(applyDiscountRequestDto);
-        DiscountLineItem discountLineItem = discountService.applyDiscount(order, discount);
-        return discountMapper.toDto(discountLineItem);
-    }
-
     @KafkaListener(topics = "create-discount-command",
-    properties = "spring.json.value.default.type=solutions.skydev.pos.discount_service.model.dto.request.DiscountRequestDto")
+    properties = "spring.json.value.default.type=solutions.skydev.pos.common.discount_service.dto.request.DiscountRequestDto")
     @AsyncListener(operation = @AsyncOperation(
             channelName = "create-discount-command",
             description = "Create discount command"
@@ -59,7 +40,7 @@ public class DiscountConsumer {
     }
 
     @KafkaListener(topics = "update-discount-command",
-    properties = "spring.json.value.default.type=solutions.skydev.pos.discount_service.model.dto.request.DiscountRequestDto")
+    properties = "spring.json.value.default.type=solutions.skydev.pos.common.discount_service.dto.request.DiscountRequestDto")
     @AsyncListener(operation = @AsyncOperation(
             channelName = "update-discount-command",
             description = "Update discount command"
@@ -74,7 +55,7 @@ public class DiscountConsumer {
     }
 
     @KafkaListener(topics = "delete-discount-command",
-    properties = "spring.json.value.default.type=solutions.skydev.pos.discount_service.model.dto.request.DiscountRequestDto")
+    properties = "spring.json.value.default.type=solutions.skydev.pos.common.discount_service.dto.request.DiscountRequestDto")
     @AsyncListener(operation = @AsyncOperation(
             channelName = "delete-discount-command",
             description = "Delete discount command"

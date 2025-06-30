@@ -1,28 +1,31 @@
 package solutions.skydev.pos.discount_service.service.strategy;
 
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
+import solutions.skydev.pos.discount_service.model.enums.DiscountScope;
 import solutions.skydev.pos.discount_service.model.enums.DiscountType;
+//import solutions.skydev.pos.discount_service.service.strategy.scope.LineItemDiscountStrategy;
+import solutions.skydev.pos.discount_service.service.strategy.scope.LineItemDiscountStrategy;
+import solutions.skydev.pos.discount_service.service.strategy.scope.OrderLevelDiscountStrategy;
+import solutions.skydev.pos.discount_service.service.strategy.scope.DiscountScopeStrategy;
+import solutions.skydev.pos.discount_service.service.strategy.value.FixedValueDiscountStrategy;
+import solutions.skydev.pos.discount_service.service.strategy.value.PercentageDiscountStrategy;
+import solutions.skydev.pos.discount_service.service.strategy.value.DiscountValueStrategy;
 
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.math.BigDecimal;
 
 @Component
 public class DiscountStrategyResolver {
 
-    private final Map<DiscountType, DiscountStrategy> strategyMap;
+    public DiscountScopeStrategy resolve(DiscountScope scope, DiscountType type, BigDecimal value) {
+        DiscountValueStrategy valueStrategy = switch (type) {
+//            case FIXED -> new FixedValueDiscountStrategy(value);
+            case PERCENTAGE -> new PercentageDiscountStrategy(value);
+            case FIXED -> null;
+        };
 
-    public DiscountStrategyResolver(List<DiscountStrategy> strategies) {
-        this.strategyMap = strategies.stream()
-                .collect(Collectors.toMap(DiscountStrategy::getType, s -> s));
-    }
-
-    public DiscountStrategy resolve(@NotNull DiscountType type) {
-        DiscountStrategy strategy = strategyMap.get(type);
-        if (strategy == null) {
-            throw new IllegalArgumentException("Unsupported discount type: " + type);
-        }
-        return strategy;
+        return switch (scope) {
+            case ORDER -> new OrderLevelDiscountStrategy(valueStrategy);
+            case LINE_ITEM -> new LineItemDiscountStrategy(valueStrategy);
+        };
     }
 }

@@ -8,7 +8,6 @@ import solutions.skydev.pos.discount_service.model.entity.Order;
 import java.util.List;
 
 public interface DiscountService {
-    DiscountLineItem applyDiscount(Order order, Discount discount);
     Discount createDiscount(Discount discount);
     Discount findById(Long id);
     Discount updateDiscount(Discount discount);

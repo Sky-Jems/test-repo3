@@ -2,8 +2,8 @@ package solutions.skydev.pos.discount_service.model.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import solutions.skydev.pos.discount_service.model.dto.request.DiscountProductRequestDto;
-import solutions.skydev.pos.discount_service.model.dto.response.DiscountProductResponseDto;
+import solutions.skydev.pos.common.discount_service.dto.request.DiscountProductRequestDto;
+import solutions.skydev.pos.common.discount_service.dto.response.DiscountProductResponseDto;
 import solutions.skydev.pos.discount_service.model.entity.Discount;
 import solutions.skydev.pos.discount_service.model.entity.DiscountProduct;
 

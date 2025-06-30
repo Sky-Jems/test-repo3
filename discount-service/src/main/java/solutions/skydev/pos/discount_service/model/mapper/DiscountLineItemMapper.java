@@ -1,7 +1,7 @@
 package solutions.skydev.pos.discount_service.model.mapper;
 
 import org.mapstruct.Mapper;
-import solutions.skydev.pos.discount_service.model.dto.response.DiscountLineItemResponseDto;
+import solutions.skydev.pos.common.discount_service.dto.response.DiscountLineItemResponseDto;
 import solutions.skydev.pos.discount_service.model.entity.DiscountLineItem;
 
 @Mapper(componentModel = "spring")

@@ -8,6 +8,7 @@ import lombok.Setter;
 import solutions.skydev.pos.discount_service.model.enums.DiscountScope;
 import solutions.skydev.pos.discount_service.model.enums.DiscountType;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,9 +27,7 @@ public class Discount {
     @Enumerated(EnumType.STRING)
     private DiscountType type; // e.g., "percentage", "fixed_value"
     private String discountType; // e.g "employee", "coupon, "promotion" (Todo: currently unused)
-    private Double value; // e.g., 10.0 for 10% or 10.0 for 10 off
-    @Enumerated(EnumType.STRING)
-    private DiscountScope scope; // e.g., "items", "order"
+    private BigDecimal value; // e.g., 10.0 for 10% or 10.0 for 10 off
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
     private Double cap; // for 5k capping, this is the maximum discount amount that can be applied to the order
@@ -39,10 +38,18 @@ public class Discount {
     @OneToMany(mappedBy = "discount", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<DiscountProduct> products = new ArrayList<>();
 
-    @OneToMany(mappedBy = "discount", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<DiscountOrder> discountOrders = new ArrayList<>();
+//    @OneToMany(mappedBy = "discount", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+//    private List<DiscountOrder> discountOrders = new ArrayList<>();
 
     @OneToMany(mappedBy = "discount", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<DiscountLineItem> discountLineItems = new ArrayList<>();
 
+    @OneToMany(mappedBy = "discount", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<LineItemLevelDiscountOrder> lineItemLevelDiscountOrders = new ArrayList<>();
+
+    @OneToMany(mappedBy = "discount", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<OrderLevelDiscountOrder> orderLevelDiscountOrders = new ArrayList<>();
+
+//    @OneToMany(mappedBy = "discount", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+//    private List<DiscountOrderLineItem> discountOrderLineItems = new ArrayList<>();
 }

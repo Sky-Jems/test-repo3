@@ -2,7 +2,6 @@ package solutions.skydev.pos.discount_service.service;
 
 import org.springframework.stereotype.Service;
 import solutions.skydev.pos.discount_service.model.entity.DiscountLineItem;
-import solutions.skydev.pos.discount_service.model.entity.DiscountOrder;
 import solutions.skydev.pos.discount_service.repository.DiscountLineItemRepository;
 
 import java.util.List;

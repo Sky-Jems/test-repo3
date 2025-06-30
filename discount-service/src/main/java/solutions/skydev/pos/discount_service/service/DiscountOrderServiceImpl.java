@@ -1,40 +1,141 @@
 package solutions.skydev.pos.discount_service.service;
 
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-import solutions.skydev.pos.discount_service.model.entity.DiscountOrder;
-import solutions.skydev.pos.discount_service.producer.DiscountOrderProducer;
+import solutions.skydev.pos.discount_service.model.entity.*;
 import solutions.skydev.pos.discount_service.repository.DiscountOrderRepository;
+import solutions.skydev.pos.discount_service.repository.DiscountRepository;
+import solutions.skydev.pos.discount_service.repository.LineItemLevelDiscountOrderRepository;
+import solutions.skydev.pos.discount_service.service.strategy.DiscountStrategyResolver;
+import solutions.skydev.pos.discount_service.service.strategy.scope.DiscountScopeStrategy;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class DiscountOrderServiceImpl implements DiscountOrderService {
 
     private final DiscountOrderRepository discountOrderRepository;
+    private final DiscountStrategyResolver strategyResolver;
+    private final DiscountRepository discountRepository;
+    private final LineItemLevelDiscountOrderRepository lineItemLevelDiscountOrderRepository;
 
-    public DiscountOrderServiceImpl(DiscountOrderRepository discountOrderRepository) {
+    public DiscountOrderServiceImpl(DiscountOrderRepository discountOrderRepository,
+                                    DiscountStrategyResolver strategyResolver,
+                                    DiscountRepository discountRepository,
+                                    LineItemLevelDiscountOrderRepository lineItemLevelDiscountOrderRepository) {
         this.discountOrderRepository = discountOrderRepository;
+        this.strategyResolver = strategyResolver;
+        this.discountRepository = discountRepository;
+        this.lineItemLevelDiscountOrderRepository = lineItemLevelDiscountOrderRepository;
     }
 
     @Override
-    public DiscountOrder create(DiscountOrder discountOrder) {
-        if (discountOrder == null) {
-            throw new IllegalArgumentException("Discount order cannot be null");
+    public List<DiscountOrder> findAllByOrderId(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Order ID cannot be null");
+        }
+        return discountOrderRepository.findAllByOrderId(id);
+    }
+
+    @Override
+    public List<LineItemLevelDiscountOrder> deleteByLineItems(Long orderId, List<LineItemLevelDiscountOrder> lineItemIds) {
+        if (orderId == null || lineItemIds == null || lineItemIds.isEmpty()) {
+            throw new IllegalArgumentException("Order ID and line item IDs cannot be null or empty.");
         }
 
-        if (discountOrder.getOrderId() == null || discountOrder.getDiscount() == null) {
-            throw new IllegalArgumentException("Discount order must have an associated order and discount");
+        List<LineItemLevelDiscountOrder> deletedDiscounts = new ArrayList<>();
+        for (LineItemLevelDiscountOrder lineItem : lineItemIds) {
+            List<LineItemLevelDiscountOrder> discounts =
+                    lineItemLevelDiscountOrderRepository.findAllByOrderIdAndLineItemId(orderId, lineItem.getLineItemId());
+            deletedDiscounts.addAll(discounts);
+            lineItemLevelDiscountOrderRepository.deleteAll(discounts);
+        }
+        return deletedDiscounts;
+    }
+
+    @Override
+    public DiscountOrder create(OrderLevelDiscountOrder discountOrder, Order order) {
+        if (discountOrder == null || discountOrder.getDiscount() == null) {
+            throw new IllegalArgumentException("Order-level discount or discount reference cannot be null.");
         }
 
-        // only one discount can be applied to an order at a time for now
-        DiscountOrder existingDiscountOrder = discountOrderRepository.findByOrderId(discountOrder.getOrderId());
-        if (existingDiscountOrder != null) {
-            existingDiscountOrder.setDiscount(discountOrder.getDiscount());
-            discountOrder = discountOrderRepository.save(existingDiscountOrder);
-            return discountOrder;
+        Discount discount = discountRepository.findById(discountOrder.getDiscount().getId())
+                .orElseThrow(() -> new IllegalArgumentException("Discount not found with ID: " + discountOrder.getDiscount().getId()));
+
+        DiscountOrder existing = discountOrderRepository.findFirstByOrderId(order.getId());
+        OrderLevelDiscountOrder toSave;
+
+        if (existing != null) {
+            if (!(existing instanceof OrderLevelDiscountOrder)) {
+                throw new IllegalArgumentException("Existing discount for orderId " + order.getId() + " is not of scope ORDER.");
+            }
+            toSave = (OrderLevelDiscountOrder) existing;
         } else {
-            return discountOrderRepository.save(discountOrder);
+            toSave = discountOrder;
         }
 
+        toSave.setOrderId(order.getId());
+        toSave.setDiscount(discount);
 
+        DiscountScopeStrategy strategy = strategyResolver.resolve(
+                discountOrder.getScope(),
+                discount.getType(),
+                discount.getValue()
+        );
+
+        BigDecimal discountAmount = strategy.applyDiscount(order, discountOrder);
+
+        toSave.setDiscountAmount(discountAmount);
+
+        return discountOrderRepository.save(toSave);
+    }
+
+    @Override
+    @Transactional
+    public List<LineItemLevelDiscountOrder> create(List<LineItemLevelDiscountOrder> discountOrders, Long orderId) {
+        if (discountOrders == null || discountOrders.isEmpty()) {
+            throw new IllegalArgumentException("No line-item discounts provided.");
+        }
+
+        DiscountOrder existing = discountOrderRepository.findFirstByOrderId(orderId);
+        if (existing != null && !(existing instanceof LineItemLevelDiscountOrder)) {
+            throw new IllegalArgumentException("Cannot create LINE_ITEM-level discount: ORDER-level discount already exists for orderId " + orderId);
+        }
+        List<LineItemLevelDiscountOrder> results = new ArrayList<>();
+        for (LineItemLevelDiscountOrder item : discountOrders) {
+            if (item.getDiscount() == null) {
+                throw new IllegalArgumentException("Each line-item discount must have a discount reference.");
+            }
+
+            Discount discount = discountRepository.findById(item.getDiscount().getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Discount not found with ID: " + item.getDiscount().getId()));
+
+            LineItemLevelDiscountOrder toSave = lineItemLevelDiscountOrderRepository
+                    .findByOrderIdAndLineItemId(orderId, item.getLineItemId())
+                    .orElseGet(LineItemLevelDiscountOrder::new);
+
+            toSave.setOrderId(orderId);
+            toSave.setLineItemId(item.getLineItemId());
+            toSave.setDiscount(discount);
+            toSave.setPrice(item.getPrice());
+            toSave.setQuantity(item.getQuantity());
+            toSave.setSubTotal(item.getSubTotal());
+
+            DiscountScopeStrategy strategy = strategyResolver.resolve(
+                    item.getScope(),
+                    discount.getType(),
+                    discount.getValue()
+            );
+
+            BigDecimal discountAmount = strategy.applyDiscount(null, toSave);
+            toSave.setDiscountAmount(discountAmount);
+
+            results.add(toSave);
+        }
+
+        return discountOrderRepository.saveAll(results);
     }
 
     @Override
@@ -45,19 +146,9 @@ public class DiscountOrderServiceImpl implements DiscountOrderService {
         return discountOrderRepository.findByOrderId(id);
     }
 
-    @Override
-    public DiscountOrder deleteByOrderId(Long id) {
-        if (id == null) {
-            throw new IllegalArgumentException("Order ID cannot be null");
-        }
-
-        DiscountOrder discountOrder = discountOrderRepository.findByOrderId(id);
-        if (discountOrder == null) {
-            throw new IllegalArgumentException("No discount order found for the given order ID");
-        }
-
-        discountOrderRepository.delete(discountOrder);
-        return discountOrder;
-
+    public List<DiscountOrder> deleteByOrderId(Long orderId) {
+        List<DiscountOrder> discounts = discountOrderRepository.findAllByOrderId(orderId);
+        discountOrderRepository.deleteAll(discounts);
+        return discounts;
     }
 }

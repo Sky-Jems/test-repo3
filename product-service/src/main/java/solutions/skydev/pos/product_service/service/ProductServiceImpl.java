@@ -2,6 +2,7 @@ package solutions.skydev.pos.product_service.service;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import solutions.skydev.pos.product_service.model.entity.Product;
@@ -42,6 +43,6 @@ public class ProductServiceImpl implements ProductService {
     }
 
     public List<Product> findAll() {
-        return productRepository.findAll();
+        return productRepository.findAll(Sort.by("name").ascending());
     }
 }

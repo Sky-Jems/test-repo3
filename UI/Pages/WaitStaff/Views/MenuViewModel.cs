@@ -123,7 +123,7 @@ public class MenuViewModel : ReactiveObject, IRoutableViewModel
             ProductDescription = product.Description,
             Category = Category,
             Quantity = 1,
-            Price = 500
+            Price = product.Price
         };
         
         var addedItem = _cartService.AddItem(item, incrementIfExists: false);
@@ -135,26 +135,27 @@ public class MenuViewModel : ReactiveObject, IRoutableViewModel
         {
             var newOrder = new Order
             {
-                Customer = _cartService.CustomerName,
+                Customer = _cartService.Customer,
                 TableNumber = 1,
                 LineItems = []
             };
 
             var createdOrder = await _orderService.AddOrder(newOrder);
             orderId = createdOrder.OrderId;
+            _cartService.OrderId = createdOrder.OrderId;
         }
         else
         {
             orderId = _cartService.OrderId.Value;
         }
 
-        // var lineItemDto = LineItemMapper.ToDto(item, orderId);
-        // var updatedOrder = await _orderService.AddLineItem(lineItemDto);
-        //
-        // _cartService.LoadOrder(updatedOrder);
-        //
-        // _cartService.SelectedItem = _cartService.Items
-        //     .FirstOrDefault(x => x.ProductId == addedItem.ProductId);
+        var lineItemDto = LineItemMapper.ToDto(item, orderId);
+        var updatedOrder = await _orderService.AddLineItem(lineItemDto);
+        
+        _cartService.LoadOrder(updatedOrder);
+        
+        _cartService.SelectedItem = _cartService.Items
+            .FirstOrDefault(x => x.ProductId == addedItem.ProductId);
     }
     
     private async Task HandleClickPlusAsync()
@@ -168,8 +169,11 @@ public class MenuViewModel : ReactiveObject, IRoutableViewModel
         if (_cartService.OrderId is null)
             return;
 
-        // var updatedOrder = await _orderService.UpdateOrder(_cartService.GetSelectedOrder());
-        // _cartService.LoadOrder(updatedOrder);
+        var updatedOrder = await _orderService.UpdateLineItem(LineItemMapper.ToDto(selectedItem, _cartService.OrderId));
+        _cartService.LoadOrder(updatedOrder);
+
+        _cartService.SelectedItem = _cartService.Items
+            .FirstOrDefault(x => x.ProductId == selectedItem.ProductId);
     }
     
     private async Task HandleClickMinusAsync()
@@ -184,13 +188,17 @@ public class MenuViewModel : ReactiveObject, IRoutableViewModel
         if (_cartService.OrderId is null)
             return;
 
-        var orderId = _cartService.OrderId.Value;
+        var updatedOrder = previousQuantity == 1
+            ? await _orderService.RemoveLineItem(selectedItem.Id)
+        : await _orderService.UpdateLineItem(LineItemMapper.ToDto(selectedItem, _cartService.OrderId));
 
-        // var updatedOrder = previousQuantity == 1
-        //     ? await _orderService.RemoveItem(orderId, selectedItem.ProductId)
-        // : await _orderService.UpdateOrder(_cartService.GetSelectedOrder());
+        _cartService.LoadOrder(updatedOrder);
 
-        // _cartService.LoadOrder(updatedOrder);
+        if (previousQuantity > 1)
+        {
+            _cartService.SelectedItem = _cartService.Items
+                .FirstOrDefault(x => x.ProductId == selectedItem.ProductId);
+        }
     }
 
     public ReactiveCommand<Unit, IRoutableViewModel> GoBack => HostScreen.Router.NavigateBack;

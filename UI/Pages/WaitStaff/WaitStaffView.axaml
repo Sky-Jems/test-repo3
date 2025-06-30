@@ -5,32 +5,16 @@
     xmlns:app="using:Pos.Pages.WaitStaff"
     xmlns:controls="using:Pos.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:dialogs="using:AvaloniaDialogs.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:page="app:Views.Categories"
     xmlns:rxui="http://reactiveui.net"
     x:DataType="app:WaitStaffViewModel"
     mc:Ignorable="d">
     <Grid ColumnDefinitions="* 2*">
         <Border BorderBrush="{StaticResource SemiColorBorder}" BorderThickness="0,0,1,0">
-            <DockPanel>
-                <UniformGrid
-                    Margin="24,24,24,0"
-                    HorizontalAlignment="Stretch"
-                    ColumnSpacing="12"
-                    DockPanel.Dock="Top"
-                    Rows="1">
-                    <TextBox
-                        Classes="Large Bordered"
-                        Text="{Binding CustomerName, Mode=TwoWay}"
-                        Watermark="Enter customer name" />
-                </UniformGrid>
-
-                <controls:OrderCartPanel
-                    DataContext="{Binding OrderCartPanelViewModel}"
-                    IsEditable="True"
-                    SummaryButtonCommand="{Binding $parent.DataContext.SummaryButtonCommand}" />
-            </DockPanel>
+            <controls:OrderCartPanel
+                DataContext="{Binding OrderCartPanelViewModel}"
+                IsEditable="True"
+                SummaryButtonCommand="{Binding $parent.DataContext.SummaryButtonCommand}" />
         </Border>
 
         <ScrollViewer Grid.Column="1">

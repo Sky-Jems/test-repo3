@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Pos.Models;
@@ -9,9 +8,9 @@ namespace pos.Api;
 
 public enum PaymentStatus
 {
-     Pending,
-     Paid,
-     Cancelled
+     PENDING,
+     COMPLETED,
+     CANCELLED,
 }
 
 public class CartService: ReactiveObject, ICartService
@@ -23,7 +22,7 @@ public class CartService: ReactiveObject, ICartService
           set => this.RaiseAndSetIfChanged(ref _orderId, value);
      }
      
-     private PaymentStatus _paymentStatus = PaymentStatus.Pending;
+     private PaymentStatus _paymentStatus = PaymentStatus.PENDING;
 
      public PaymentStatus PaymentStatus
      {
@@ -34,7 +33,7 @@ public class CartService: ReactiveObject, ICartService
      public ObservableCollection<LineItem> Items { get; set; } = new();
      
      private string _customerName = string.Empty;
-     public string CustomerName
+     public string Customer
      {
           get => _customerName;
           set => this.RaiseAndSetIfChanged(ref _customerName, value);
@@ -97,7 +96,7 @@ public class CartService: ReactiveObject, ICartService
      public void ClearItems()
      {
           Items.Clear();
-          CustomerName = string.Empty;
+          Customer = string.Empty;
           this.RaisePropertyChanged(nameof(Items));
           this.RaisePropertyChanged(nameof(Total));
      }
@@ -111,30 +110,10 @@ public class CartService: ReactiveObject, ICartService
           set => this.RaiseAndSetIfChanged(ref _selectedItem, value);
      }
 
-     
-     public Order GetSelectedOrder()
-     {
-          if (SelectedItem == null)
-               return null;
-
-          return new Order
-          {
-               // OrderId = OrderId,
-               // Customer = CustomerName,
-               // LineItems = new List<LineItemDto>
-               // {
-               //      LineItemMapper.ToDto(SelectedItem, OrderId)
-               // }
-          };
-     }
-
      public void LoadOrder(GetOrderResponseDto orderResponse)
      {
-          if (orderResponse == null)
-               return;
-
           OrderId = orderResponse.OrderId;
-          // CustomerName = orderResponse.Order.Customer;
+          Customer = orderResponse.Order.Customer;
           
           if (Enum.TryParse<PaymentStatus>(orderResponse.PaymentStatus, true, out var parsedStatus))
           {
@@ -151,5 +130,11 @@ public class CartService: ReactiveObject, ICartService
 
           this.RaisePropertyChanged(nameof(Items));
           this.RaisePropertyChanged(nameof(Total));
+     }
+
+     public void ResetOrder()
+     {
+          ClearItems();
+          OrderId = null;
      }
 }

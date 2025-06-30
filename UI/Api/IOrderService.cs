@@ -8,6 +8,8 @@ public interface IOrderService
 {
  Task<GetOrderResponseDto> AddOrder(Order order);
  Task<GetOrderResponseDto> AddLineItem(LineItemDto lineItemDto);
- Task<OrderResponseDto> RemoveItem(long orderId, long productId);
+ Task<GetOrderResponseDto> UpdateLineItem(LineItemDto lineItemDto);
+ Task<GetOrderResponseDto> RemoveLineItem(long productId);
+ Task<GetOrderResponseDto> ClearLineItems(long orderId);
  Task<OrderResponseDto> PayOrder(long? orderId, string paymentMethod);
 }

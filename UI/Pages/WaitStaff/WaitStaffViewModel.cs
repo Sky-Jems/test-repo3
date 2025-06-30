@@ -21,12 +21,6 @@ public class WaitStaffViewModel : ReactiveObject, IScreen
     private readonly ICartService _cartService;
     private readonly IOrderService _orderService;
 
-    public string CustomerName
-    {
-        get => _cartService.CustomerName;
-        set => _cartService.CustomerName = value;
-    }
-
     public OrderCartPanelViewModel OrderCartPanelViewModel { get; set; } = new ();
     public ReactiveCommand<Unit, Unit> SummaryButtonCommand { get; }
     public event EventHandler<NotificationEventArgs> TriggerNotif;
@@ -39,15 +33,7 @@ public class WaitStaffViewModel : ReactiveObject, IScreen
         Router.Navigate.Execute(new CategoriesViewModel(this));
         SummaryButtonCommand = ReactiveCommand.CreateFromTask(PayOrder);
 
-        InitializeCartBindings();
-        
         OrderCartPanelViewModel.CartItemClicked += HandleCartItemClicked;
-    }
-
-    private void InitializeCartBindings()
-    {
-        _cartService.WhenAnyValue(x => x.CustomerName)
-            .Subscribe(_ => this.RaisePropertyChanged(nameof(CustomerName)));
     }
     
     private void HandleCartItemClicked(LineItem lineItem)

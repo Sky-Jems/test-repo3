@@ -9,6 +9,7 @@ import solutions.skydev.pos.product_service.model.entity.Product;
 import solutions.skydev.pos.product_service.repository.CategoryRepository;
 import solutions.skydev.pos.product_service.repository.ProductRepository;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -47,7 +48,7 @@ public class CategoryServiceImpl implements CategoryService {
     public void deleteCategory(Long id) {
         categoryRepository.deleteById(id);
     }
-    
+
     public List<Category> findAll() {
         return this.categoryRepository.findAll(Sort.by("name").ascending());
     }
@@ -71,6 +72,9 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<Product> getProductsByCategoryId(Long categoryId) {
         Category category = categoryRepository.findById(categoryId).orElse(null);
-        return category != null ? category.getProducts().stream().toList() : null;
+        return category != null ? category.getProducts()
+                .stream()
+                .sorted(Comparator.comparing(p -> p.getName().toLowerCase()))
+                .toList() : null;
     }
 }

@@ -13,8 +13,8 @@ public interface ICartService
     void RemoveItem(LineItem lineItem);
     void ClearItems();
     decimal Total { get; }
-    string CustomerName { get; set; }
+    string Customer { get; set; }
     LineItem? SelectedItem { get; set; }
-    Order GetSelectedOrder();
     void LoadOrder(GetOrderResponseDto order);
+    void ResetOrder();
 }

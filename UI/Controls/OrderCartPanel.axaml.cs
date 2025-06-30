@@ -1,13 +1,12 @@
 using System;
+using System.Linq;
 using System.Reactive;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Microsoft.Extensions.DependencyInjection;
-using pos.Api;
+using AvaloniaDialogs.Views;
 using Pos.Dialogs;
-using pos.Extensions;
 using Pos.Models;
 using ReactiveUI;
 
@@ -63,22 +62,65 @@ public partial class OrderCartPanel : UserControl
 
     private void OnRemoveLineItemButtonClick(object? sender, RoutedEventArgs e)
     {
-        var cartService = ServiceLocator.Services.GetRequiredService<ICartService>();
-        // TODO: use batch remove item instead
-        cartService.RemoveItem((e.Source as Button).Tag as LineItem);
+        if (sender is Button button && button.Tag is LineItem lineItem)
+        {
+            var vm = DataContext as OrderCartPanelViewModel;
+            vm?.RemoveLineItemCommand?.Execute(lineItem)?.Subscribe();
+        }
     }
 
-    private void OnClearButtonClick(object? sender, RoutedEventArgs e)
+    private async void OnClearButtonClick(object? sender, RoutedEventArgs e)
     {
-        var cartService = ServiceLocator.Services.GetRequiredService<ICartService>();
-        cartService.Items.Clear();
+        if (sender is not Button) return;
+
+        var vm = DataContext as OrderCartPanelViewModel;
+        if (vm == null) return;
+
+        if (!vm.OrderList.Any())
+        {
+            var emptyDialog = new SingleActionDialog
+            {
+                Message = "No items to clear.",
+                ButtonText = "OK"
+            };
+
+            await emptyDialog.ShowAsync();
+            return;
+        }
+
+        var dialog = new TwofoldDialog
+        {
+            Message = "Are you sure you want to clear all items?",
+            PositiveText = "Yes",
+            NegativeText = "No"
+        };
+
+        if ((await dialog.ShowAsync()).GetValueOrDefault())
+        {
+            vm.ClearLineItemsCommand?.Execute()?.Subscribe();
+        }
     }
 
-    private void OnPayLaterButtonClick(object? sender, RoutedEventArgs e)
+    private async void OnPayLaterButtonClick(object? sender, RoutedEventArgs e)
     {
-        var cartService = ServiceLocator.Services.GetRequiredService<ICartService>();
-        cartService.ClearItems();
-        cartService.OrderId = null;
+        if (sender is not Button) return;
+
+        var vm = DataContext as OrderCartPanelViewModel;
+        if (vm == null) return;
+
+        if (!vm.OrderList.Any())
+        {
+            var emptyDialog = new SingleActionDialog
+            {
+                Message = "Please add at least one item.",
+                ButtonText = "OK"
+            };
+
+            await emptyDialog.ShowAsync();
+            return;
+        }
+
+        vm.PayLaterCommand?.Execute().Subscribe();
     }
 
     private void CartItem_PointerPressed(object sender, PointerPressedEventArgs e)

@@ -20,6 +20,7 @@ public class LineItem : ReactiveObject
         set
         {
             this.RaiseAndSetIfChanged(ref _quantity, value);
+            this.RaisePropertyChanged(nameof(IsQuantityVisible));
             UpdateItemTotal();
         }
     }
@@ -50,6 +51,8 @@ public class LineItem : ReactiveObject
     {
         ItemTotal = Quantity * Price;
     }
+    
+    public bool IsQuantityVisible => Quantity > 1;
 }
 
 public class LineItemDto

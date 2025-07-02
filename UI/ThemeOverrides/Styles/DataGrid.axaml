@@ -13,6 +13,11 @@
         <Setter Property="SeparatorBrush" Value="Transparent" />
         <Setter Property="FontSize" Value="{StaticResource SemiFontSizeRegular}" />
         <Setter Property="Margin" Value="0 0 0 1" />
+
+        <Style Selector="^[Content=none]">
+            <Setter Property="Foreground" Value="Transparent" />
+            <Setter Property="IsHitTestVisible" Value="False" />
+        </Style>
     </Style>
 
     <Style Selector="DataGridColumnHeader:sortascending /template/ PathIcon#SortIcon, DataGridColumnHeader:sortdescending /template/ PathIcon#SortIcon">

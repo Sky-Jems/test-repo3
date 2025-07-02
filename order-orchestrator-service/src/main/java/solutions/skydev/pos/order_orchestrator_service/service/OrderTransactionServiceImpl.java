@@ -10,6 +10,7 @@ import solutions.skydev.pos.order_orchestrator_service.model.dto.response.ApplyD
 import solutions.skydev.pos.order_orchestrator_service.model.dto.response.DiscountOrderResponseDto;
 import solutions.skydev.pos.common.order_service.dto.response.OrderResponseDto;
 import solutions.skydev.pos.order_orchestrator_service.model.entity.OrderTransaction;
+import solutions.skydev.pos.order_orchestrator_service.model.enums.OrderStatus;
 import solutions.skydev.pos.order_orchestrator_service.repository.OrderTransactionRepository;
 
 import java.math.BigDecimal;
@@ -160,5 +161,11 @@ public class OrderTransactionServiceImpl implements OrderTransactionService {
     @Override
     public List<OrderTransaction> getOrderTransactionsByOrderId(Long orderId) {
         return orderTransactionRepository.findByOrderId(orderId);
+    }
+
+    @Override
+    public List<OrderTransaction> getOrderTransactionsByOrderStatus(String orderStatus) {
+        OrderStatus orderStatusEnum = OrderStatus.valueOf(orderStatus);
+        return orderTransactionRepository.findByOrderStatus(orderStatusEnum);
     }
 }

@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using pos.Api;
 using pos.Extensions;
 using pos.Models.EventArgs;
-using pos.Util;
+using Pos.Util;
 using Pos.Models;
 using ReactiveUI;
 

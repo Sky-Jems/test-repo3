@@ -1,7 +1,7 @@
 using System.Collections.ObjectModel;
 using ReactiveUI;
 using pos.Api;
-using pos.Util;
+using Pos.Util;
 using Pos.Models;
 using System.Reactive;
 using System.Threading.Tasks;
@@ -158,7 +158,7 @@ public partial class MainViewModel : ReactiveObject, IRoutableViewModel
             TriggerNotif?.Invoke(this, new NotificationEventArgs
             {
                 Message = "Failed to load categories",
-                NotifType = NotifConstants.NotifType.Error
+                NotifType = Constants.NotifType.Error
             });
         }
     }

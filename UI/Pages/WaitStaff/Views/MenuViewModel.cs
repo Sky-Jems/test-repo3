@@ -5,6 +5,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using AvaloniaDialogs.Views;
 using Microsoft.Extensions.DependencyInjection;
 using pos.Api;
 using pos.Extensions;
@@ -37,6 +38,7 @@ public class MenuViewModel : ReactiveObject, IRoutableViewModel
         }
     }
     public string SelectedItemQuantityDisplay => $"( {SelectedItemQuantity} )";
+    private bool _isProcessingProduct = false;
 
     public MenuViewModel(IScreen screen, Category category)
     {
@@ -116,50 +118,74 @@ public class MenuViewModel : ReactiveObject, IRoutableViewModel
 
     private async Task HandleClickProduct(Product product)
     {
-        var item = new LineItem
-        {
-            ProductId = product.Id.Value,
-            ProductName = product.Name,
-            ProductDescription = product.Description,
-            Category = Category,
-            Quantity = 1,
-            Price = product.Price
-        };
+        if (_isProcessingProduct)
+            return;
         
-        var addedItem = _cartService.AddItem(item, incrementIfExists: false);
-        _cartService.SelectedItem = addedItem;
-        
-        long orderId;
+        if (_cartService.Items.Any(x => x.ProductId == product.Id))
+            return;
 
-        if (_cartService.OrderId is null)
+        try
         {
-            var newOrder = new Order
+            var item = new LineItem
             {
-                Customer = _cartService.Customer,
-                TableNumber = 1,
-                LineItems = []
+                ProductId = product.Id.Value,
+                ProductName = product.Name,
+                ProductDescription = product.Description,
+                Category = Category,
+                Quantity = 1,
+                Price = product.Price
             };
+        
+            var addedItem = _cartService.AddItem(item, incrementIfExists: false);
+            _cartService.SelectedItem = addedItem;
+        
+            long orderId;
 
-            var createdOrder = await _orderService.AddOrder(newOrder);
-            orderId = createdOrder.OrderId;
-            _cartService.OrderId = createdOrder.OrderId;
+            if (_cartService.OrderId is null)
+            {
+                var newOrder = new Order
+                {
+                    Customer = _cartService.Customer,
+                    TableNumber = 1,
+                    LineItems = []
+                };
+
+                var createdOrder = await _orderService.AddOrder(newOrder);
+                orderId = createdOrder.OrderId;
+                _cartService.OrderId = createdOrder.OrderId;
+            }
+            else
+            {
+                orderId = _cartService.OrderId.Value;
+            }
+
+            var lineItemDto = LineItemMapper.ToDto(item, orderId);
+            var updatedOrder = await _orderService.AddLineItem(lineItemDto);
+        
+            _cartService.LoadOrder(updatedOrder);
+        
+            _cartService.SelectedItem = _cartService.Items
+                .FirstOrDefault(x => x.ProductId == addedItem.ProductId);
         }
-        else
+        finally
         {
-            orderId = _cartService.OrderId.Value;
+            _isProcessingProduct = false;
         }
-
-        var lineItemDto = LineItemMapper.ToDto(item, orderId);
-        var updatedOrder = await _orderService.AddLineItem(lineItemDto);
-        
-        _cartService.LoadOrder(updatedOrder);
-        
-        _cartService.SelectedItem = _cartService.Items
-            .FirstOrDefault(x => x.ProductId == addedItem.ProductId);
     }
     
     private async Task HandleClickPlusAsync()
     {
+        if (!_cartService.CanModifyItems)
+        {
+            var lockedDialog = new SingleActionDialog
+            {
+                Message = "Items cannot be modified because the order is already completed or partially paid.",
+                ButtonText = "OK"
+            };
+
+            await lockedDialog.ShowAsync();
+            return;
+        }
         var selectedItem = _cartService.SelectedItem;
         if (selectedItem is null)
             return;
@@ -178,6 +204,18 @@ public class MenuViewModel : ReactiveObject, IRoutableViewModel
     
     private async Task HandleClickMinusAsync()
     {
+        if (!_cartService.CanModifyItems)
+        {
+            var lockedDialog = new SingleActionDialog
+            {
+                Message = "Items cannot be modified because the order is already completed or partially paid.",
+                ButtonText = "OK"
+            };
+
+            await lockedDialog.ShowAsync();
+            return;
+        }
+
         var selectedItem = _cartService.SelectedItem;
         if (selectedItem is null)
             return;

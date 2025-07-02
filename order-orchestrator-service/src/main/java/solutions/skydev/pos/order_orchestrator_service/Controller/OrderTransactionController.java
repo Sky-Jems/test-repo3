@@ -40,13 +40,17 @@ public class OrderTransactionController {
      * @return List of order transaction response DTOs
      */
     @GetMapping
-    public List<OrderTransactionResponseDto> getOrderTransactions(@RequestParam(name = "order_id", required = false) Long orderId) {
+    public List<OrderTransactionResponseDto> getOrderTransactions(
+            @RequestParam(name = "order_id", required = false) Long orderId,
+            @RequestParam(name = "order_status", required = false) String orderStatus) {
         List<OrderTransaction> transactions;
         // TODO: this should happen in the service layer
 
         if (orderId != null) {
             // Filter by order_id if provided
             transactions = orderTransactionService.getOrderTransactionsByOrderId(orderId);
+        } else if (orderStatus != null) {
+            transactions = orderTransactionService.getOrderTransactionsByOrderStatus(orderStatus);
         } else {
             // Otherwise, get all transactions
             transactions = orderTransactionService.getAllOrderTransactions();

@@ -8,6 +8,7 @@ import solutions.skydev.pos.common.product_service.dto.response.ProductResponseD
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 
 @Builder
 @Data
@@ -25,7 +26,10 @@ public class LineItemResponseDto implements Serializable {
     BigDecimal subTotal;
     @JsonProperty("order_id")
     Long orderId;
-    
+
     // TODO: Maybe make another DTO with enriched product details
     ProductResponseDto product;
+
+    @JsonProperty("updated_at")
+    OffsetDateTime updatedAt;
 }

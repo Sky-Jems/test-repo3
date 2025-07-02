@@ -51,11 +51,8 @@ public class OrderServiceImpl implements OrderService{
         return orderRepository.findAll();
     }
 
-    public List<Order> getOrderReports(OffsetDateTime startDate, OffsetDateTime endDate) {
-        if (startDate == null || endDate == null) {
-            return orderRepository.findAll();
-        }
-        return orderRepository.findByCreatedAtBetween(startDate, endDate);
+    public Order findByOrderIdAndCreatedAtBetween(Long orderId, OffsetDateTime startDate, OffsetDateTime endDate) {
+        return orderRepository.findByIdAndCreatedAtBetween(orderId, startDate, endDate);
     }
     
     @Transactional

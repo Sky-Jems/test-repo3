@@ -1,16 +1,18 @@
 package solutions.skydev.pos.gateway_service.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import solutions.skydev.pos.common.order_orchestrator_service.dto.response.OrderTransactionResponseDto;
 import solutions.skydev.pos.common.order_service.dto.request.LineItemRequestDto;
 import solutions.skydev.pos.common.order_service.dto.request.OrderRequestDto;
-import solutions.skydev.pos.common.order_service.dto.response.OrderResponseDto;
 import solutions.skydev.pos.gateway_service.producer.OrderOrchestratorProducer;
-import solutions.skydev.pos.gateway_service.service.*;
+import solutions.skydev.pos.gateway_service.service.OrderOrchestratorEnrichmentService;
+import solutions.skydev.pos.gateway_service.service.OrderOrchestratorServiceClient;
+
+import java.time.OffsetDateTime;
 
 @RestController
 @RequestMapping("/order-transaction")
@@ -49,6 +51,15 @@ public class OrderOrchestratorController {
     public Mono<OrderTransactionResponseDto> getOrderTransactionByOrderId(@RequestParam("order_id") String orderId) {
         Mono<OrderTransactionResponseDto> orderTransactionResponseDtoMono = this.orderOrchestratorServiceClient.fetchOrderTransactionByOrderId(Long.valueOf(orderId));
         return orderOrchestratorEnrichmentService.enrichWithOrderAndProduct(orderTransactionResponseDtoMono);
+    }
+
+    @GetMapping(path= "/orders", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Flux<OrderTransactionResponseDto> getOrderTransactions(
+            @RequestParam("order_status") String orderStatus,
+            @RequestParam("start_date") OffsetDateTime startDate,
+            @RequestParam("end_date") OffsetDateTime endDate) {
+        Flux<OrderTransactionResponseDto> orderTransactionResponseDtoFlux = this.orderOrchestratorServiceClient.fetchOrderTransactionsByOrderStatus(orderStatus);
+        return orderOrchestratorEnrichmentService.enrichTransactionsWithDateFilter(orderTransactionResponseDtoFlux, startDate, endDate);
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)

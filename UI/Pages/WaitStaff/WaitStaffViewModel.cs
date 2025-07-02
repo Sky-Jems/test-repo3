@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using pos.Api;
 using pos.Models.EventArgs;
-using pos.Util;
+using Pos.Util;
 using Pos.Controls;
 using Pos.Dialogs;
 using pos.Extensions;
@@ -16,12 +16,12 @@ namespace Pos.Pages.WaitStaff;
 
 public class WaitStaffViewModel : ReactiveObject, IScreen
 {
-    public RoutingState Router { get; } = new ();
+    public RoutingState Router { get; } = new();
 
     private readonly ICartService _cartService;
     private readonly IOrderService _orderService;
 
-    public OrderCartPanelViewModel OrderCartPanelViewModel { get; set; } = new ();
+    public OrderCartPanelViewModel OrderCartPanelViewModel { get; set; } = new();
     public ReactiveCommand<Unit, Unit> SummaryButtonCommand { get; }
     public event EventHandler<NotificationEventArgs> TriggerNotif;
 
@@ -29,13 +29,13 @@ public class WaitStaffViewModel : ReactiveObject, IScreen
     {
         _cartService = ServiceLocator.Services.GetRequiredService<ICartService>();
         _orderService = ServiceLocator.Services.GetRequiredService<IOrderService>();
-        
+
         Router.Navigate.Execute(new CategoriesViewModel(this));
         SummaryButtonCommand = ReactiveCommand.CreateFromTask(PayOrder);
 
         OrderCartPanelViewModel.CartItemClicked += HandleCartItemClicked;
     }
-    
+
     private void HandleCartItemClicked(LineItem lineItem)
     {
         var currentMenuVm = Router.NavigationStack.LastOrDefault() as MenuViewModel;
@@ -64,7 +64,7 @@ public class WaitStaffViewModel : ReactiveObject, IScreen
             TriggerNotif?.Invoke(this, new NotificationEventArgs
             {
                 Message = $"Order has been paid with {selectedPayment}.",
-                NotifType = NotifConstants.NotifType.Success
+                NotifType = Constants.NotifType.Success
             });
         }
     }

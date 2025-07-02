@@ -11,6 +11,7 @@ public enum PaymentStatus
      PENDING,
      COMPLETED,
      CANCELLED,
+     APPROVED,
 }
 
 public class CartService: ReactiveObject, ICartService
@@ -21,7 +22,7 @@ public class CartService: ReactiveObject, ICartService
           get => _orderId;
           set => this.RaiseAndSetIfChanged(ref _orderId, value);
      }
-     
+
      private PaymentStatus _paymentStatus = PaymentStatus.PENDING;
 
      public PaymentStatus PaymentStatus
@@ -31,14 +32,14 @@ public class CartService: ReactiveObject, ICartService
      }
 
      public ObservableCollection<LineItem> Items { get; set; } = new();
-     
+
      private string _customerName = string.Empty;
      public string Customer
      {
           get => _customerName;
           set => this.RaiseAndSetIfChanged(ref _customerName, value);
      }
-     
+
      public CartService()
      {
           Items.CollectionChanged += (_, _) =>
@@ -64,11 +65,17 @@ public class CartService: ReactiveObject, ICartService
           var existingItem  = Items.FirstOrDefault(lineItem => lineItem.ProductId == item.ProductId);
           if (existingItem == null)
           {
-               Items.Add(item);
+               Items.Insert(0, item);
                return item;
           }
-          else if (incrementIfExists)
+
+          if (incrementIfExists)
           {
+               var oldIndex = Items.IndexOf(existingItem);
+               if (oldIndex > 0)
+               {
+                    Items.Move(oldIndex, 0);
+               }
                existingItem.Quantity++;
           }
           this.RaisePropertyChanged(nameof(Total));
@@ -100,9 +107,9 @@ public class CartService: ReactiveObject, ICartService
           this.RaisePropertyChanged(nameof(Items));
           this.RaisePropertyChanged(nameof(Total));
      }
-     
+
      public decimal Total => Items.Sum(lineItem => lineItem.Quantity * lineItem.Price);
-     
+
      private LineItem? _selectedItem;
      public LineItem? SelectedItem
      {
@@ -114,12 +121,12 @@ public class CartService: ReactiveObject, ICartService
      {
           OrderId = orderResponse.OrderId;
           Customer = orderResponse.Order.Customer;
-          
+
           if (Enum.TryParse<PaymentStatus>(orderResponse.PaymentStatus, true, out var parsedStatus))
           {
                PaymentStatus = parsedStatus;
           }
-          
+
           Items.Clear();
 
           foreach (var lineItemDto in orderResponse.Order.LineItems ?? Enumerable.Empty<GetLineItemDto>())
@@ -137,4 +144,6 @@ public class CartService: ReactiveObject, ICartService
           ClearItems();
           OrderId = null;
      }
+     
+     public bool CanModifyItems => PaymentStatus == PaymentStatus.PENDING;
 }

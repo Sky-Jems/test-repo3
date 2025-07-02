@@ -1,16 +1,16 @@
 <UserControl
-    x:Class="Pos.Pages.Reports.ReportsView"
+    x:Class="Pos.Pages.Orders.OrdersView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:app="using:Pos.Pages.Reports"
+    xmlns:app="using:Pos.Pages.Orders"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:rxui="http://reactiveui.net"
-    x:DataType="app:ReportsViewModel"
+    x:DataType="app:OrdersViewModel"
     mc:Ignorable="d">
     <rxui:RoutedViewHost Router="{Binding Router}">
         <rxui:RoutedViewHost.ViewLocator>
-            <app:ReportsViewLocator />
+            <app:OrdersViewLocator />
         </rxui:RoutedViewHost.ViewLocator>
     </rxui:RoutedViewHost>
 </UserControl>

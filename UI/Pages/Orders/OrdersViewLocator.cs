@@ -1,9 +1,9 @@
 using System;
 using ReactiveUI;
 
-namespace Pos.Pages.Reports;
+namespace Pos.Pages.Orders;
 
-public class ReportsViewLocator : IViewLocator
+public class OrdersViewLocator : IViewLocator
 {
     public IViewFor ResolveView<T>(T? viewModel, string? contract) => viewModel switch
     {

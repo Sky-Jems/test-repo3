@@ -118,7 +118,7 @@
                         Binding="{Binding Price}"
                         Header="Price" />
 
-                    <DataGridTemplateColumn Tag="Actions">
+                    <DataGridTemplateColumn Header="none" Tag="Actions">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel

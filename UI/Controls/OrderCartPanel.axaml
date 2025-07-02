@@ -2,19 +2,19 @@
     x:Class="Pos.Controls.OrderCartPanel"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:Pos.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:Pos.Controls"
-    xmlns:converters="clr-namespace:Pos.Converters"
     x:Name="root"
     x:DataType="vm:OrderCartPanelViewModel"
     mc:Ignorable="d">
-    
+
     <UserControl.Resources>
         <converters:IsZeroConverter x:Key="isZeroConverter" />
         <converters:IsGreaterThanZeroConverter x:Key="isGreaterThanZeroConverter" />
     </UserControl.Resources>
-    
+
     <DockPanel>
         <!--  customer name  -->
         <Grid
@@ -26,11 +26,11 @@
                 Classes="Large Bordered"
                 Text="{Binding Customer, Mode=TwoWay}"
                 Watermark="Enter customer name" />
-            <!-- <Button -->
-            <!--     Grid.Column="1" -->
-            <!--     Content="Save" -->
-            <!--     IsVisible="{Binding IsEditable, ElementName=root}" -->
-            <!--     Theme="{StaticResource OutlineButton}" /> -->
+            <!--  <Button  -->
+            <!--  Grid.Column="1"  -->
+            <!--  Content="Save"  -->
+            <!--  IsVisible="{Binding IsEditable, ElementName=root}"  -->
+            <!--  Theme="{StaticResource OutlineButton}" />  -->
         </Grid>
 
         <Grid Grid.Column="0" RowDefinitions="auto * auto">
@@ -127,6 +127,7 @@
                                                     HorizontalAlignment="Right"
                                                     Classes="Circle Indigo"
                                                     Content="{Binding Quantity, StringFormat='{}{0}x'}"
+                                                    IsVisible="{Binding IsQuantityVisible}"
                                                     Theme="{StaticResource TagLabel}" />
                                             </Grid>
                                         </StackPanel>
@@ -141,16 +142,16 @@
                         </ListBox>
                     </ScrollViewer>
 
-                    <!-- Zero state message -->
+                    <!--  Zero state message  -->
                     <TextBlock
-                        Text="No items yet. To add items, start by selecting a service and then choose a product."
-                        FontSize="14"
-                        Foreground="Gray"
-                        TextWrapping="Wrap"
-                        TextAlignment="Center"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
-                        IsVisible="{Binding OrderList.Count, Converter={StaticResource isZeroConverter}}" />
+                        FontSize="14"
+                        Foreground="Gray"
+                        IsVisible="{Binding OrderList.Count, Converter={StaticResource isZeroConverter}}"
+                        Text="No items yet. To add items, start by selecting a service and then choose a product."
+                        TextAlignment="Center"
+                        TextWrapping="Wrap" />
                 </Grid>
             </Border>
 
@@ -160,7 +161,7 @@
                 Padding="24"
                 Background="{StaticResource SemiColorPrimaryLight}"
                 CornerRadius="6 6 0 0">
-                <StackPanel>
+                <StackPanel Spacing="16">
                     <StackPanel.Styles>
                         <Style Selector="Label">
                             <Style Selector="^.price">
@@ -181,7 +182,6 @@
                     </Button>
 
                     <Rectangle
-                        Margin="0,16"
                         IsVisible="{Binding IsEditable, ElementName=root}"
                         Stroke="{StaticResource SemiColorFill2}"
                         StrokeDashArray="2,6"
@@ -196,12 +196,11 @@
                     </UniformGrid>
 
                     <Rectangle
-                        Margin="0,16"
                         Stroke="{StaticResource SemiColorFill2}"
                         StrokeDashArray="2,6"
                         StrokeThickness="1" />
 
-                    <UniformGrid Margin="0,0,0,16" Rows="1">
+                    <UniformGrid Rows="1">
                         <Label
                             HorizontalAlignment="Stretch"
                             Classes="H5"
@@ -216,6 +215,7 @@
                     <UniformGrid
                         HorizontalAlignment="Stretch"
                         ColumnSpacing="12"
+                        IsVisible="{Binding ShowButtons, ElementName=root}"
                         Rows="1">
                         <Button
                             HorizontalAlignment="Stretch"

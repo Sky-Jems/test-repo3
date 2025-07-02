@@ -18,4 +18,5 @@ public interface OrderTransactionService {
 //    OrderTransaction tagDiscount(DiscountOrderRequestDto discountOrderRequestDto);
     List<OrderTransaction> getAllOrderTransactions();
     List<OrderTransaction> getOrderTransactionsByOrderId(Long orderId);
+    List<OrderTransaction> getOrderTransactionsByOrderStatus(String orderStatus);
 }

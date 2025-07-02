@@ -1,7 +1,7 @@
 
-namespace pos.Util;
+namespace Pos.Util;
 
-public class NotifConstants
+public static class Constants
 {
     public enum NotifType
     {
@@ -9,5 +9,12 @@ public class NotifConstants
         Success,
         Warning,
         Error
+    }
+
+    public enum OrderStatusType
+    {
+        PENDING,
+        COMPLETED,
+        CANCELED
     }
 }

@@ -7,8 +7,8 @@
     xmlns:converters="using:Pos.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:orders="using:Pos.Pages.Orders"
     xmlns:products="using:Pos.Pages.Products"
-    xmlns:reports="using:Pos.Pages.Reports"
     xmlns:waitStaff="using:Pos.Pages.WaitStaff"
     x:DataType="app:HomePageViewModel"
     mc:Ignorable="d">
@@ -68,8 +68,15 @@
 
                     <TabStripItem>
                         <StackPanel Classes="tabContainer">
+                            <PathIcon Data="{StaticResource SemiIconActivity}" />
+                            <TextBlock Text="Pending" />
+                        </StackPanel>
+                    </TabStripItem>
+
+                    <TabStripItem>
+                        <StackPanel Classes="tabContainer">
                             <PathIcon Data="{StaticResource SemiIconCheckList}" />
-                            <TextBlock Text="Orders" />
+                            <TextBlock Text="Completed" />
                         </StackPanel>
                     </TabStripItem>
 
@@ -121,7 +128,10 @@
                 <waitStaff:WaitStaffView />
             </TabItem>
             <TabItem>
-                <reports:ReportsView />
+                <orders:OrdersView Status="{StaticResource OrderPending}" />
+            </TabItem>
+            <TabItem>
+                <orders:OrdersView Status="{StaticResource OrderCompleted}" />
             </TabItem>
             <TabItem>
                 <categories:CategoriesView />

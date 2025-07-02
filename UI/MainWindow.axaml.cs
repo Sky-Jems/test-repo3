@@ -18,7 +18,6 @@ public partial class MainWindow : Window
     {
         DataContext = new MainWindowViewModel();
         InitializeComponent();
-        DataContext = new MainWindowViewModel();
         if (DataContext is MainWindowViewModel viewModel)
         {
             viewModel.UnknownUser += () =>
@@ -27,12 +26,12 @@ public partial class MainWindow : Window
                 ErrorTextBlock.IsVisible = true;
             };
 
-        viewModel.LoginFailed += (msg) =>
-        {
-            ErrorTextBlock.Text = $"Login failed";
-            ErrorTextBlock.IsVisible = true;
-        };
-    }
+            viewModel.LoginFailed += (msg) =>
+            {
+                ErrorTextBlock.Text = $"Login failed";
+                ErrorTextBlock.IsVisible = true;
+            };
+        }
         UsernameTextBox.Focus();
     }
 

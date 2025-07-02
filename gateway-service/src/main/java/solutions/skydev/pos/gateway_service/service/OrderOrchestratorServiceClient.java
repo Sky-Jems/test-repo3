@@ -2,6 +2,7 @@ package solutions.skydev.pos.gateway_service.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import solutions.skydev.pos.common.order_orchestrator_service.dto.response.OrderTransactionResponseDto;
 
@@ -30,5 +31,15 @@ public class OrderOrchestratorServiceClient {
                 .retrieve()
                 .bodyToFlux(OrderTransactionResponseDto.class)
                 .next(); // Get only the first element from the array
+    }
+
+    public Flux<OrderTransactionResponseDto> fetchOrderTransactionsByOrderStatus(String orderStatus) {
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/order-transactions")
+                        .queryParam("order_status", orderStatus)
+                        .build()
+                ).retrieve()
+                .bodyToFlux(OrderTransactionResponseDto.class);
     }
 }

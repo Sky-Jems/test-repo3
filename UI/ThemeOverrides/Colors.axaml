@@ -2,16 +2,19 @@
     <!--  Color Resources  -->
     <Color x:Key="SemiWhiteColor">White</Color>
     <Color x:Key="SemiBlackColor">Black</Color>
-    <Color x:Key="SemiRed0Color">#FEF2ED</Color>
-    <Color x:Key="SemiRed1Color">#FEDDD2</Color>
-    <Color x:Key="SemiRed2Color">#FDB7A5</Color>
-    <Color x:Key="SemiRed3Color">#FB9078</Color>
-    <Color x:Key="SemiRed4Color">#FA664C</Color>
-    <Color x:Key="SemiRed5Color">#F93920</Color>
-    <Color x:Key="SemiRed6Color">#D52515</Color>
-    <Color x:Key="SemiRed7Color">#B2140C</Color>
-    <Color x:Key="SemiRed8Color">#8E0805</Color>
-    <Color x:Key="SemiRed9Color">#6A0103</Color>
+
+    <!--  https://hihayk.github.io/scale/#4/5/50/90/10/-10/100/0/FF5A64/255/90/100/white  -->
+    <Color x:Key="SemiRed0Color">#FFEAE6</Color>
+    <Color x:Key="SemiRed1Color">#FFC4BE</Color>
+    <Color x:Key="SemiRed2Color">#FFA19C</Color>
+    <Color x:Key="SemiRed3Color">#FF8180</Color>
+    <Color x:Key="SemiRed4Color">#FF6A6F</Color>
+    <Color x:Key="SemiRed5Color">#FF5A64</Color>
+    <Color x:Key="SemiRed6Color">#DF4F5E</Color>
+    <Color x:Key="SemiRed7Color">#BF4455</Color>
+    <Color x:Key="SemiRed8Color">#9F384B</Color>
+    <Color x:Key="SemiRed9Color">#802D40</Color>
+
     <Color x:Key="SemiPink0Color">#FDECEF</Color>
     <Color x:Key="SemiPink1Color">#FBCFD8</Color>
     <Color x:Key="SemiPink2Color">#F6A0B5</Color>
@@ -42,6 +45,8 @@
     <Color x:Key="SemiViolet7Color">#46259E</Color>
     <Color x:Key="SemiViolet8Color">#361C8A</Color>
     <Color x:Key="SemiViolet9Color">#281475</Color>
+
+    <!--  https://hihayk.github.io/scale/#2/7/50/90/10/10/100/0/3346d7/51/70/215/white  -->
     <Color x:Key="SemiIndigo0Color">#E6ECFF</Color>
     <Color x:Key="SemiIndigo1Color">#C5D2FF</Color>
     <Color x:Key="SemiIndigo2Color">#A4B9FF</Color>
@@ -52,6 +57,7 @@
     <Color x:Key="SemiIndigo7Color">#3346D7</Color>
     <Color x:Key="SemiIndigo8Color">#263FA1</Color>
     <Color x:Key="SemiIndigo9Color">#1A316C</Color>
+
     <Color x:Key="SemiBlue0Color">#EAF5FF</Color>
     <Color x:Key="SemiBlue1Color">#CBE7FE</Color>
     <Color x:Key="SemiBlue2Color">#98CDFD</Color>
@@ -162,10 +168,12 @@
     <Color x:Key="SemiGrey7Color">#41464C</Color>
     <Color x:Key="SemiGrey8Color">#2E3238</Color>
     <Color x:Key="SemiGrey9Color">#1C1F23</Color>
-    <Color x:Key="SemiBackground0Color">#EDF0F2</Color>
-    <Color x:Key="SemiBackground1Color">#F1F5F7</Color>
-    <Color x:Key="SemiBackground2Color">#F6F9FB</Color>
-    <Color x:Key="SemiBackground3Color">#FBFDFF</Color>
+
+    <!--  https://hihayk.github.io/scale/#0/4/50/99/10/10/100/0/EFF5FF/239/245/255/white  -->
+    <Color x:Key="SemiBackground0Color">#F6F8FF</Color>
+    <Color x:Key="SemiBackground1Color">#F7F9FF</Color>
+    <Color x:Key="SemiBackground2Color">#F9FBFF</Color>
+    <Color x:Key="SemiBackground3Color">#FCFDFF</Color>
     <Color x:Key="SemiBackground4Color">#FFFFFF</Color>
 
     <SolidColorBrush x:Key="SemiWhite" Color="{StaticResource SemiWhiteColor}" />
@@ -388,19 +396,19 @@
     <SolidColorBrush x:Key="SemiColorDangerLightActive" Color="{StaticResource SemiRed2Color}" />
 
     <!--  Text and Icons  -->
-    <SolidColorBrush x:Key="SemiColorText0" Color="{StaticResource SemiGrey9Color}" />
+    <SolidColorBrush x:Key="SemiColorText0" Color="{StaticResource SemiIndigo9Color}" />
     <SolidColorBrush
         x:Key="SemiColorText1"
         Opacity="0.8"
-        Color="{StaticResource SemiGrey9Color}" />
+        Color="{StaticResource SemiIndigo9Color}" />
     <SolidColorBrush
         x:Key="SemiColorText2"
         Opacity="0.62"
-        Color="{StaticResource SemiGrey9Color}" />
+        Color="{StaticResource SemiIndigo9Color}" />
     <SolidColorBrush
         x:Key="SemiColorText3"
         Opacity="0.35"
-        Color="{StaticResource SemiGrey9Color}" />
+        Color="{StaticResource SemiIndigo9Color}" />
 
     <!--  Link  -->
     <SolidColorBrush x:Key="SemiColorLink" Color="{StaticResource SemiBlue5Color}" />
@@ -433,8 +441,8 @@
     <SolidColorBrush
         x:Key="SemiColorBorder"
         Opacity="0.08"
-        Color="{StaticResource SemiGrey9Color}" />
-    <SolidColorBrush x:Key="SemiColorFocusBorder" Color="{StaticResource SemiBlue5Color}" />
+        Color="{StaticResource SemiIndigo9Color}" />
+    <SolidColorBrush x:Key="SemiColorFocusBorder" Color="{StaticResource SemiIndigo5Color}" />
 
     <!--  Disabled  -->
     <SolidColorBrush

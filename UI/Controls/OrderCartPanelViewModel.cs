@@ -37,6 +37,7 @@ public class OrderCartPanelViewModel : ReactiveObject
     }
     private readonly ObservableAsPropertyHelper<bool> _canPay;
     public bool CanPay => _canPay.Value;
+    public bool CanModifyItems => _cartService.CanModifyItems;
     public event Action<LineItem>? CartItemClicked;
     public ReactiveCommand<LineItem, Unit> NavigateToMenuCommand { get; }
     public ReactiveCommand<LineItem, Unit> RemoveLineItemCommand { get; }

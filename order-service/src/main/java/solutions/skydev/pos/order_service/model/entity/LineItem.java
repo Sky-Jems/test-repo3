@@ -2,8 +2,11 @@ package solutions.skydev.pos.order_service.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 
 @Setter
 @Getter
@@ -23,6 +26,13 @@ public class LineItem {
 
     @Column(precision = 10, scale = 2)
     private BigDecimal subTotal = BigDecimal.ZERO;
+
+    @CreationTimestamp
+    @Column(updatable = false)
+    private OffsetDateTime createdAt;
+
+    @UpdateTimestamp
+    private OffsetDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)

@@ -1,7 +1,7 @@
 using Avalonia;
 using pos.Api;
 using pos.Models.EventArgs;
-using pos.Util;
+using Pos.Util;
 using Pos.Models;
 using ReactiveUI;
 using System;

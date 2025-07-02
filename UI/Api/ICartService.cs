@@ -17,4 +17,5 @@ public interface ICartService
     LineItem? SelectedItem { get; set; }
     void LoadOrder(GetOrderResponseDto order);
     void ResetOrder();
+    bool CanModifyItems { get; }
 }

@@ -1,8 +1,8 @@
 <UserControl
-    x:Class="Pos.Pages.Reports.MainView"
+    x:Class="Pos.Pages.Orders.MainView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:app="using:Pos.Pages.Reports"
+    xmlns:app="using:Pos.Pages.Orders"
     xmlns:controls="using:Pos.Controls"
     xmlns:converters="using:Pos.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -13,6 +13,8 @@
 
     <UserControl.Resources>
         <converters:DateTimeConverter x:Key="dateTimeConverter" />
+        <converters:EqualsConverter x:Key="equalsConverter" />
+        <converters:TextCaseConverter x:Key="textCaseConverter" />
     </UserControl.Resources>
 
     <SplitView
@@ -26,8 +28,9 @@
             <controls:OrderCartPanel
                 Width="{Binding $parent.OpenPaneLength}"
                 DataContext="{Binding OrderCartPanelViewModel}"
-                SummaryButtonCommand="{Binding $parent.DataContext.SummaryButtonCommand}"
-                SummaryButtonText="Edit Details" />
+                ShowButtons="{Binding $parent.DataContext.ShowOrderCartPanelButtons}"
+                SummaryButtonCommand="{Binding $parent.DataContext.AddOrdersButtonCommand}"
+                SummaryButtonText="Add Order" />
         </SplitView.Pane>
 
         <Border Padding="32">
@@ -39,14 +42,14 @@
                     <Label
                         Grid.Column="0"
                         Classes="H2"
-                        Theme="{StaticResource TitleLabel}">
-                        Orders
-                    </Label>
+                        Content="{Binding Status, StringFormat='{}{0} Orders', Converter={StaticResource textCaseConverter}, ConverterParameter=title}"
+                        Theme="{StaticResource TitleLabel}" />
 
                     <Button
                         Name="dateRangeFlyoutButton"
                         Grid.Column="1"
                         Classes="Large"
+                        IsVisible="{Binding Status, Converter={StaticResource equalsConverter}, ConverterParameter={StaticResource OrderCompleted}}"
                         Theme="{StaticResource SolidButton}">
                         <StackPanel Orientation="Horizontal">
                             <PathIcon
@@ -91,8 +94,7 @@
                 <Grid
                     ColumnDefinitions="* *"
                     ColumnSpacing="24"
-                    RowDefinitions="auto *"
-                    RowSpacing="24">
+                    RowDefinitions="auto auto *">
                     <Grid.Styles>
                         <Style Selector="Border.reportCard">
                             <Setter Property="Margin" Value="0" />
@@ -130,7 +132,11 @@
                         </Style>
                     </Grid.Styles>
 
-                    <Border Grid.Column="0" Classes="reportCard">
+                    <Border
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Classes="reportCard"
+                        IsVisible="{Binding Status, Converter={StaticResource equalsConverter}, ConverterParameter={StaticResource OrderCompleted}}">
                         <StackPanel>
                             <Border Classes="cardIcon">
                                 <PathIcon Data="{StaticResource SemiIconCheckList}" />
@@ -138,12 +144,16 @@
 
                             <StackPanel>
                                 <Label Classes="reportCardTitle" Content="TOTAL ORDERS" />
-                                <Label Classes="reportCardDescription" Content="{Binding OrderReports.TotalOrders}" />
+                                <Label Classes="reportCardDescription" Content="{Binding OrderTransactions.Count, FallbackValue=0}" />
                             </StackPanel>
                         </StackPanel>
                     </Border>
 
-                    <Border Grid.Column="1" Classes="reportCard">
+                    <Border
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Classes="reportCard"
+                        IsVisible="{Binding Status, Converter={StaticResource equalsConverter}, ConverterParameter={StaticResource OrderCompleted}}">
                         <StackPanel>
                             <Border Classes="cardIcon">
                                 <PathIcon Data="{StaticResource SemiIconLineChartStroked}" />
@@ -151,18 +161,23 @@
 
                             <StackPanel>
                                 <Label Classes="reportCardTitle" Content="TOTAL SALES" />
-                                <Label Classes="reportCardDescription" Content="{Binding OrderReports.AmountOfSales, StringFormat='₱{0}'}" />
+                                <Label Classes="reportCardDescription" Content="{Binding AmountOfSales, StringFormat='₱{0:N2}', FallbackValue=₱0.00}" />
                             </StackPanel>
                         </StackPanel>
                     </Border>
 
-                    <DataGrid
+                    <Border
                         Grid.Row="1"
+                        Height="24"
+                        IsVisible="{Binding Status, Converter={StaticResource equalsConverter}, ConverterParameter={StaticResource OrderCompleted}}" />
+
+                    <DataGrid
+                        Grid.Row="2"
                         Grid.Column="0"
                         Grid.ColumnSpan="2"
                         CellPointerPressed="DataGrid_CellPointerPressed"
                         IsReadOnly="True"
-                        ItemsSource="{Binding OrderReports.Orders}"
+                        ItemsSource="{Binding OrderTransactions}"
                         PointerReleased="DataGrid_PointerReleased">
                         <DataGrid.Styles>
                             <Style Selector="DataGridRow:pointerover">
@@ -173,54 +188,37 @@
                         <DataGrid.Columns>
                             <DataGridTextColumn Binding="{Binding Id}" Header="No." />
                             <DataGridTextColumn
-                                Width="2*"
-                                Binding="{Binding Customer}"
+                                Width="3*"
+                                Binding="{Binding Order.Customer}"
                                 Header="Name" />
                             <DataGridTextColumn
-                                Width="2*"
-                                Binding="{Binding LineItems.Count}"
+                                Width="auto"
+                                Binding="{Binding Order.LineItems.Count}"
                                 Header="Items" />
                             <DataGridTextColumn
-                                Width="2*"
-                                Binding="{Binding Total, StringFormat='₱{0}'}"
+                                Width="auto"
+                                Binding="{Binding Order.Total, StringFormat='₱{0}'}"
                                 Header="Amount" />
                             <DataGridTextColumn
                                 Width="2*"
-                                Binding="{Binding CreatedAt, Converter={StaticResource dateTimeConverter}, Mode=OneWay}"
+                                Binding="{Binding Order.CreatedAt, Converter={StaticResource dateTimeConverter}, ConverterParameter='M/d/yy - h:mm tt', Mode=OneWay}"
                                 Header="Date" />
-                            <DataGridTemplateColumn Header="Status">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Label
-                                            Classes="Large Indigo Circle"
-                                            Content="ongoing"
-                                            Theme="{StaticResource TagLabel}" />
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Tag="Actions">
+                            <DataGridTemplateColumn
+                                Header="none"
+                                IsVisible="{Binding $parent.DataContext.Status, Converter={StaticResource equalsConverter}, ConverterParameter={StaticResource OrderPending}}"
+                                Tag="Actions">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Button
                                             Width="32"
                                             Height="32"
-                                            HorizontalAlignment="Right"
                                             Classes="Tertiary"
+                                            Click="AddOrdersButton_Click"
                                             Theme="{StaticResource BorderlessButton}">
-                                            <PathIcon Data="{StaticResource SemiIconMore}" Theme="{StaticResource InnerPathIcon}" />
-
-                                            <Button.Flyout>
-                                                <MenuFlyout>
-                                                    <MenuItem Header="Edit" />
-                                                    <MenuItem Header="Checkout" />
-                                                    <Separator />
-                                                    <MenuItem>
-                                                        <MenuItem.Header>
-                                                            <Label Classes="Danger" Content="Cancel" />
-                                                        </MenuItem.Header>
-                                                    </MenuItem>
-                                                </MenuFlyout>
-                                            </Button.Flyout>
+                                            <PathIcon
+                                                Height="16"
+                                                Data="{StaticResource SemiIconPlusCircle}"
+                                                Theme="{StaticResource InnerPathIcon}" />
                                         </Button>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>

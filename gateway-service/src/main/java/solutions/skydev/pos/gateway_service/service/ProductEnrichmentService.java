@@ -5,9 +5,9 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import solutions.skydev.pos.common.order_service.dto.response.LineItemResponseDto;
 import solutions.skydev.pos.common.order_service.dto.response.OrderResponseDto;
-import solutions.skydev.pos.common.product_service.dto.response.CategoryResponseDto;
 import solutions.skydev.pos.common.product_service.dto.response.ProductResponseDto;
 
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -23,7 +23,7 @@ public class ProductEnrichmentService {
     public ProductEnrichmentService(ProductServiceClient productServiceClient) {
         this.productServiceClient = productServiceClient;
     }
-    
+
     private Mono<ProductResponseDto> enrichProductWithCategories(ProductResponseDto product) {
         return Flux.fromIterable(product.getCategoryIds())
                 .flatMap(categoryId -> productServiceClient.getCategoryById(categoryId)
@@ -57,9 +57,15 @@ public class ProductEnrichmentService {
                     .flatMap(this::enrichLineItemWithProduct)
                     .collectList()
                     .map(enrichedLineItems -> {
+                        enrichedLineItems.sort(Comparator.comparing(
+                                LineItemResponseDto::getUpdatedAt,
+                                Comparator.nullsLast(Comparator.naturalOrder())
+                        ).reversed());
+
                         order.setLineItems(enrichedLineItems);
                         return order;
                     });
+
         });
     }
 }

@@ -14,5 +14,4 @@ public class OrderReport
     public string CreatedAt { get; set; }
     [JsonPropertyName("line_items")]
     public List<LineItemDto> LineItems { get; set; }
-    // public string Status { get; set; }
 }

@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using pos.Handlers.Interfaces;
 using Pos.Models;
+using static Pos.Util.Constants;
 
 namespace pos.Api;
 
@@ -13,6 +15,13 @@ public class OrderService : IOrderService
     {
         _httpClient = httpClient;
     }
+
+    public static Dictionary<string, string> OrderStatus = new Dictionary<string, string>
+    {
+        { OrderStatusType.PENDING.ToString(), "P" },
+        { OrderStatusType.COMPLETED.ToString(), "CO" },
+        { OrderStatusType.CANCELED.ToString(), "CA" },
+    };
 
     public async Task<GetOrderResponseDto> AddOrder(Order order)
     {
@@ -37,7 +46,7 @@ public class OrderService : IOrderService
         var response = await _httpClient.DeleteAsync($"order-transaction/line-item/{lineItemId}");
         return await _httpClient.ReadJsonResponseAsync<GetOrderResponseDto>(response);
     }
-    
+
     public async Task<GetOrderResponseDto> ClearLineItems(long orderId)
     {
         var response = await _httpClient.PostJsonAsync($"order-transaction/order/clear-line-items", new { id = orderId });

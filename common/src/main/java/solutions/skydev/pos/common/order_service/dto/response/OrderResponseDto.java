@@ -8,6 +8,7 @@ import lombok.extern.jackson.Jacksonized;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Builder
@@ -26,4 +27,7 @@ public class OrderResponseDto implements Serializable {
     
     @JsonProperty("line_items")
     List<LineItemResponseDto> lineItems;
+
+    @JsonProperty("created_at")
+    OffsetDateTime createdAt;
 }

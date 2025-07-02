@@ -1,6 +1,6 @@
 using pos.Models.EventArgs;
 
-namespace pos.Util;
+namespace Pos.Util;
 
 public static class NotificationUtil
 {
@@ -9,7 +9,7 @@ public static class NotificationUtil
         return new NotificationEventArgs
         {
             Message = message,
-            NotifType = NotifConstants.NotifType.Success
+            NotifType = Constants.NotifType.Success
         };
     }
 
@@ -18,7 +18,7 @@ public static class NotificationUtil
         return new NotificationEventArgs
         {
             Message = message,
-            NotifType = NotifConstants.NotifType.Error
+            NotifType = Constants.NotifType.Error
         };
     }
 
@@ -27,7 +27,7 @@ public static class NotificationUtil
         return new NotificationEventArgs
         {
             Message = message,
-            NotifType = NotifConstants.NotifType.Warning
+            NotifType = Constants.NotifType.Warning
         };
     }
 
@@ -36,7 +36,7 @@ public static class NotificationUtil
         return new NotificationEventArgs
         {
             Message = message,
-            NotifType = NotifConstants.NotifType.Information
+            NotifType = Constants.NotifType.Information
         };
     }
 }

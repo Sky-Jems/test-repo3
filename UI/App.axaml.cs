@@ -2,10 +2,10 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using System.Linq;
-using Pos.Pages;
 using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
 using pos.Extensions;
+using static Pos.Util.Constants;
 
 namespace Pos;
 
@@ -21,22 +21,23 @@ public partial class App : Application
         // Register all the services needed for the application to run
         var collection = new ServiceCollection();
         collection.AddCommonServices();
-        
+
         // Creates a ServiceProvider containing services from the provided IServiceCollection
         var services = collection.BuildServiceProvider();
-        
+
         ServiceLocator.Services = services;
-        
+
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            Resources["TabItemController"] = new TabItemController();
+            InitializeStaticResources();
             // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
             // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
             DisableAvaloniaDataAnnotationValidation();
             desktop.MainWindow = new MainWindow();
             {
                 DataContext = new MainWindowViewModel();
-            };
+            }
+            ;
         }
 
         base.OnFrameworkInitializationCompleted();
@@ -53,5 +54,13 @@ public partial class App : Application
         {
             BindingPlugins.DataValidators.Remove(plugin);
         }
+    }
+
+    private void InitializeStaticResources()
+    {
+        Resources["TabItemController"] = new TabItemController();
+        Resources["OrderPending"] = OrderStatusType.PENDING.ToString();
+        Resources["OrderCompleted"] = OrderStatusType.COMPLETED.ToString();
+        Resources["OrderCanceled"] = OrderStatusType.CANCELED.ToString();
     }
 }

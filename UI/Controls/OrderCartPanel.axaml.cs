@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Reactive;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -21,6 +22,15 @@ public partial class OrderCartPanel : UserControl
     {
         get => GetValue(IsEditableProperty);
         set => SetValue(IsEditableProperty, value);
+    }
+
+    public static readonly StyledProperty<bool> ShowButtonsProperty =
+        AvaloniaProperty.Register<CategoryCard, bool>(nameof(ShowButtons), true);
+
+    public bool ShowButtons
+    {
+        get => GetValue(ShowButtonsProperty);
+        set => SetValue(ShowButtonsProperty, value);
     }
 
     public static readonly StyledProperty<string> SummaryButtonTextProperty =
@@ -59,12 +69,30 @@ public partial class OrderCartPanel : UserControl
             (dialog.DataContext as DiscountDialogViewModel)!.DiscountList.Add(discount);
         await dialog.ShowAsync();
     }
+    
+    private async Task<bool> ShowLockedDialogIfNotModifiable(OrderCartPanelViewModel? vm)
+    {
+        if (vm == null || vm.CanModifyItems)
+            return false;
 
-    private void OnRemoveLineItemButtonClick(object? sender, RoutedEventArgs e)
+        var lockedDialog = new SingleActionDialog
+        {
+            Message = "Items cannot be modified because the order is already completed or partially paid.",
+            ButtonText = "OK"
+        };
+
+        await lockedDialog.ShowAsync();
+        return true;
+    }
+
+
+    private async void OnRemoveLineItemButtonClick(object? sender, RoutedEventArgs e)
     {
         if (sender is Button button && button.Tag is LineItem lineItem)
         {
             var vm = DataContext as OrderCartPanelViewModel;
+            if (await ShowLockedDialogIfNotModifiable(vm)) return;
+
             vm?.RemoveLineItemCommand?.Execute(lineItem)?.Subscribe();
         }
     }
@@ -74,9 +102,9 @@ public partial class OrderCartPanel : UserControl
         if (sender is not Button) return;
 
         var vm = DataContext as OrderCartPanelViewModel;
-        if (vm == null) return;
+        if (await ShowLockedDialogIfNotModifiable(vm)) return;
 
-        if (!vm.OrderList.Any())
+        if (!vm!.OrderList.Any())
         {
             var emptyDialog = new SingleActionDialog
             {

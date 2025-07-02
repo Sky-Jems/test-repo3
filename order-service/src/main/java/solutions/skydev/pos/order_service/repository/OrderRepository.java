@@ -7,6 +7,5 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
-    List<Order> findByCreatedAtBetween(OffsetDateTime from, OffsetDateTime to);
-
+    Order findByIdAndCreatedAtBetween(Long id, OffsetDateTime createdAtAfter, OffsetDateTime createdAtBefore);
 }

@@ -61,7 +61,7 @@
                         Width="*"
                         Binding="{Binding Name}"
                         Header="Name" />
-                    <DataGridTemplateColumn Tag="Actions">
+                    <DataGridTemplateColumn Header="none" Tag="Actions">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" Spacing="8">

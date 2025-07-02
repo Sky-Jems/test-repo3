@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -92,6 +93,39 @@ namespace pos.Api
 
             _tokenStore.AccessToken = null;
             _tokenStore.RefreshToken = null;
+        }
+
+        public Task<List<Staff>> GetStaffAsync()
+        {
+            var token = _tokenStore.AccessToken ?? "mock-access-token";
+
+            var staffList = new List<Staff>
+            {
+                // TODO : fetch from backend
+                new Staff { Id = 1, Name = "Lea Salonga", AccessToken = token },
+                new Staff { Id = 2, Name = "Sarah Geronimo", AccessToken = token },
+                new Staff { Id = 3, Name = "Piolo Pascual", AccessToken = token },
+                new Staff { Id = 4, Name = "Vice Ganda", AccessToken = token },
+                new Staff { Id = 5, Name = "Anne Curtis", AccessToken = token },
+                new Staff { Id = 6, Name = "Kathryn Bernardo", AccessToken = token },
+                new Staff { Id = 7, Name = "Daniel Padilla", AccessToken = token },
+                new Staff { Id = 8, Name = "Coco Martin", AccessToken = token },
+                new Staff { Id = 9, Name = "Liza Soberano", AccessToken = token },
+                new Staff { Id = 10, Name = "Enrique Gil", AccessToken = token },
+                new Staff { Id = 11, Name = "Alden Richards", AccessToken = token },
+                new Staff { Id = 12, Name = "Maine Mendoza", AccessToken = token },
+                new Staff { Id = 13, Name = "James Reid", AccessToken = token },
+                new Staff { Id = 14, Name = "Nadine Lustre", AccessToken = token },
+                new Staff { Id = 15, Name = "Angel Locsin", AccessToken = token },
+                new Staff { Id = 16, Name = "Bea Alonzo", AccessToken = token },
+                new Staff { Id = 17, Name = "John Lloyd Cruz", AccessToken = token },
+                new Staff { Id = 18, Name = "Dingdong Dantes", AccessToken = token },
+                new Staff { Id = 19, Name = "Marian Rivera", AccessToken = token },
+                new Staff { Id = 20, Name = "Julia Barretto", AccessToken = token },
+            };
+
+            return Task.FromResult(staffList);
+
         }
     }
 }

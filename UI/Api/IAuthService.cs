@@ -9,4 +9,5 @@ public interface IAuthService
     Task<string> GetAccessTokenAsync();
     Task<string> RefreshTokenAsync();
     Task LogoutAsync();
+    Task<List<Staff>> GetStaffAsync();
 }

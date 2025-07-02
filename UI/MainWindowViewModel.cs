@@ -20,6 +20,7 @@ public class MainWindowViewModel : ReactiveObject, IScreen
     public string Password { get; set; }
 
     public ReactiveCommand<Unit, Unit> LoginCommand { get; }
+    public ReactiveCommand<Unit, Unit> NavigateStaffLoginCommand { get; }
 
     public event Action? UnknownUser;
     public event Action<string>? LoginFailed;
@@ -36,6 +37,11 @@ public class MainWindowViewModel : ReactiveObject, IScreen
             Console.WriteLine($"Login failed: {ex.Message}");
             LoginFailed?.Invoke("Login failed");
         });
+        NavigateStaffLoginCommand = ReactiveCommand.Create(() =>
+       {
+           Router.Navigate.Execute(new StaffLoginViewModel(this, _authService));
+
+       });
     }
 
     public async Task LoginAsync()

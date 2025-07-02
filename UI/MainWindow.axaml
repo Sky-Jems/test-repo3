@@ -46,8 +46,13 @@
                         Classes="Large"
                         Click="onClickLogin"
                         Content="Login"
-                        Theme="{StaticResource SolidButton}">
-                    </Button>
+                        Theme="{StaticResource SolidButton}" />
+                    <Button
+                        HorizontalAlignment="Stretch"
+                        Classes="Large"
+                        Command="{Binding NavigateStaffLoginCommand}"
+                        Content="Staff Login"
+                        Theme="{StaticResource SolidButton}" />
                 </StackPanel>
             </rxui:RoutedViewHost.DefaultContent>
             <rxui:RoutedViewHost.ViewLocator>

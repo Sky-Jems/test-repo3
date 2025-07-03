@@ -1,0 +1,5 @@
+{
+  "CustomSettings": {
+    "GatewayAddress": "http://localhost"
+  }
+}

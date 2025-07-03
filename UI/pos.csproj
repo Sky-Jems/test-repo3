@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <Folder Include="Assets/" />
-    <Folder Include="Models\" />
     <AvaloniaResource Include="Assets\**" />
     <Folder Include="Resources/" />
   </ItemGroup>
@@ -30,9 +29,21 @@
     <PackageReference Include="AvaloniaDialogs" Version="3.6.1" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
     <PackageReference Include="HotAvalonia" Version="3.0.0" PrivateAssets="All" Publish="True" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.6" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.6" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.6" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.5" />
     <PackageReference Include="Semi.Avalonia" Version="11.2.1.7" />
     <PackageReference Include="Semi.Avalonia.DataGrid" Version="11.2.1.7" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.12.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="appsettings.json.example">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

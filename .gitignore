@@ -485,3 +485,9 @@ $RECYCLE.BIN/
 *.swp
 
 console-test-app/
+
+#ServerPOS configuration
+services-app-pos/appsettings.json
+
+#ClientPOS configuration
+UI/appsettings.json

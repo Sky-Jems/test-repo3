@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using pos.Handlers.Interfaces;
 using pos.Api;
 using Microsoft.Extensions.DependencyInjection;
+using Pos;
 
 namespace pos.Handlers
 {
@@ -20,7 +21,7 @@ namespace pos.Handlers
             _client = new HttpClient
             {
                 // base.DefaultRequestHeaders.Add("fad", "fad");
-                BaseAddress = new Uri("http://localhost:8081/")
+                BaseAddress = new Uri($"{Program.customSettings.GatewayAddress}:8081/")
             };
         }
 

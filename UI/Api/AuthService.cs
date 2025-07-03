@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using pos.Extensions;
 using pos.Handlers.Interfaces;
+using Pos;
 using Pos.Models;
 
 namespace pos.Api
@@ -20,7 +21,7 @@ namespace pos.Api
             _tokenStore = tokenStore;
             _client = new HttpClient
         {
-            BaseAddress = new Uri("http://localhost:8081/")
+            BaseAddress = new Uri($"{Program.customSettings.GatewayAddress}:8081/")
         };
         }
 

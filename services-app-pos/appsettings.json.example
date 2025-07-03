@@ -1,0 +1,13 @@
+{
+  "CustomSettings": {
+    "KafkaPort": 9092,
+    "ZookeeperPort": 2181,
+    "MainDrive": "C:",
+    "PostgreSQLAccount":  "<username>",
+    "PostgreSQLPassword": "<password>",
+    "PostgreSQLInstallationDirectory": "\\Program Files\\PostgreSQL\\17",
+    "PostgreSQLPath": "\\Program Files\\PostgreSQL\\17\\bin\\pg_ctl.exe",
+    "PostgreSQLData": "\\Program Files\\PostgreSQL\\17\\data",
+    "InstallationDirectory": "\\Program Files\\Skydev Solutions Inc\\ServerPOS"
+  }
+}

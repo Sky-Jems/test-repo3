@@ -48,7 +48,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthExceptions.UserNotFoundException.class)
     public ProblemDetail handleUserNotFoundException(AuthExceptions.UserNotFoundException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
-        problemDetail.setTitle("User Not Found");
+        problemDetail.setTitle("Account Not Found");
         problemDetail.setDetail(ex.getMessage() != null ? ex.getMessage() : "The requested user was not found");
 
         return problemDetail;
@@ -66,7 +66,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthExceptions.UserAlreadyExistsException.class)
     public ProblemDetail handleUserAlreadyExistsException(AuthExceptions.UserAlreadyExistsException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
-        problemDetail.setTitle("User Already Exists");
+        problemDetail.setTitle("Account Already Exists");
         problemDetail.setDetail(ex.getMessage() != null ? ex.getMessage() : "A user with this username already exists");
 
         return problemDetail;

@@ -9,8 +9,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import solutions.skydev.pos.auth_service.exception.AuthExceptions;
-import solutions.skydev.pos.auth_service.model.dto.response.AuthResponseDto;
-import solutions.skydev.pos.auth_service.model.entity.User;
+import solutions.skydev.pos.common.auth_service.dto.response.AuthResponseDto;
+import solutions.skydev.pos.auth_service.model.entity.Account;
 import solutions.skydev.pos.auth_service.model.mapper.AuthMapper;
 import solutions.skydev.pos.auth_service.model.result.AuthResult;
 import solutions.skydev.pos.auth_service.repository.AuthRepository;
@@ -41,11 +41,12 @@ public class AuthServiceImplTests {
 
     private PasswordEncoder encoder;
 
-    private User buildUser(String username, String password) {
-        User user = new User();
-        user.setUsername(username);
-        user.setPassword(password);
-        return user;
+    private Account buildUser(String username, String password) {
+        Account account = new Account();
+        account.setUsername(username);
+        account.setAdmin(true);
+        account.setPassword(password);
+        return account;
     }
 
     @BeforeEach
@@ -56,21 +57,21 @@ public class AuthServiceImplTests {
     @Test
     @DisplayName("Should register a new user and call repository save")
     void registerUser_success() {
-        User user = buildUser("testuser", "password");
+        Account account = buildUser("testuser", "password");
 
         when(authRepository.findByUsername("testuser")).thenReturn(Optional.empty());
-        authService.register(user);
+        authService.register(account);
 
-        verify(authRepository).save(any(User.class));
+        verify(authRepository).save(any(Account.class));
     }
 
     @Test
     @DisplayName("Should throw when registering an already existing user")
     void registerUser_alreadyExists() {
-        User user = buildUser("testuser", "password");
-        when(authRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
+        Account account = buildUser("testuser", "password");
+        when(authRepository.findByUsername("testuser")).thenReturn(Optional.of(account));
 
-        assertThrows(AuthExceptions.UserAlreadyExistsException.class, () -> authService.register(user));
+        assertThrows(AuthExceptions.UserAlreadyExistsException.class, () -> authService.register(account));
     }
 
     @Test
@@ -82,14 +83,14 @@ public class AuthServiceImplTests {
         String accessToken = "access-token";
         String refreshToken = "refresh-token";
 
-        User dbUser = buildUser(username, encodedPassword);
-        User loginUser = buildUser(username, rawPassword);
+        Account dbAccount = buildUser(username, encodedPassword);
+        Account loginAccount = buildUser(username, rawPassword);
 
-        when(authRepository.findByUsername(username)).thenReturn(Optional.of(dbUser));
-        when(jwtUtil.generateToken(username)).thenReturn(accessToken);
-        when(refreshTokenService.generateRefreshToken(dbUser)).thenReturn(refreshToken);
+        when(authRepository.findByUsername(username)).thenReturn(Optional.of(dbAccount));
+        when(jwtUtil.generateToken(username, "ADMIN")).thenReturn(accessToken);
+        when(refreshTokenService.generateRefreshToken(dbAccount)).thenReturn(refreshToken);
 
-        AuthResult tokens = authService.authenticate(loginUser);
+        AuthResult tokens = authService.authenticate(loginAccount);
 
         assertNotNull(tokens);
         assertEquals(accessToken, tokens.accessToken());
@@ -109,20 +110,20 @@ public class AuthServiceImplTests {
     void authenticateUser_userNotFound() {
         when(authRepository.findByUsername("missing")).thenReturn(Optional.empty());
 
-        User user = buildUser("missing", "any");
+        Account account = buildUser("missing", "any");
 
-        assertThrows(AuthExceptions.UserNotFoundException.class, () -> authService.authenticate(user));
+        assertThrows(AuthExceptions.UserNotFoundException.class, () -> authService.authenticate(account));
     }
 
     @Test
     @DisplayName("Should throw when password does not match")
     void authenticateUser_invalidPassword() {
         String username = "testuser";
-        User dbUser = buildUser(username, encoder.encode("correct"));
-        User loginUser = buildUser(username, "wrong");
+        Account dbAccount = buildUser(username, encoder.encode("correct"));
+        Account loginAccount = buildUser(username, "wrong");
 
-        when(authRepository.findByUsername(username)).thenReturn(Optional.of(dbUser));
+        when(authRepository.findByUsername(username)).thenReturn(Optional.of(dbAccount));
 
-        assertThrows(AuthExceptions.InvalidCredentialsException.class, () -> authService.authenticate(loginUser));
+        assertThrows(AuthExceptions.InvalidCredentialsException.class, () -> authService.authenticate(loginAccount));
     }
 }

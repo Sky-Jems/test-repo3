@@ -1,4 +1,4 @@
-package solutions.skydev.pos.auth_service.model.dto.response;
+package solutions.skydev.pos.common.auth_service.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

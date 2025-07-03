@@ -7,8 +7,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import solutions.skydev.pos.auth_service.exception.AuthExceptions;
-import solutions.skydev.pos.auth_service.model.dto.response.AuthResponseDto;
-import solutions.skydev.pos.auth_service.model.entity.User;
+import solutions.skydev.pos.common.auth_service.dto.response.AuthResponseDto;
+import solutions.skydev.pos.auth_service.model.entity.Account;
 import solutions.skydev.pos.auth_service.model.entity.UserRefreshToken;
 import solutions.skydev.pos.auth_service.model.mapper.AuthMapper;
 import solutions.skydev.pos.auth_service.model.result.AuthResult;
@@ -37,27 +37,28 @@ public class RefreshTokenServiceImplTests {
     @InjectMocks
     private RefreshTokenServiceImpl refreshTokenService;
 
-    private User user;
+    private Account account;
     private String sampleRefreshToken;
 
     @BeforeEach
     void setup() {
-        user = new User();
-        user.setId(1L);
-        user.setUsername("testuser");
+        account = new Account();
+        account.setId(1L);
+        account.setUsername("testuser");
+        account.setAdmin(true);
         sampleRefreshToken = UUID.randomUUID().toString();
     }
 
     @Test
     @DisplayName("Should generate a new refresh token and save it")
     void GenerateRefreshToken() {
-        doNothing().when(tokenRepository).deleteByUser(user);
+        doNothing().when(tokenRepository).deleteByAccount(account);
         when(tokenRepository.save(any(UserRefreshToken.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        String token = refreshTokenService.generateRefreshToken(user);
+        String token = refreshTokenService.generateRefreshToken(account);
 
         assertNotNull(token);
-        verify(tokenRepository).deleteByUser(user);
+        verify(tokenRepository).deleteByAccount(account);
         verify(tokenRepository).save(any(UserRefreshToken.class));
     }
 
@@ -66,14 +67,14 @@ public class RefreshTokenServiceImplTests {
     void RefreshTokens_Success() {
         UserRefreshToken existingToken = new UserRefreshToken();
         existingToken.setRefreshToken(sampleRefreshToken);
-        existingToken.setUser(user);
+        existingToken.setAccount(account);
         existingToken.setExpiresAt(LocalDateTime.now().plusDays(1));
 
         String newAccessToken = "newAccessToken";
         String newRefreshToken = "newRefreshToken";
 
         when(tokenRepository.findByRefreshToken(sampleRefreshToken)).thenReturn(Optional.of(existingToken));
-        when(jwtUtil.generateToken(user.getUsername())).thenReturn(newAccessToken);
+        when(jwtUtil.generateToken(account.getUsername(), "ADMIN")).thenReturn(newAccessToken);
         when(tokenRepository.save(any(UserRefreshToken.class))).thenAnswer(invocation -> {
             UserRefreshToken savedToken = invocation.getArgument(0);
             savedToken.setRefreshToken(newRefreshToken);
@@ -115,7 +116,7 @@ public class RefreshTokenServiceImplTests {
     void RefreshTokens_ExpiredToken() {
         UserRefreshToken expiredToken = new UserRefreshToken();
         expiredToken.setRefreshToken(sampleRefreshToken);
-        expiredToken.setUser(user);
+        expiredToken.setAccount(account);
         expiredToken.setExpiresAt(LocalDateTime.now().minusMinutes(1));
 
         when(tokenRepository.findByRefreshToken(sampleRefreshToken)).thenReturn(Optional.of(expiredToken));

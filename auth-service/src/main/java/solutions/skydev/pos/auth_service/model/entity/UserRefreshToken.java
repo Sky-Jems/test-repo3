@@ -22,7 +22,7 @@ public class UserRefreshToken {
     private LocalDateTime expiresAt;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "account_id")
+    private Account account;
 }
 

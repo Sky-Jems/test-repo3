@@ -1,7 +1,7 @@
 package solutions.skydev.pos.auth_service.model.mapper;
 
 import org.mapstruct.Mapper;
-import solutions.skydev.pos.auth_service.model.dto.request.RefreshTokenRequestDto;
+import solutions.skydev.pos.common.auth_service.dto.request.RefreshTokenRequestDto;
 import solutions.skydev.pos.auth_service.model.entity.UserRefreshToken;
 
 @Mapper(componentModel = "spring")

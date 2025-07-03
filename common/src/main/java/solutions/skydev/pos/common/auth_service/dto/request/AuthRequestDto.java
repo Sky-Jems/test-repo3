@@ -1,8 +1,8 @@
-package solutions.skydev.pos.auth_service.model.dto.request;
+package solutions.skydev.pos.common.auth_service.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 
 import java.io.Serializable;
@@ -13,9 +13,8 @@ import java.io.Serializable;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AuthRequestDto implements Serializable {
 
-    @NotBlank(message = "Username must not be blank")
     private String username;
-
-    @NotBlank(message = "Password must not be blank")
     private String password;
+    private Boolean admin;
+    private Long userId;
 }

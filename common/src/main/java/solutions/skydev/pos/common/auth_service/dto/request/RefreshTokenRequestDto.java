@@ -1,7 +1,7 @@
-package solutions.skydev.pos.auth_service.model.dto.request;
+package solutions.skydev.pos.common.auth_service.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.validation.constraints.NotBlank;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
@@ -16,7 +16,7 @@ import lombok.extern.jackson.Jacksonized;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RefreshTokenRequestDto {
 
-    @NotBlank(message = "Refresh token is required")
+    @JsonProperty("refresh_token")
     private String refreshToken;
 
     public RefreshTokenRequestDto() {}

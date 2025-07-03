@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import solutions.skydev.pos.auth_service.exception.AuthExceptions;
+import solutions.skydev.pos.auth_service.model.entity.Account;
 import solutions.skydev.pos.auth_service.model.entity.User;
 import solutions.skydev.pos.auth_service.model.entity.UserRefreshToken;
 import solutions.skydev.pos.auth_service.model.result.AuthResult;
@@ -31,17 +32,22 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     }
 
     @Override
-    public String generateRefreshToken(User user) {
+    public String generateRefreshToken(Account account) {
         String refreshToken = createRefreshTokenString();
 
         if (SINGLE_REFRESH_TOKEN_PER_USER) {
-            userRefreshTokenRepository.deleteByUser(user);
+            userRefreshTokenRepository.deleteByAccount(account);
         }
 
-        UserRefreshToken tokenEntity = createRefreshTokenEntity(refreshToken, user);
+        UserRefreshToken tokenEntity = createRefreshTokenEntity(refreshToken, account);
         userRefreshTokenRepository.save(tokenEntity);
 
         return refreshToken;
+    }
+
+    @Override
+    public String generateRefreshToken(User user) {
+        return generateRefreshToken(user.getAccount());
     }
 
     @Override
@@ -51,8 +57,8 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
         validateRefreshToken(tokenEntity);
 
-        User user = tokenEntity.getUser();
-        String newAccessToken = jwtUtil.generateToken(user.getUsername());
+        Account account = tokenEntity.getAccount();
+        String newAccessToken = jwtUtil.generateToken(account.getUsername(), account.getAdmin() ? "ADMIN" : "EMPLOYEE");
         String newRefreshToken = createRefreshTokenString();
 
         tokenEntity.setRefreshToken(newRefreshToken);
@@ -66,10 +72,10 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         return UUID.randomUUID().toString();
     }
 
-    private UserRefreshToken createRefreshTokenEntity(String refreshToken, User user) {
+    private UserRefreshToken createRefreshTokenEntity(String refreshToken, Account account) {
         UserRefreshToken tokenEntity = new UserRefreshToken();
         tokenEntity.setRefreshToken(refreshToken);
-        tokenEntity.setUser(user);
+        tokenEntity.setAccount(account);
         tokenEntity.setExpiresAt(LocalDateTime.now().plusDays(REFRESH_TOKEN_EXPIRY_DAYS));
         return tokenEntity;
     }

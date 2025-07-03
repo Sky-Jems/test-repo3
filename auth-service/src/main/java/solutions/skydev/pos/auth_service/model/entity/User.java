@@ -6,9 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity
 @Table(name = "users") // user is a reserved keyword in postgres
 @Getter
@@ -16,12 +13,19 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String username;
-    private String password;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UserRefreshToken> refreshTokens = new ArrayList<>();
+    @Id
+    @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
+    private Long id;
+    private String firstName;
+    private String lastName;
+
+    @OneToOne
+    @JoinColumn(name = "account_id")
+    private Account account;
+
+
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
 }

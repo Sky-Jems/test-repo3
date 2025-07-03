@@ -4,19 +4,18 @@ package solutions.skydev.pos.auth_service.controller;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import solutions.skydev.pos.auth_service.model.dto.request.AuthRequestDto;
-import solutions.skydev.pos.auth_service.model.dto.request.RefreshTokenRequestDto;
-import solutions.skydev.pos.auth_service.model.dto.response.AuthResponseDto;
-import solutions.skydev.pos.auth_service.model.entity.User;
+import org.springframework.web.bind.annotation.*;
+import solutions.skydev.pos.common.auth_service.dto.request.AuthRequestDto;
+import solutions.skydev.pos.common.auth_service.dto.request.RefreshTokenRequestDto;
+import solutions.skydev.pos.common.auth_service.dto.response.AuthResponseDto;
+import solutions.skydev.pos.auth_service.model.entity.Account;
 import solutions.skydev.pos.auth_service.model.mapper.AuthMapper;
 import solutions.skydev.pos.auth_service.model.mapper.RefreshTokenMapper;
 import solutions.skydev.pos.auth_service.model.result.AuthResult;
 import solutions.skydev.pos.auth_service.service.AuthService;
 import solutions.skydev.pos.auth_service.service.RefreshTokenService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/auth")
@@ -38,16 +37,16 @@ public class AuthController {
 
     @PostMapping("/login")
      public ResponseEntity<AuthResponseDto> login(@Valid @RequestBody AuthRequestDto loginRequest) {
-         User loginUser = authMapper.toEntity(loginRequest);
-         AuthResult tokens = authService.authenticate(loginUser);
+         Account loginAccount = authMapper.toEntity(loginRequest);
+         AuthResult tokens = authService.authenticate(loginAccount);
          AuthResponseDto response = authMapper.toDto(tokens);
          return ResponseEntity.ok(response);
      }
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@Valid @RequestBody AuthRequestDto registerRequest) {
-        User registerUser = authMapper.toEntity(registerRequest);
-        authService.register(registerUser);
+        Account registerAccount = authMapper.toEntity(registerRequest);
+        authService.register(registerAccount);
         return ResponseEntity.ok().build();
      }
 
@@ -63,5 +62,4 @@ public class AuthController {
         refreshTokenService.revokeRefreshToken(logoutRequest.getRefreshToken());
         return ResponseEntity.ok().build();
     }
-
 }

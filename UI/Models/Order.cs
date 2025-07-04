@@ -18,15 +18,18 @@ public class Order
     public List<LineItemDto>? LineItems { get; set; }
 }
 
-public class OrderResponseDto
+public class UpdateOrderDto
 {
-    [JsonPropertyName("order_id")]
-    public long OrderId { get; set; }
-
+    [JsonPropertyName("id")]
+    public long Id { get; set; }
+    [JsonPropertyName("customer")]
     public string Customer { get; set; }
-
+    [JsonPropertyName("total")]
+    public decimal Total { get; set; }
+    [JsonPropertyName("table_number")]
+    public string TableNumber { get; set; }
     [JsonPropertyName("line_items")]
-    public List<LineItemDto>? LineItems { get; set; }
+    public List<LineItemDto> LineItems { get; set; }
 }
 
 public class GetOrderResponseDto

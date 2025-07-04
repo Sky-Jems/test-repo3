@@ -1,6 +1,6 @@
-using System;
 using Microsoft.Extensions.DependencyInjection;
 using pos.Api;
+using Pos.Controls;
 using pos.Handlers;
 using pos.Handlers.Interfaces;
 
@@ -17,5 +17,6 @@ public static class ServiceCollectionExtensions
         collection.AddSingleton<IProductService, ProductService>();
         collection.AddSingleton<ICategoryService, CategoryService>();
         collection.AddSingleton<IOrderService, OrderService>();
+        collection.AddSingleton<OrderCartPanelViewModel>();
     }
 }

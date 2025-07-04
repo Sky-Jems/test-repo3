@@ -50,4 +50,18 @@ public class OrderConsumer {
         Order clearedOrder = this.orderService.clearLineItems(order);
         return this.orderMapper.toResponseDto(clearedOrder);
     }
+
+    @KafkaListener(topics = "update-customer-command")
+    @AsyncListener(operation = @AsyncOperation(
+            channelName = "update-customer-command",
+            description = "Update customer name command"
+    ))
+    @KafkaAsyncOperationBinding
+    @SendTo("order.updated")
+    public OrderResponseDto updateCustomerCommand(ConsumerRecord<String, OrderRequestDto> record) {
+        OrderRequestDto orderRequestDto = record.value();
+        Order order = this.orderMapper.toEntity(orderRequestDto);
+        Order updatedOrder = this.orderService.updateCustomer(order);
+        return this.orderMapper.toResponseDto(updatedOrder);
+    }
 }

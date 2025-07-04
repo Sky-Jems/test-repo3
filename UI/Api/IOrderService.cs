@@ -11,5 +11,7 @@ public interface IOrderService
  Task<GetOrderResponseDto> UpdateLineItem(LineItemDto lineItemDto);
  Task<GetOrderResponseDto> RemoveLineItem(long productId);
  Task<GetOrderResponseDto> ClearLineItems(long orderId);
- Task<OrderResponseDto> PayOrder(long? orderId, string paymentMethod);
+ Task<UpdateOrderDto> PayOrder(long? orderId, string paymentMethod);
+ Task<UpdateOrderDto> UpdateCustomer(UpdateOrderDto updateOrderDto);
+ Task<GetOrderResponseDto> GetOrderTransaction(long id);
 }

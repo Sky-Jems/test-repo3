@@ -17,4 +17,10 @@ public static class Constants
         COMPLETED,
         CANCELED
     }
+
+    public enum OrderDiscountType
+    {
+        LineItem,
+        Order
+    }
 }

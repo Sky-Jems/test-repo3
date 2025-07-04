@@ -7,8 +7,11 @@ import org.springframework.kafka.requestreply.RequestReplyFuture;
 import org.springframework.stereotype.Component;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import solutions.skydev.pos.common.order_service.dto.request.OrderRequestDto;
+import solutions.skydev.pos.common.order_service.dto.response.OrderResponseDto;
 import solutions.skydev.pos.gateway_service.config.KafkaConfig;
 
+import java.time.Duration;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -17,28 +20,25 @@ import java.util.concurrent.TimeoutException;
 public class OrderProducer {
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
-    private final ReplyingKafkaTemplate<String, Object, Object> replyingKafkaTemplate;
-    private static final String REPLY_TOPIC = "order.created";
+    private final ReplyingKafkaTemplate<String, Object, Object> replyingKafkaTemplateUpdated;
 
     @Autowired
     public OrderProducer(KafkaTemplate<String, Object> kafkaTemplate,
                         KafkaConfig kafkaConfig) {
         this.kafkaTemplate = kafkaTemplate;
-        this.replyingKafkaTemplate = kafkaConfig.createReplyingKafkaTemplate(REPLY_TOPIC);
+
+        this.replyingKafkaTemplateUpdated = kafkaConfig.createReplyingKafkaTemplate("order.updated");
+        this.replyingKafkaTemplateUpdated.setSharedReplyTopic(true);
+        this.replyingKafkaTemplateUpdated.start();
     }
 
-//    public String sendOrderCreateCommand(String requestBody) throws ExecutionException, InterruptedException, TimeoutException {
-//        ProducerRecord<String, String> record = new ProducerRecord<>("create-order-command", requestBody);
-//        RequestReplyFuture<String, String, String> future = replyingKafkaTemplate.sendAndReceive(record);
-//        ConsumerRecord<String, String> response = future.get(10, TimeUnit.SECONDS);
-//        return response.value();
-//    }
-//
-//    public void sendOrderUpdateCommand(String id, String requestBody) {
-//        this.kafkaTemplate.send("update-order-command", id, requestBody);
-//    }
-//
-//    public void sendOrderDeleteCommand(String id) {
-//        this.kafkaTemplate.send("delete-order-command", id, null);
-//    }
+    public OrderResponseDto sendOrderUpdateCommand(String id, OrderRequestDto requestBody) throws ExecutionException, InterruptedException, TimeoutException {
+        if (!this.replyingKafkaTemplateUpdated.waitForAssignment(Duration.ofSeconds(10))) {
+            throw new IllegalStateException("Reply container did not initialize");
+        }
+        ProducerRecord<String, Object> record = new ProducerRecord<>("update-customer-command", id, requestBody);
+        RequestReplyFuture<String, Object, Object> future = this.replyingKafkaTemplateUpdated.sendAndReceive(record);
+        ConsumerRecord<String, Object> response = future.get(10, TimeUnit.SECONDS);
+        return (OrderResponseDto) response.value();
+    }
 }

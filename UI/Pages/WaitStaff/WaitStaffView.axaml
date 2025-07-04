@@ -9,7 +9,7 @@
     xmlns:rxui="http://reactiveui.net"
     x:DataType="app:WaitStaffViewModel"
     mc:Ignorable="d">
-    <Grid ColumnDefinitions="* 2*">
+    <Grid ColumnDefinitions="450 *">
         <Border BorderBrush="{StaticResource SemiColorBorder}" BorderThickness="0,0,1,0">
             <controls:OrderCartPanel
                 DataContext="{Binding OrderCartPanelViewModel}"

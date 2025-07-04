@@ -13,4 +13,5 @@ public interface OrderService {
     Order updateOrder(Order order);
     void deleteOrder(Long id);
     Order findByOrderIdAndCreatedAtBetween(Long orderId, OffsetDateTime startDate, OffsetDateTime endDate);
+    Order updateCustomer(Order order);
 }

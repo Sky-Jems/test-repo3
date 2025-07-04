@@ -1,0 +1,179 @@
+<UserControl
+    x:Class="Pos.Controls.OrderDisplayPanel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:Pos.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:Pos.Controls"
+    x:Name="root"
+    x:DataType="vm:OrderDisplayPanelViewModel"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <converters:EqualsConverter x:Key="equalsConverter" />
+        <converters:IsZeroConverter x:Key="isZeroConverter" />
+        <converters:IsGreaterThanZeroConverter x:Key="isGreaterThanZeroConverter" />
+    </UserControl.Resources>
+
+    <DockPanel>
+        <Grid RowDefinitions="auto * auto">
+            <!--  header  -->
+            <Label
+                Grid.Row="0"
+                Margin="24,24,24,0"
+                VerticalAlignment="Center"
+                Classes="H4"
+                Content="Order Items"
+                Theme="{StaticResource TitleLabel}" />
+
+            <!--  order list  -->
+            <Border
+                Grid.Row="1"
+                Margin="24,16"
+                ClipToBounds="True"
+                CornerRadius="4">
+                <Grid>
+                    <ScrollViewer IsVisible="{Binding OrderTransactionDetails.Order.LineItems.Count, Converter={StaticResource isGreaterThanZeroConverter}}">
+                        <ListBox
+                            IsHitTestVisible="false"
+                            ItemsSource="{Binding OrderTransactionDetails.Order.LineItems}"
+                            Theme="{StaticResource PureCardRadioGroupListBox}">
+                            <ListBox.Styles>
+                                <Style Selector="ListBoxItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                    <Setter Property="Padding" Value="16 12 16 12" />
+                                </Style>
+                            </ListBox.Styles>
+
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Spacing="8">
+                                        <Grid
+                                            HorizontalAlignment="Stretch"
+                                            ColumnDefinitions="* auto"
+                                            ColumnSpacing="16"
+                                            RowDefinitions="auto auto">
+                                            <TextBlock
+                                                Grid.Column="0"
+                                                VerticalAlignment="Center"
+                                                FontSize="{StaticResource SemiFontSizeRegular}"
+                                                LineHeight="{StaticResource SemiFontSizeHeader5}">
+                                                <TextBlock.Text>
+                                                    <MultiBinding StringFormat="{}{0} - {1}">
+                                                        <Binding Path="Product.ProductName" />
+                                                        <Binding Path="Product.ProductDescription" />
+                                                    </MultiBinding>
+                                                </TextBlock.Text>
+                                            </TextBlock>
+
+                                            <Label
+                                                Grid.Row="1"
+                                                Grid.Column="0"
+                                                VerticalContentAlignment="Center"
+                                                Content="{Binding Price, StringFormat='₱{0:N2}'}"
+                                                FontSize="{StaticResource SemiFontSizeSmall}"
+                                                Foreground="{StaticResource SemiColorText2}" />
+
+                                            <Label
+                                                Grid.Row="0"
+                                                Grid.Column="1"
+                                                VerticalAlignment="Top"
+                                                Classes="Indigo Circle"
+                                                Content="{Binding Quantity, StringFormat='{}{0}x'}"
+                                                Theme="{StaticResource TagLabel}" />
+                                        </Grid>
+
+                                        <Rectangle
+                                            Stroke="{StaticResource SemiColorFill2}"
+                                            StrokeDashArray="2,6"
+                                            StrokeThickness="1" />
+
+                                        <Label
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Center"
+                                            Content="{Binding SubTotal, StringFormat='₱{0:N2}'}"
+                                            Theme="{StaticResource TitleLabel}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Vertical" Spacing="8" />
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                        </ListBox>
+                    </ScrollViewer>
+
+                    <!--  Zero state message  -->
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontSize="14"
+                        Foreground="Gray"
+                        IsVisible="{Binding OrderTransactionDetails.Order.LineItems.Count, Converter={StaticResource isZeroConverter}}"
+                        Text="No items yet. To add items, start by selecting a service and then choose a product."
+                        TextAlignment="Center"
+                        TextWrapping="Wrap" />
+                </Grid>
+            </Border>
+
+            <!--  summary  -->
+            <Border
+                Grid.Row="2"
+                Padding="16"
+                Background="{StaticResource SemiColorPrimaryLight}"
+                CornerRadius="6 6 0 0">
+                <StackPanel Spacing="6">
+                    <StackPanel.Styles>
+                        <Style Selector="Label">
+                            <Setter Property="FontSize" Value="{StaticResource SemiFontSizeSmall}" />
+                            <Style Selector="^.title">
+                                <Setter Property="Foreground" Value="{StaticResource SemiColorText2}" />
+                            </Style>
+                            <Style Selector="^.description">
+                                <Setter Property="HorizontalContentAlignment" Value="Right" />
+                            </Style>
+                        </Style>
+                    </StackPanel.Styles>
+
+                    <UniformGrid Columns="2" RowSpacing="6">
+                        <Label Classes="title" Content="Subtotal" />
+                        <Label Classes="description" Content="{Binding OrderTransactionDetails.GrossAmount, StringFormat='₱{0:N2}'}" />
+
+                        <Label Classes="title" Content="Discount" />
+                        <Label Classes="description" Content="{Binding OrderTransactionDetails.DiscountAmount, StringFormat='₱{0:N2}'}" />
+                    </UniformGrid>
+
+                    <Rectangle
+                        Margin="0,4"
+                        Stroke="{StaticResource SemiColorFill2}"
+                        StrokeDashArray="2,6"
+                        StrokeThickness="1" />
+
+                    <UniformGrid Rows="1">
+                        <Label
+                            HorizontalAlignment="Stretch"
+                            Content="Total"
+                            FontSize="{StaticResource SemiFontSizeRegular}"
+                            Theme="{StaticResource TitleLabel}" />
+                        <Label
+                            Classes="description"
+                            Content="{Binding OrderTransactionDetails.NetAmount, StringFormat='₱{0:N2}'}"
+                            FontSize="{StaticResource SemiFontSizeRegular}"
+                            Theme="{StaticResource TitleLabel}" />
+                    </UniformGrid>
+
+                    <Button
+                        Margin="0,8,0,0"
+                        HorizontalAlignment="Stretch"
+                        Classes="Large"
+                        Command="{Binding SummaryButtonCommand, ElementName=root}"
+                        Content="{Binding SummaryButtonText, ElementName=root}"
+                        IsVisible="{Binding ShowSummaryButton, ElementName=root}"
+                        Theme="{StaticResource SolidButton}" />
+                </StackPanel>
+            </Border>
+        </Grid>
+    </DockPanel>
+</UserControl>

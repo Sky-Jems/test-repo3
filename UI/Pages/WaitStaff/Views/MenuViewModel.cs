@@ -22,11 +22,9 @@ public class MenuViewModel : ReactiveObject, IRoutableViewModel
     private readonly ICartService _cartService;
     private readonly IOrderService _orderService;
     private Category Category { get; set; }
-    public ObservableCollection<Product> Products { get; set; } = new ();
+    public ObservableCollection<Product> Products { get; set; } = new();
     private ReactiveCommand<Unit, Unit> LoadProductsCommand { get; }
     public ICommand ProductCardClickedCommand { get; }
-    public ReactiveCommand<Unit, Unit> ClickPlusCommand { get; }
-    public ReactiveCommand<Unit, Unit> ClickMinusCommand { get; }
     private int _selectedItemQuantity;
     private int SelectedItemQuantity
     {
@@ -51,8 +49,6 @@ public class MenuViewModel : ReactiveObject, IRoutableViewModel
 
         LoadProductsCommand = ReactiveCommand.CreateFromTask(LoadProductsAsync);
         ProductCardClickedCommand = ReactiveCommand.CreateFromTask<Product>(HandleClickProduct);
-        ClickPlusCommand = ReactiveCommand.CreateFromTask(HandleClickPlusAsync);
-        ClickMinusCommand = ReactiveCommand.CreateFromTask(HandleClickMinusAsync);
 
         LoadProductsCommand.Execute().Subscribe();
 
@@ -79,7 +75,7 @@ public class MenuViewModel : ReactiveObject, IRoutableViewModel
                 }
             });
     }
-    
+
     public void UpdateCategory(Category newCategory)
     {
         if (!Category.Equals(newCategory))
@@ -88,7 +84,7 @@ public class MenuViewModel : ReactiveObject, IRoutableViewModel
             LoadProductsCommand.Execute().Subscribe();
         }
     }
-    
+
     private void UpdateProductSelection(LineItem? selectedItem)
     {
         foreach (var product in Products)
@@ -120,7 +116,7 @@ public class MenuViewModel : ReactiveObject, IRoutableViewModel
     {
         if (_isProcessingProduct)
             return;
-        
+
         if (_cartService.Items.Any(x => x.ProductId == product.Id))
             return;
 
@@ -135,10 +131,10 @@ public class MenuViewModel : ReactiveObject, IRoutableViewModel
                 Quantity = 1,
                 Price = product.Price
             };
-        
+
             var addedItem = _cartService.AddItem(item, incrementIfExists: false);
             _cartService.SelectedItem = addedItem;
-        
+
             long orderId;
 
             if (_cartService.OrderId is null)
@@ -161,81 +157,15 @@ public class MenuViewModel : ReactiveObject, IRoutableViewModel
 
             var lineItemDto = LineItemMapper.ToDto(item, orderId);
             var updatedOrder = await _orderService.AddLineItem(lineItemDto);
-        
+
             _cartService.LoadOrder(updatedOrder);
-        
+
             _cartService.SelectedItem = _cartService.Items
                 .FirstOrDefault(x => x.ProductId == addedItem.ProductId);
         }
         finally
         {
             _isProcessingProduct = false;
-        }
-    }
-    
-    private async Task HandleClickPlusAsync()
-    {
-        if (!_cartService.CanModifyItems)
-        {
-            var lockedDialog = new SingleActionDialog
-            {
-                Message = "Items cannot be modified because the order is already completed or partially paid.",
-                ButtonText = "OK"
-            };
-
-            await lockedDialog.ShowAsync();
-            return;
-        }
-        var selectedItem = _cartService.SelectedItem;
-        if (selectedItem is null)
-            return;
-
-        _cartService.AddItem(selectedItem);
-
-        if (_cartService.OrderId is null)
-            return;
-
-        var updatedOrder = await _orderService.UpdateLineItem(LineItemMapper.ToDto(selectedItem, _cartService.OrderId));
-        _cartService.LoadOrder(updatedOrder);
-
-        _cartService.SelectedItem = _cartService.Items
-            .FirstOrDefault(x => x.ProductId == selectedItem.ProductId);
-    }
-    
-    private async Task HandleClickMinusAsync()
-    {
-        if (!_cartService.CanModifyItems)
-        {
-            var lockedDialog = new SingleActionDialog
-            {
-                Message = "Items cannot be modified because the order is already completed or partially paid.",
-                ButtonText = "OK"
-            };
-
-            await lockedDialog.ShowAsync();
-            return;
-        }
-
-        var selectedItem = _cartService.SelectedItem;
-        if (selectedItem is null)
-            return;
-
-        var previousQuantity = selectedItem.Quantity;
-        _cartService.RemoveItem(selectedItem);
-
-        if (_cartService.OrderId is null)
-            return;
-
-        var updatedOrder = previousQuantity == 1
-            ? await _orderService.RemoveLineItem(selectedItem.Id)
-        : await _orderService.UpdateLineItem(LineItemMapper.ToDto(selectedItem, _cartService.OrderId));
-
-        _cartService.LoadOrder(updatedOrder);
-
-        if (previousQuantity > 1)
-        {
-            _cartService.SelectedItem = _cartService.Items
-                .FirstOrDefault(x => x.ProductId == selectedItem.ProductId);
         }
     }
 

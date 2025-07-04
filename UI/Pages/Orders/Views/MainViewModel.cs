@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using static Pos.Util.Constants;
 using System.Web;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Pos.Pages.Orders;
 
@@ -92,21 +93,21 @@ public partial class MainViewModel : ReactiveObject, IRoutableViewModel
         set => this.RaiseAndSetIfChanged(ref _AmountOfSales, value);
     }
 
-    private bool _ShowOrderCartPanelButtons;
-    public bool ShowOrderCartPanelButtons
+    private bool _ShowOrderCartPanelButton;
+    public bool ShowOrderCartPanelButton
     {
-        get => _ShowOrderCartPanelButtons;
-        set => this.RaiseAndSetIfChanged(ref _ShowOrderCartPanelButtons, value);
+        get => _ShowOrderCartPanelButton;
+        set => this.RaiseAndSetIfChanged(ref _ShowOrderCartPanelButton, value);
     }
 
-    public OrderCartPanelViewModel OrderCartPanelViewModel { get; set; } = new OrderCartPanelViewModel();
+    public OrderDisplayPanelViewModel OrderDisplayPanelViewModel { get; set; } = new OrderDisplayPanelViewModel();
     public ReactiveCommand<Unit, Unit> AddOrdersButtonCommand { get; }
     public ReactiveCommand<Unit, Unit> FilteredOrderTransactionsCommand { get; }
 
     public MainViewModel(IScreen screen, OrderTransactionService orderTransactionService, string status)
     {
         Status = status;
-        ShowOrderCartPanelButtons = status == OrderStatusType.PENDING.ToString();
+        _ShowOrderCartPanelButton = status == OrderStatusType.PENDING.ToString();
         HostScreen = screen;
         _orderTransactionService = orderTransactionService;
         AddOrdersButtonCommand = ReactiveCommand.Create(() => MessageBus.Current.SendMessage(new SelectedTabIndexMessage(0)));
@@ -132,17 +133,9 @@ public partial class MainViewModel : ReactiveObject, IRoutableViewModel
         }
     }
 
-    public void PopulateOrderCartPanel(List<LineItemDto> lineItems)
+    public void PopulateOrderCartPanel(long orderTransactionId)
     {
-        OrderCartPanelViewModel.OrderList.Clear();
-        foreach (LineItemDto lineItem in lineItems)
-        {
-            OrderCartPanelViewModel.OrderList.Add(new LineItem
-            {
-                ProductId = lineItem.ProductId,
-                Quantity = lineItem.Quantity,
-                Price = lineItem.Price
-            });
-        }
+         var orderCartPanelViewModel = ServiceLocator.Services.GetRequiredService<OrderCartPanelViewModel>();
+         orderCartPanelViewModel.LoadOrderToCart(orderTransactionId);
     }
 }

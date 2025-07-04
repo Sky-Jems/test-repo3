@@ -74,14 +74,14 @@ public partial class MainView : ReactiveUserControl<MainViewModel>
         orderDetailsPane.IsPaneOpen = true;
 
         OrderTransaction CurrentRowData = (OrderTransaction)args.Row.DataContext!;
-        ViewModel!.PopulateOrderCartPanel(CurrentRowData.Order.LineItems);
+        ViewModel!.PopulateOrderCartPanel(CurrentRowData.Id);
     }
 
     private void AddOrdersButton_Click(object sender, RoutedEventArgs args)
     {
         Button button = (Button)sender;
         OrderTransaction CurrentRowData = (OrderTransaction)button.FindAncestorOfType<DataGridRow>()!.DataContext!;
-        ViewModel!.PopulateOrderCartPanel(CurrentRowData.Order.LineItems);
+        ViewModel!.PopulateOrderCartPanel(CurrentRowData.Id);
         MessageBus.Current.SendMessage(new SelectedTabIndexMessage(0));
     }
 }

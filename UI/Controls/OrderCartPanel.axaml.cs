@@ -10,6 +10,7 @@ using AvaloniaDialogs.Views;
 using Pos.Dialogs;
 using Pos.Models;
 using ReactiveUI;
+using static Pos.Util.Constants;
 
 namespace Pos.Controls;
 
@@ -58,18 +59,9 @@ public partial class OrderCartPanel : UserControl
 
     private async void ApplyDiscountButton_Click(object sender, RoutedEventArgs args)
     {
-        Discount[] myDiscountList = [
-            new Discount { Name = "₱100 off", Description = "Applies to one product" },
-            new Discount { Name = "%20 off", Description = "Minimum spend of ₱50" },
-
-        ];
-
-        DiscountDialog dialog = new();
-        foreach (var discount in myDiscountList)
-            (dialog.DataContext as DiscountDialogViewModel)!.DiscountList.Add(discount);
-        await dialog.ShowAsync();
+        await DisplayDiscountDialog(sender, OrderDiscountType.Order);
     }
-    
+
     private async Task<bool> ShowLockedDialogIfNotModifiable(OrderCartPanelViewModel? vm)
     {
         if (vm == null || vm.CanModifyItems)
@@ -85,6 +77,28 @@ public partial class OrderCartPanel : UserControl
         return true;
     }
 
+    private async void OnPlusClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button button && button.Tag is LineItem lineItem)
+        {
+            var vm = DataContext as OrderCartPanelViewModel;
+            if (await ShowLockedDialogIfNotModifiable(vm)) return;
+
+            vm?.ClickPlusCommand?.Execute(lineItem)?.Subscribe();
+        }
+    }
+    
+    private async void OnMinusClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button button && button.Tag is LineItem lineItem)
+        {
+            var vm = DataContext as OrderCartPanelViewModel;
+            if (await ShowLockedDialogIfNotModifiable(vm)) return;
+
+            vm?.ClickMinusCommand?.Execute(lineItem)?.Subscribe();
+        }
+    }
+
 
     private async void OnRemoveLineItemButtonClick(object? sender, RoutedEventArgs e)
     {
@@ -94,6 +108,17 @@ public partial class OrderCartPanel : UserControl
             if (await ShowLockedDialogIfNotModifiable(vm)) return;
 
             vm?.RemoveLineItemCommand?.Execute(lineItem)?.Subscribe();
+        }
+    }
+
+    private async void OnCustomerNameLostFocus(object? sender, RoutedEventArgs e)
+    {
+        var vm = DataContext as OrderCartPanelViewModel;
+        if (await ShowLockedDialogIfNotModifiable(vm)) return;
+
+        if (!string.IsNullOrWhiteSpace(vm!.Customer))
+        {
+            vm.UpdateOrderCommand?.Execute().Subscribe();    
         }
     }
 
@@ -157,6 +182,47 @@ public partial class OrderCartPanel : UserControl
         {
             var vm = DataContext as OrderCartPanelViewModel;
             vm?.NavigateToMenuCommand?.Execute(lineItem)?.Subscribe();
+        }
+    }
+
+    private async void DiscountLineItemButton_Click(object? sender, RoutedEventArgs args)
+    {
+        await DisplayDiscountDialog(sender, OrderDiscountType.LineItem);
+    }
+
+    private async Task DisplayDiscountDialog(object? sender, OrderDiscountType discountType)
+    {
+        // TODO: handle fetching discounts per line item and order.
+        Discount[] myDiscountList = [
+            new Discount { Name = "₱100 off", Description = "Applies to one product" },
+            new Discount { Name = "%20 off", Description = "Minimum spend of ₱50" },
+
+        ];
+
+        DiscountDialog dialog = new();
+        foreach (var discount in myDiscountList)
+            (dialog.DataContext as DiscountDialogViewModel)!.DiscountList.Add(discount);
+        await dialog.ShowAsync();
+
+
+        // TODO: After selecting discount, apply to label
+        Button button = (Button)sender;
+        button.Classes.Add("Success");
+        button.Content = "Applied %";
+    }
+
+    private async void Border_Holding(object? sender, HoldingRoutedEventArgs args)
+    {
+        if (args.HoldingState == HoldingState.Completed)
+        {
+            TwofoldDialog dialog = new()
+            {
+                Message = "Are you sure you want to remove this item from your cart?",
+                PositiveText = "Yes, Remove",
+                NegativeText = "Cancel"
+            };
+            dialog.FindControl<Button>("PositiveButton")!.Classes.Add("Danger");
+            await dialog.ShowAsync();
         }
     }
 }

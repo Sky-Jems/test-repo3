@@ -23,14 +23,14 @@
         PaneBackground="{StaticResource SemiBackground4Color}"
         PanePlacement="Right">
         <SplitView.Pane>
-            <!--  OrderCartPanel Width prevents contents inside the pane from getting squished  -->
+            <!--  OrderDisplayPanel Width prevents contents inside the pane from getting squished  -->
             <!--  as the pane resizes when appearing, not moving  -->
-            <controls:OrderCartPanel
+            <controls:OrderDisplayPanel
                 Width="{Binding $parent.OpenPaneLength}"
-                DataContext="{Binding OrderCartPanelViewModel}"
-                ShowButtons="{Binding $parent.DataContext.ShowOrderCartPanelButtons}"
+                DataContext="{Binding OrderDisplayPanelViewModel}"
+                ShowSummaryButton="{Binding $parent.DataContext.ShowOrderCartPanelButton}"
                 SummaryButtonCommand="{Binding $parent.DataContext.AddOrdersButtonCommand}"
-                SummaryButtonText="Add Order" />
+                SummaryButtonText="Edit Order" />
         </SplitView.Pane>
 
         <Border Padding="32">
@@ -212,12 +212,12 @@
                                         <Button
                                             Width="32"
                                             Height="32"
-                                            Classes="Tertiary"
+                                            Classes="Success"
                                             Click="AddOrdersButton_Click"
                                             Theme="{StaticResource BorderlessButton}">
                                             <PathIcon
                                                 Height="16"
-                                                Data="{StaticResource SemiIconPlusCircle}"
+                                                Data="{StaticResource SemiIconPlus}"
                                                 Theme="{StaticResource InnerPathIcon}" />
                                         </Button>
                                     </DataTemplate>

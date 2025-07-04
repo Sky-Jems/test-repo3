@@ -53,18 +53,29 @@ public class OrderService : IOrderService
         return await _httpClient.ReadJsonResponseAsync<GetOrderResponseDto>(response);
     }
 
-    public async Task<OrderResponseDto> PayOrder(long? orderId, string paymentMethod)
+    public async Task<UpdateOrderDto> PayOrder(long? orderId, string paymentMethod)
     {
         // var rawResponse = await _httpClient.PostJsonAsync("orders/pay", orderId);
         // var response = await _httpClient.ReadJsonResponseAsync<OrderResponse>(rawResponse);
         var guid = Guid.NewGuid();
         var guidBytes = guid.ToByteArray();
         long tempId = BitConverter.ToInt64(guidBytes, 0);
-        var responseDto = new OrderResponseDto
+        var responseDto = new UpdateOrderDto
         {
-            OrderId = tempId,
+            Id = tempId,
             Customer = "Customer-" + tempId,
         };
         return responseDto;
+    }
+
+    public async Task<UpdateOrderDto> UpdateCustomer(UpdateOrderDto updateOrderDto)
+    {
+        var response = await _httpClient.PutJsonAsync($"orders/{updateOrderDto.Id}", updateOrderDto);
+        return await _httpClient.ReadJsonResponseAsync<UpdateOrderDto>(response);
+    }
+
+    public async Task<GetOrderResponseDto> GetOrderTransaction(long id)
+    {
+        return await _httpClient.GetJsonAsync<GetOrderResponseDto>($"order-transaction/{id}");
     }
 }

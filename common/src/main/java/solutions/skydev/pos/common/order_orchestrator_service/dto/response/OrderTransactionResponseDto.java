@@ -4,9 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
+import solutions.skydev.pos.common.billing_service.dto.response.BillingRequestResponseDto;
 import solutions.skydev.pos.common.order_service.dto.response.OrderResponseDto;
+import solutions.skydev.pos.common.payment_service.dto.response.PaymentResponseDto;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Builder
 @Data
@@ -40,4 +43,6 @@ public class OrderTransactionResponseDto {
     
     
     OrderResponseDto order;
+    BillingRequestResponseDto billing;
+    List<PaymentResponseDto> payments;
 }

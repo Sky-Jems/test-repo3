@@ -7,8 +7,8 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Component;
-import solutions.skydev.pos.payment_service.model.dto.request.PaymentRequestDto;
-import solutions.skydev.pos.payment_service.model.dto.response.PaymentResponseDto;
+import solutions.skydev.pos.common.payment_service.dto.request.PaymentRequestDto;
+import solutions.skydev.pos.common.payment_service.dto.response.PaymentResponseDto;
 import solutions.skydev.pos.payment_service.model.entity.Payment;
 import solutions.skydev.pos.payment_service.model.mapper.PaymentMapper;
 import solutions.skydev.pos.payment_service.service.PaymentService;
@@ -23,13 +23,10 @@ public class PaymentConsumer {
         this.paymentMapper = paymentMapper;
     }
 
-    @KafkaListener(topics = "create-payment-command", properties = {
-            "spring.json.value.default.type=solutions.skydev.pos.payment_service.model.dto.request.PaymentRequestDto"
-    })
+    @KafkaListener(topics = "create-payment-command")
     @AsyncListener(operation = @AsyncOperation(
             channelName = "create-payment-command",
-            description = "Create payment command",
-            payloadType = Payment.class
+            description = "Create payment command"
     ))
     @KafkaAsyncOperationBinding
     @SendTo("payment.created")

@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 import org.springframework.kafka.requestreply.RequestReplyFuture;
 import org.springframework.stereotype.Component;
+import solutions.skydev.pos.common.billing_service.dto.response.BillingRequestResponseDto;
+import solutions.skydev.pos.common.order_orchestrator_service.dto.request.OrderPaymentRequestDto;
 import solutions.skydev.pos.common.order_orchestrator_service.dto.response.OrderTransactionResponseDto;
 import solutions.skydev.pos.common.order_service.dto.request.LineItemRequestDto;
 import solutions.skydev.pos.common.order_service.dto.request.OrderRequestDto;
@@ -17,15 +19,18 @@ import java.util.concurrent.TimeUnit;
 public class OrderOrchestratorProducer {
     private final ReplyingKafkaTemplate<String, Object, Object> orderTransactionCreatedReplyingTemplate;
     private final ReplyingKafkaTemplate<String, Object, Object> orderTransactionUpdatedReplyingTemplate;
-
+    private final ReplyingKafkaTemplate<String, Object, Object> orderPaymentCreatedReplyingTemplate;
+    
     private static final Duration timeoutForInitialization = Duration.ofSeconds(1000);
 
     @Autowired
     public OrderOrchestratorProducer(ReplyingKafkaTemplate<String, Object, Object> orderTransactionCreatedReplyingTemplate, 
-                                     ReplyingKafkaTemplate<String, Object, Object> orderTransactionUpdatedReplyingTemplate
+                                     ReplyingKafkaTemplate<String, Object, Object> orderTransactionUpdatedReplyingTemplate,
+                                     ReplyingKafkaTemplate<String, Object, Object> orderPaymentCreatedReplyingTemplate
                                      ) {
         this.orderTransactionCreatedReplyingTemplate = orderTransactionCreatedReplyingTemplate;
         this.orderTransactionUpdatedReplyingTemplate = orderTransactionUpdatedReplyingTemplate;
+        this.orderPaymentCreatedReplyingTemplate = orderPaymentCreatedReplyingTemplate;
     }
     
     private void waitForInitialization(ReplyingKafkaTemplate<String, Object, Object> replyingTemplate) throws InterruptedException {
@@ -114,6 +119,19 @@ public class OrderOrchestratorProducer {
             return (OrderTransactionResponseDto) response.value();
         } catch (Exception e) {
             throw new RuntimeException("Failed to send clear line items command", e);
+        }
+    }
+    
+    public BillingRequestResponseDto sendOrderPaymentCommand(OrderPaymentRequestDto requestBody) {
+        ProducerRecord<String, Object> record = new ProducerRecord<>("create-order-payment-command", requestBody);
+        try {
+            waitForInitialization(orderPaymentCreatedReplyingTemplate);
+            RequestReplyFuture<String, Object, Object> future = this.orderPaymentCreatedReplyingTemplate.sendAndReceive(record);
+            ConsumerRecord<String, Object> response = future.get(10,
+                    TimeUnit.SECONDS);
+            return (BillingRequestResponseDto) response.value();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to send order payment command", e);
         }
     }
 }

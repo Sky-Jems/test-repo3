@@ -20,6 +20,7 @@ import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.event.annotation.BeforeTestClass;
 import solutions.skydev.pos.common.product_service.dto.request.ProductRequestDto;
 import solutions.skydev.pos.common.product_service.dto.response.ProductResponseDto;
 import solutions.skydev.pos.product_service.model.entity.Category;
@@ -55,9 +56,6 @@ public class ProductConsumerIntegrationTest {
 
     @Autowired
     EmbeddedKafkaBroker embeddedKafkaBroker;
-
-    @Autowired
-    ProductService productService;
 
     @Test
     void contextLoads() {
@@ -175,7 +173,6 @@ public class ProductConsumerIntegrationTest {
         assert updatedProduct.getPrice().equals(BigDecimal.valueOf(19.99));
     }
 
-
     @Test
     void testProductIsDeleted() throws Exception {
         Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testT", "false", embeddedKafkaBroker);
@@ -213,8 +210,6 @@ public class ProductConsumerIntegrationTest {
         kafkaTemplate.send("delete-product-command", productRequestDto);
         kafkaTemplate.flush();
 
-        KafkaTestUtils.getSingleRecord(consumer, "product.deleted");
-        
         ConsumerRecord<String, ProductResponseDto> record = KafkaTestUtils.getSingleRecord(consumer, "product.deleted", Duration.ofSeconds(5));
         // Assert that the product was deleted successfully
         ProductResponseDto productResponseDto = record.value();

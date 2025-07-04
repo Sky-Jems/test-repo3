@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import solutions.skydev.pos.payment_service.model.entity.Payment;
 import solutions.skydev.pos.payment_service.repository.PaymentRepository;
 
+import java.util.List;
+
 @Service
 public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
@@ -19,6 +21,14 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     public Payment getPaymentById(Long id) { return paymentRepository.findById(id).orElse(null); }
+    
+    public List<Payment> getPaymentsByBillingRequestId(Long orderId) {
+        return paymentRepository.findAllByBillingRequestId(orderId);
+    }
+    
+    public List<Payment> getAllPayments() {
+        return paymentRepository.findAll();
+    }
 
     public void cancelPayment(Long id) {
         Payment payment = paymentRepository.findById(id).orElse(null);

@@ -37,7 +37,7 @@ public class OrderOrchestratorController {
     public Mono<OrderTransactionResponseDto> getOrderTransactionById(@PathVariable String id) {
 
         Mono<OrderTransactionResponseDto> orderTransactionResponseDtoMono = this.orderOrchestratorServiceClient.fetchOrderTransactionById(Long.valueOf(id));
-        return orderOrchestratorEnrichmentService.enrichWithOrderAndProduct(orderTransactionResponseDtoMono);
+        return orderOrchestratorEnrichmentService.enrichWithOrderProductBillingAndPayment(orderTransactionResponseDtoMono);
     }
 
     /**
@@ -50,7 +50,7 @@ public class OrderOrchestratorController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public Mono<OrderTransactionResponseDto> getOrderTransactionByOrderId(@RequestParam("order_id") String orderId) {
         Mono<OrderTransactionResponseDto> orderTransactionResponseDtoMono = this.orderOrchestratorServiceClient.fetchOrderTransactionByOrderId(Long.valueOf(orderId));
-        return orderOrchestratorEnrichmentService.enrichWithOrderAndProduct(orderTransactionResponseDtoMono);
+        return orderOrchestratorEnrichmentService.enrichWithOrderProductBillingAndPayment(orderTransactionResponseDtoMono);
     }
 
     @GetMapping(path= "/orders", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -67,8 +67,8 @@ public class OrderOrchestratorController {
         OrderTransactionResponseDto response;
         try {
             response = this.orderOrchestratorProducer.sendCreateOrderTransactionCommand(order);
-            
-            return orderOrchestratorEnrichmentService.enrichWithOrderAndProduct(Mono.just(response));
+
+            return orderOrchestratorEnrichmentService.enrichWithOrderProductBillingAndPayment(Mono.just(response));
         } catch (Exception e) {
             return Mono.error(new RuntimeException("Failed to parse response: " + e.getMessage()));
         }
@@ -91,7 +91,7 @@ public class OrderOrchestratorController {
             Mono<OrderTransactionResponseDto> orderTransactionResponseDtoMono = 
                 this.orderOrchestratorServiceClient.fetchOrderTransactionById(response.getId());
 
-            return this.orderOrchestratorEnrichmentService.enrichWithOrderAndProduct(orderTransactionResponseDtoMono);
+            return this.orderOrchestratorEnrichmentService.enrichWithOrderProductBillingAndPayment(orderTransactionResponseDtoMono);
         } catch (Exception e) {
             return Mono.error(new RuntimeException("Failed to update line item: " + e.getMessage()));
         }
@@ -106,18 +106,18 @@ public class OrderOrchestratorController {
             Mono<OrderTransactionResponseDto> orderTransactionResponseDtoMono = 
                 this.orderOrchestratorServiceClient.fetchOrderTransactionByOrderId(responseDto.getOrderId());
 
-            return this.orderOrchestratorEnrichmentService.enrichWithOrderAndProduct(orderTransactionResponseDtoMono);
+            return this.orderOrchestratorEnrichmentService.enrichWithOrderProductBillingAndPayment(orderTransactionResponseDtoMono);
         } catch (Exception e) {
             return Mono.error(new RuntimeException("Failed to add line item: " + e.getMessage()));
         }
     }
-    
+
     @DeleteMapping(path = "/line-item/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Mono<OrderTransactionResponseDto> removeLineItem(@PathVariable String id) {
         LineItemRequestDto lineItemRequestDto = LineItemRequestDto.builder()
                 .id(Long.valueOf(id))
                 .build();
-        
+
         try {
             OrderTransactionResponseDto response = this.orderOrchestratorProducer.sendRemoveLineItemCommand(lineItemRequestDto);
 
@@ -125,12 +125,12 @@ public class OrderOrchestratorController {
             Mono<OrderTransactionResponseDto> orderTransactionResponseDtoMono = 
                 this.orderOrchestratorServiceClient.fetchOrderTransactionByOrderId(response.getOrderId());
 
-            return this.orderOrchestratorEnrichmentService.enrichWithOrderAndProduct(orderTransactionResponseDtoMono);
+            return this.orderOrchestratorEnrichmentService.enrichWithOrderProductBillingAndPayment(orderTransactionResponseDtoMono);
         } catch (Exception e) {
             return Mono.error(new RuntimeException("Failed to remove line item: " + e.getMessage()));
         }
     }
-    
+
     @PostMapping(path = "/order/clear-line-items", produces = MediaType.APPLICATION_JSON_VALUE)
     public Mono<OrderTransactionResponseDto> clearLineItems(@RequestBody OrderRequestDto orderRequestDto) {
         try {
@@ -140,7 +140,7 @@ public class OrderOrchestratorController {
             Mono<OrderTransactionResponseDto> orderTransactionResponseDtoMono = 
                 this.orderOrchestratorServiceClient.fetchOrderTransactionByOrderId(response.getOrderId());
 
-            return this.orderOrchestratorEnrichmentService.enrichWithOrderAndProduct(orderTransactionResponseDtoMono);
+            return this.orderOrchestratorEnrichmentService.enrichWithOrderProductBillingAndPayment(orderTransactionResponseDtoMono);
         } catch (Exception e) {
             return Mono.error(new RuntimeException("Failed to clear line items: " + e.getMessage()));
         }

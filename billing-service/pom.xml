@@ -75,6 +75,11 @@
 			<version>1.6.3</version>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>solutions.skydev.pos</groupId>
+			<artifactId>common</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>

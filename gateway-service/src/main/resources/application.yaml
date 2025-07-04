@@ -57,6 +57,18 @@ spring:
             predicates:
               - Path=/variants/**
               - Method=GET
+          
+          - id: payment_route
+            uri: http://localhost:8084/payments
+            predicates:
+              - Path=/payments/**
+              - Method=GET
+          
+          - id: billing_requests_route
+            uri: http://localhost:8087/billing-requests
+            predicates:
+              - Path=/billings-requests/**
+              - Method=GET
 
 jwt:
   secret: sample_secret_key_sample_32_char

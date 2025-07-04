@@ -134,6 +134,18 @@ public class OrderTransactionServiceImpl implements OrderTransactionService {
         return updateOrderTransactionAmounts(orderTransaction, orderResponseDto, "0.0");
     }
     
+    public OrderTransaction markOrderAsPaid(Long orderId) {
+        List<OrderTransaction> orderTransactions = orderTransactionRepository.findByOrderId(orderId);
+        if (orderTransactions.isEmpty()) {
+            throw new RuntimeException("No order transaction found for order ID: " + orderId);
+        }
+        
+        OrderTransaction orderTransaction = orderTransactions.get(0);
+        orderTransaction.setOrderStatus(OrderStatus.COMPLETED);
+        
+        return orderTransactionRepository.save(orderTransaction);
+    }
+    
     public OrderTransaction tagDiscount(DiscountOrderRequestDto discountOrderRequestDto) {
         DiscountOrderResponseDto discountOrderResponseDto;
         try {

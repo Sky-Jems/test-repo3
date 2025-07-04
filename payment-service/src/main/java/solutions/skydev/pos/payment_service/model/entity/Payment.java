@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Setter
 @Getter
 @NoArgsConstructor
@@ -16,8 +18,10 @@ public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long billingRequestId;
-    private Double amount;
+    private BigDecimal amount;
+    // TODO: make enum
     private String paymentMethod;
-    private String status;
+    private String notes;
+    private Long billingRequestId;
+    private String status = "paid"; // default status is 'paid'
 }

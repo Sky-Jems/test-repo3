@@ -1,16 +1,16 @@
 package solutions.skydev.pos.billing_service.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import solutions.skydev.pos.billing_service.model.entity.BillingRequest;
-import solutions.skydev.pos.billing_service.model.dto.request.BillingRequestRequestDto;
-import solutions.skydev.pos.billing_service.model.dto.response.BillingRequestResponseDto;
+import solutions.skydev.pos.common.billing_service.dto.response.BillingRequestResponseDto;
 import solutions.skydev.pos.billing_service.model.mapper.BillingRequestMapper;
 import solutions.skydev.pos.billing_service.service.BillingRequestService;
+import solutions.skydev.pos.common.billing_service.dto.request.BillingRequestRequestDto;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/billing-requests")
@@ -26,7 +26,11 @@ public class BillingRequestController {
     }
 
     @GetMapping
-    public ResponseEntity<List<BillingRequestResponseDto>> getAllBillingRequests() {
+    public ResponseEntity<List<BillingRequestResponseDto>> getAllBillingRequests(@RequestParam("order_id") Optional<String> orderId) {
+        if (orderId.isPresent()) {
+            List<BillingRequest> billingRequests = billingRequestService.findAllBillingRequestsByOrderId(Long.valueOf(orderId.get()));
+            return ResponseEntity.ok(billingRequestMapper.toResponseDtoList(billingRequests));
+        }
         List<BillingRequest> billingRequests = billingRequestService.findAllBillingRequests();
         return ResponseEntity.ok(billingRequestMapper.toResponseDtoList(billingRequests));
     }
@@ -38,13 +42,6 @@ public class BillingRequestController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(billingRequestMapper.toResponseDto(billingRequest));
-    }
-
-    @PostMapping
-    public ResponseEntity<BillingRequestResponseDto> createBillingRequest(@RequestBody BillingRequestRequestDto requestDto) {
-        BillingRequest billingRequest = billingRequestMapper.toEntity(requestDto);
-        BillingRequest createdBillingRequest = billingRequestService.createBillingRequest(billingRequest);
-        return new ResponseEntity<>(billingRequestMapper.toResponseDto(createdBillingRequest), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")

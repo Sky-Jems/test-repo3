@@ -15,6 +15,7 @@ public interface OrderTransactionService {
     OrderTransaction removeLineItem(LineItemRequestDto requestLineItem);
     OrderTransaction getOrderTransactionById(Long id);
     OrderTransaction clearLineItems(OrderRequestDto orderRequestDto);
+    OrderTransaction markOrderAsPaid(Long orderId);
 //    OrderTransaction tagDiscount(DiscountOrderRequestDto discountOrderRequestDto);
     List<OrderTransaction> getAllOrderTransactions();
     List<OrderTransaction> getOrderTransactionsByOrderId(Long orderId);

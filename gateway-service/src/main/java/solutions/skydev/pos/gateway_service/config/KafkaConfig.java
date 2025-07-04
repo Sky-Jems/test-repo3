@@ -123,4 +123,12 @@ public class KafkaConfig {
         template.start();
         return template;
     }
+
+    @Bean
+    public ReplyingKafkaTemplate<String, Object, Object> orderPaymentCreatedReplyingTemplate() {
+        ReplyingKafkaTemplate<String, Object, Object> template = this.createReplyingKafkaTemplate("order-payment.created");
+        template.setSharedReplyTopic(true);
+        template.start();
+        return template;
+    }
 }

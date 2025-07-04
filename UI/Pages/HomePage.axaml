@@ -170,7 +170,7 @@
                         VerticalAlignment="Bottom"
                         HorizontalContentAlignment="Left"
                         Theme="{StaticResource BorderlessDropDownButton}">
-                        <AccessText Text="{Binding Role}" />
+                        <AccessText Text="{Binding Name}" />
                         <Button.Flyout>
                             <MenuFlyout>
                                 <MenuItem Click="OnClickLogout" Header="Logout" />

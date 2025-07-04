@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using pos.Extensions;
 using pos.Handlers.Interfaces;
-using Pos;
 using Pos.Models;
 
 namespace pos.Api
@@ -14,20 +11,38 @@ namespace pos.Api
     public class AuthService : IAuthService
     {
         private readonly TokenStore _tokenStore;
-        private readonly HttpClient _client;
+        private readonly IHttpHandler _client;
 
-        public AuthService(TokenStore tokenStore)
+        public AuthService(TokenStore tokenStore, IHttpHandler httpHandler)
         {
             _tokenStore = tokenStore;
-            _client = new HttpClient
-        {
-            BaseAddress = new Uri($"{Program.customSettings.GatewayAddress}:8081/")
-        };
+            _client = httpHandler;
         }
 
         public async Task<string> LoginAsync(string username, string password)
         {
-            var response = await _client.PostAsJsonAsync("auth/login", new { username, password });
+            var response = await _client.PostJsonAsync("auth/login", new { username, password }, this);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Login failed: {errorContent}");
+            }
+
+            var loginResult = await response.Content.ReadFromJsonAsync<AuthResponseDto>();
+
+            if (string.IsNullOrWhiteSpace(loginResult?.AccessToken) || string.IsNullOrWhiteSpace(loginResult?.RefreshToken))
+                throw new Exception("Access or Refresh token missing in login response.");
+
+            _tokenStore.AccessToken = loginResult.AccessToken;
+            _tokenStore.RefreshToken = loginResult.RefreshToken;
+
+            return loginResult.AccessToken;
+        }
+
+        public async Task<string> StaffLoginAsync(int userId)
+        {
+            var response = await _client.PostJsonAsync("auth/login", new { userId }, this);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -61,7 +76,7 @@ namespace pos.Api
             if (string.IsNullOrWhiteSpace(_tokenStore.RefreshToken))
                 throw new Exception("No refresh token available");
 
-            var response = await _client.PostAsJsonAsync("auth/refresh", new { refreshToken = _tokenStore.RefreshToken });
+            var response = await _client.PostJsonAsync("auth/refresh", new { refreshToken = _tokenStore.RefreshToken }, this);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -84,7 +99,7 @@ namespace pos.Api
             if (string.IsNullOrWhiteSpace(_tokenStore.RefreshToken))
                 throw new Exception("No refresh token available to logout.");
 
-            var response = await _client.PostAsJsonAsync("auth/logout", new { refreshToken = _tokenStore.RefreshToken });
+            var response = await _client.PostJsonAsync("auth/logout", new { refreshToken = _tokenStore.RefreshToken }, this);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -96,37 +111,10 @@ namespace pos.Api
             _tokenStore.RefreshToken = null;
         }
 
-        public Task<List<Staff>> GetStaffAsync()
+        public async Task<List<Staff>> GetStaffAsync()
         {
-            var token = _tokenStore.AccessToken ?? "mock-access-token";
-
-            var staffList = new List<Staff>
-            {
-                // TODO : fetch from backend
-                new Staff { Id = 1, Name = "Lea Salonga", AccessToken = token },
-                new Staff { Id = 2, Name = "Sarah Geronimo", AccessToken = token },
-                new Staff { Id = 3, Name = "Piolo Pascual", AccessToken = token },
-                new Staff { Id = 4, Name = "Vice Ganda", AccessToken = token },
-                new Staff { Id = 5, Name = "Anne Curtis", AccessToken = token },
-                new Staff { Id = 6, Name = "Kathryn Bernardo", AccessToken = token },
-                new Staff { Id = 7, Name = "Daniel Padilla", AccessToken = token },
-                new Staff { Id = 8, Name = "Coco Martin", AccessToken = token },
-                new Staff { Id = 9, Name = "Liza Soberano", AccessToken = token },
-                new Staff { Id = 10, Name = "Enrique Gil", AccessToken = token },
-                new Staff { Id = 11, Name = "Alden Richards", AccessToken = token },
-                new Staff { Id = 12, Name = "Maine Mendoza", AccessToken = token },
-                new Staff { Id = 13, Name = "James Reid", AccessToken = token },
-                new Staff { Id = 14, Name = "Nadine Lustre", AccessToken = token },
-                new Staff { Id = 15, Name = "Angel Locsin", AccessToken = token },
-                new Staff { Id = 16, Name = "Bea Alonzo", AccessToken = token },
-                new Staff { Id = 17, Name = "John Lloyd Cruz", AccessToken = token },
-                new Staff { Id = 18, Name = "Dingdong Dantes", AccessToken = token },
-                new Staff { Id = 19, Name = "Marian Rivera", AccessToken = token },
-                new Staff { Id = 20, Name = "Julia Barretto", AccessToken = token },
-            };
-
-            return Task.FromResult(staffList);
-
+            var staffList = await _client.GetJsonAsync<List<Staff>>("user/get-all-users", this);
+            return staffList ?? new List<Staff>();
         }
     }
 }

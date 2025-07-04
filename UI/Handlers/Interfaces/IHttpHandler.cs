@@ -6,9 +6,9 @@ namespace pos.Handlers.Interfaces;
 
 public interface IHttpHandler
 {
-    Task<TValue> GetJsonAsync<TValue>(string endpoint);
-    Task<HttpResponseMessage> PostJsonAsync(string endpoint, object postData);
-    Task<HttpResponseMessage> PutJsonAsync(string endpoint, object putData);
-    Task<HttpResponseMessage> DeleteAsync(string endpoint);
+    Task<TValue> GetJsonAsync<TValue>(string endpoint, object? caller = null);
+    Task<HttpResponseMessage> PostJsonAsync(string endpoint, object postData, object? caller = null);
+    Task<HttpResponseMessage> PutJsonAsync(string endpoint, object putData, object? caller = null);
+    Task<HttpResponseMessage> DeleteAsync(string endpoint, object? caller = null);
     Task<T> ReadJsonResponseAsync<T>(HttpResponseMessage response);
 }

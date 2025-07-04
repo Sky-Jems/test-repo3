@@ -6,6 +6,7 @@ namespace pos.Api;
 public interface IAuthService
 {
     Task<string> LoginAsync(string username, string password);
+    Task<string> StaffLoginAsync(int userId);
     Task<string> GetAccessTokenAsync();
     Task<string> RefreshTokenAsync();
     Task LogoutAsync();

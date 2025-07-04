@@ -6,6 +6,7 @@ using pos.Api;
 using Pos.Models;
 using Pos.Pages;
 using ReactiveUI;
+using Pos.Util;
 
 namespace Pos
 {
@@ -16,7 +17,7 @@ namespace Pos
         public string? UrlPathSegment => "staff-login";
         public IScreen HostScreen { get; }
 
-        public ReactiveCommand<string, Unit> SelectStaffCommand { get; }
+        public ReactiveCommand<Staff, Unit> SelectStaffCommand { get; }
         public ReactiveCommand<Unit, Unit> LoadStaffCommand { get; }
         public ReactiveCommand<Unit, Unit> GoBack { get; }
 
@@ -27,12 +28,8 @@ namespace Pos
             HostScreen = screen;
             _authService = authService ?? throw new ArgumentNullException(nameof(authService));
 
-            SelectStaffCommand = ReactiveCommand.Create<string>(staff =>
-            {
-                HostScreen.Router.Navigate.Execute(
-                    new HomePageViewModel(HostScreen, staff)
-                );
-            });
+            SelectStaffCommand = ReactiveCommand.CreateFromTask<Staff>(LoginAndNavigateAsync);
+
 
             GoBack = ReactiveCommand.Create(() =>
             {
@@ -48,8 +45,22 @@ namespace Pos
 
             foreach (var staff in staffList)
             {
-                StaffList.Add(staff);
+                if (!string.IsNullOrWhiteSpace(staff.firstName))
+                {
+                    StaffList.Add(staff);
+                }
             }
+        }
+
+        private async Task LoginAndNavigateAsync(Staff staff)
+        {
+            var token = await _authService.StaffLoginAsync(staff.Id);
+
+            if (string.IsNullOrEmpty(token))
+                throw new Exception("Login failed: Token is empty.");
+
+            string FullName = staff.FullName;
+            HostScreen.Router.Navigate.Execute(new HomePageViewModel(HostScreen, FullName, Constants.Role.Staff));
         }
     }
 }

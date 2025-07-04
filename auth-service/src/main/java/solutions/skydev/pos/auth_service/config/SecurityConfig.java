@@ -23,7 +23,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/user/get-user/**").permitAll()
+                        .requestMatchers("/auth/**", "/user/get-all-users", "/user/get-user/**").permitAll()
                         .requestMatchers("/user/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)

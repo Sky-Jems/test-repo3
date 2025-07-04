@@ -40,8 +40,8 @@
                                 HorizontalAlignment="Stretch"
                                 Background="Transparent"
                                 Command="{Binding $parent[UserControl].DataContext.SelectStaffCommand}"
-                                CommandParameter="{Binding Name}"
-                                Content="{Binding Name}"
+                                CommandParameter="{Binding .}"
+                                Content="{Binding FullName}"
                                 FontSize="20" />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>

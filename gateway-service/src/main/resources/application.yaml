@@ -12,6 +12,11 @@ spring:
     gateway:
       mvc:
         routes:
+          - id: user_route
+            uri: http://localhost:8082
+            predicates:
+              - Path=/user/**
+
           - id: auth_route
             uri: http://localhost:8082
             predicates:

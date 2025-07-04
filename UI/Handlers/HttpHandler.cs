@@ -20,13 +20,17 @@ namespace pos.Handlers
             _provider = provider;
             _client = new HttpClient
             {
-                // base.DefaultRequestHeaders.Add("fad", "fad");
                 BaseAddress = new Uri($"{Program.customSettings.GatewayAddress}:8081/")
             };
         }
 
-        private async Task AddAuthHeaderAsync()
+        private async Task AddAuthHeaderAsync(object? caller = null)
         {
+            if (caller != null && caller.GetType().Name == nameof(AuthService))
+            {
+                return;
+            }
+
             _client.DefaultRequestHeaders.Authorization = null;
 
             try
@@ -46,27 +50,27 @@ namespace pos.Handlers
             }
         }
 
-        public async Task<TValue> GetJsonAsync<TValue>(string endpoint)
+        public async Task<TValue> GetJsonAsync<TValue>(string endpoint, object? caller = null)
         {
-            await AddAuthHeaderAsync();
+            await AddAuthHeaderAsync(caller);
             return await _client.GetFromJsonAsync<TValue>(endpoint);
         }
 
-        public async Task<HttpResponseMessage> PostJsonAsync(string endpoint, object postData)
+        public async Task<HttpResponseMessage> PostJsonAsync(string endpoint, object postData, object? caller = null)
         {
-            await AddAuthHeaderAsync();
+            await AddAuthHeaderAsync(caller);
             return await _client.PostAsJsonAsync(endpoint, postData);
         }
 
-        public async Task<HttpResponseMessage> PutJsonAsync(string endpoint, object putData)
+        public async Task<HttpResponseMessage> PutJsonAsync(string endpoint, object putData, object? caller = null)
         {
-            await AddAuthHeaderAsync();
+            await AddAuthHeaderAsync(caller);
             return await _client.PutAsJsonAsync(endpoint, putData);
         }
 
-        public async Task<HttpResponseMessage> DeleteAsync(string endpoint)
+        public async Task<HttpResponseMessage> DeleteAsync(string endpoint, object? caller = null)
         {
-            await AddAuthHeaderAsync();
+            await AddAuthHeaderAsync(caller);
             return await _client.DeleteAsync(endpoint);
         }
 

@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using pos.Api;
 using pos.Extensions;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace Pos.Pages;
 
@@ -14,18 +15,17 @@ public class HomePageViewModel : ReactiveObject, IRoutableViewModel
 
     public IScreen HostScreen { get; }
 
-    private string _Role;
-    public string Role
-    {
-        get => _Role;
-        set => this.RaiseAndSetIfChanged(ref _Role, value);
-    }
+    [Reactive]
+    public string Name { get; set; }
+     [Reactive]
+    public string Role { get; set; }
 
     public ReactiveCommand<Unit, Unit> LogoutCommand { get; }
 
-    public HomePageViewModel(IScreen screen, string role)
+    public HomePageViewModel(IScreen screen, string name, string role)
     {
         HostScreen = screen;
+        Name = name;
         Role = role;
         LogoutCommand = ReactiveCommand.CreateFromTask(LogoutAsync);
     }

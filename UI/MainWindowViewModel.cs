@@ -6,6 +6,7 @@ using pos.Api;
 using pos.Extensions;
 using Pos.Pages;
 using ReactiveUI;
+using Pos.Util;
 
 namespace Pos;
 
@@ -51,21 +52,6 @@ public class MainWindowViewModel : ReactiveObject, IScreen
         if (string.IsNullOrEmpty(token))
             throw new Exception("Login failed: Token is empty.");
 
-        string role;
-        switch (Username.ToLower())
-        {
-            case "testadmin":
-                role = "Admin";
-                break;
-            case "teststaff":
-                role = "Staff";
-                break;
-            default:
-                role = "User";
-                UnknownUser?.Invoke();
-                return;
-        }
-        
-        Router.Navigate.Execute(new HomePageViewModel(this, role));
-    }   
+        Router.Navigate.Execute(new HomePageViewModel(this, Username, Constants.Role.Admin));
+    }
 }

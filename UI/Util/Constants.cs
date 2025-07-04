@@ -23,4 +23,10 @@ public static class Constants
         LineItem,
         Order
     }
+
+    public static class Role
+    {
+        public static string Staff = "Staff";
+        public static string Admin = "Admin";
+    }
 }

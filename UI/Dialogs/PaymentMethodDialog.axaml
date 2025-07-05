@@ -2,74 +2,348 @@
     x:Class="Pos.Dialogs.PaymentMethodDialog"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:app="using:Pos.Dialogs"
+    xmlns:converters="using:Pos.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Padding="{StaticResource SemiThicknessLoose}"
+    Width="500"
+    Padding="0"
+    x:DataType="app:PaymentMethodDialogViewModel"
     Background="{StaticResource SemiColorBackground4}"
     ClipToBounds="True"
     CornerRadius="{StaticResource SemiBorderRadiusMedium}"
     mc:Ignorable="d">
 
+    <UserControl.Resources>
+        <converters:EqualsConverter x:Key="equalsConverter" />
+    </UserControl.Resources>
+
     <UserControl.Styles>
         <Style Selector="RadioButton">
-            <Setter Property="Height" Value="150" />
-            <Setter Property="Width" Value="150" />
-            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="Height" Value="50" />
 
             <Style Selector="^ &gt; StackPanel">
-                <Setter Property="Spacing" Value="8" />
+                <Setter Property="Orientation" Value="Horizontal" />
+                <Setter Property="Spacing" Value="10" />
             </Style>
 
             <Style Selector="^ Svg">
-                <Setter Property="Height" Value="48" />
-                <Setter Property="(Svg.Css)" Value="* { fill: #1C1F23 }" />
+                <Setter Property="Height" Value="20" />
             </Style>
 
             <Style Selector="^ AccessText">
-                <Setter Property="HorizontalAlignment" Value="Center" />
+                <Setter Property="VerticalAlignment" Value="Center" />
             </Style>
 
-            <Style Selector="^:disabled Svg">
-                <Setter Property="(Svg.Css)" Value="* { fill: #1C1F23; opacity: 0.35; }" />
+            <Style Selector="^:checked AccessText">
+                <Setter Property="FontWeight" Value="{StaticResource SemiFontWeightBold}" />
+            </Style>
+
+            <Style Selector="^[Tag=cash]:checked /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{StaticResource SemiGreen0Color}" />
+                <Setter Property="Foreground" Value="{StaticResource SemiGreen5Color}" />
+                <Setter Property="BorderBrush" Value="{StaticResource SemiGreen5Color}" />
+            </Style>
+            <Style Selector="^[Tag=card]:checked /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{StaticResource SemiOrange0Color}" />
+                <Setter Property="Foreground" Value="{StaticResource SemiOrange5Color}" />
+                <Setter Property="BorderBrush" Value="{StaticResource SemiOrange5Color}" />
+            </Style>
+            <Style Selector="^[Tag=gcash]:checked /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{StaticResource SemiBlue0Color}" />
+                <Setter Property="Foreground" Value="{StaticResource SemiBlue5Color}" />
+                <Setter Property="BorderBrush" Value="{StaticResource SemiBlue5Color}" />
+            </Style>
+            <Style Selector="^[Tag=voucher]:checked /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{StaticResource SemiViolet0Color}" />
+                <Setter Property="Foreground" Value="{StaticResource SemiViolet5Color}" />
+                <Setter Property="BorderBrush" Value="{StaticResource SemiViolet5Color}" />
+            </Style>
+        </Style>
+
+        <Style Selector="Border#SummaryContainer">
+            <Style Selector="^ Label.title">
+                <Setter Property="FontSize" Value="{StaticResource SemiFontSizeSmall}" />
+                <Setter Property="Foreground" Value="{StaticResource SemiColorText2}" />
+            </Style>
+            <Style Selector="^ Label.description">
+                <Setter Property="FontSize" Value="{StaticResource SemiFontSizeSmall}" />
+            </Style>
+        </Style>
+
+        <Style Selector="ItemsControl#PaymentHistoryItemsControl">
+            <Style Selector="^ Svg.cash">
+                <Setter Property="Path" Value="avares://pos/Assets/Icons/banknote.svg" />
+            </Style>
+            <Style Selector="^ Svg.card">
+                <Setter Property="Path" Value="avares://pos/Assets/Icons/credit-card.svg" />
+            </Style>
+            <Style Selector="^ Svg.gcash">
+                <Setter Property="Path" Value="avares://pos/Assets/Icons/gcash.svg" />
+            </Style>
+            <Style Selector="^ Svg.voucher">
+                <Setter Property="Path" Value="avares://pos/Assets/Icons/ticket-percent.svg" />
             </Style>
         </Style>
     </UserControl.Styles>
 
-    <StackPanel Spacing="16">
-        <Label
-            HorizontalAlignment="Center"
-            Classes="H5"
-            Content="Choose your payment method"
-            Theme="{StaticResource TitleLabel}" />
+    <Grid RowDefinitions="auto * auto">
+        <Border
+            Grid.Row="0"
+            Padding="{StaticResource SemiThicknessBaseLoose}"
+            BorderBrush="{StaticResource SemiColorBorder}"
+            BorderThickness="0,0,0,1">
+            <StackPanel>
+                <Label
+                    Classes="H4"
+                    Content="Payment"
+                    Theme="{StaticResource TitleLabel}" />
+                <Label Content="Choose your payment method and complete the transaction." Foreground="{StaticResource SemiColorText2}" />
+            </StackPanel>
+        </Border>
 
-        <StackPanel Orientation="Horizontal" Spacing="12">
-            <RadioButton
-                Checked="PaymentMethodRadioButton_Checked"
-                Tag="cash"
-                Theme="{DynamicResource PureCardRadioButton}">
-                <StackPanel>
-                    <Svg Path="avares://pos/Assets/Images/cash.svg" />
-                    <AccessText Text="Cash" />
-                </StackPanel>
-            </RadioButton>
-            <RadioButton
-                Checked="PaymentMethodRadioButton_Checked"
-                IsEnabled="False"
-                Tag="card"
-                Theme="{DynamicResource PureCardRadioButton}">
-                <StackPanel>
-                    <Svg Path="avares://pos/Assets/Images/card.svg" />
-                    <AccessText Text="Card" />
-                </StackPanel>
-            </RadioButton>
-        </StackPanel>
+        <ScrollViewer Grid.Row="1">
+            <Border Name="SummaryContainer" Padding="{StaticResource SemiThicknessBase}">
+                <StackPanel Spacing="24">
+                    <!--  order summary  -->
+                    <StackPanel Spacing="8">
+                        <Label Content="Order Summary" Theme="{StaticResource TitleLabel}" />
+                        <Border
+                            Margin="0"
+                            Padding="{StaticResource SemiThicknessBase}"
+                            Background="{StaticResource SemiColorPrimaryLight}"
+                            BorderBrush="Transparent"
+                            Theme="{StaticResource CardBorder}">
+                            <StackPanel
+                                Margin="0,-2,0,-8"
+                                HorizontalAlignment="Stretch"
+                                Spacing="8">
+                                <Grid
+                                    ColumnDefinitions="* *"
+                                    RowDefinitions="auto auto auto auto auto auto auto"
+                                    RowSpacing="6">
+                                    <Label
+                                        Grid.Row="0"
+                                        Grid.Column="0"
+                                        Classes="title"
+                                        Content="Customer" />
+                                    <Label
+                                        Grid.Row="0"
+                                        Grid.Column="1"
+                                        HorizontalAlignment="Right"
+                                        Classes="description"
+                                        Content="Customer name" />
 
-        <Button
-            Name="confirmButton"
-            HorizontalAlignment="Stretch"
-            Classes="Large"
-            Click="ConfirmButton_Click"
-            Content="CONFIRM"
-            IsEnabled="False" />
-    </StackPanel>
+                                    <Label
+                                        Grid.Row="1"
+                                        Grid.Column="0"
+                                        Classes="title"
+                                        Content="Items" />
+                                    <Label
+                                        Grid.Row="1"
+                                        Grid.Column="1"
+                                        HorizontalAlignment="Right"
+                                        Classes="description"
+                                        Content="1" />
+
+                                    <Label
+                                        Grid.Row="2"
+                                        Grid.Column="0"
+                                        Classes="title"
+                                        Content="Order Total" />
+                                    <Label
+                                        Grid.Row="2"
+                                        Grid.Column="1"
+                                        HorizontalAlignment="Right"
+                                        Classes="H6 description"
+                                        Content="₱1" />
+
+                                    <Label
+                                        Grid.Row="3"
+                                        Grid.Column="0"
+                                        Classes="title"
+                                        Content="Amount Paid" />
+                                    <Label
+                                        Grid.Row="3"
+                                        Grid.Column="1"
+                                        HorizontalAlignment="Right"
+                                        Classes="H6 description"
+                                        Content="₱1"
+                                        Foreground="{StaticResource SemiGreen5Color}" />
+
+                                    <Rectangle
+                                        Grid.Row="4"
+                                        Grid.ColumnSpan="2"
+                                        Margin="0,4"
+                                        Stroke="{StaticResource SemiColorBorder}"
+                                        StrokeDashArray="3,6"
+                                        StrokeThickness="1" />
+
+                                    <Label
+                                        Grid.Row="5"
+                                        Grid.Column="0"
+                                        Content="Remaining Balance"
+                                        Theme="{StaticResource TitleLabel}" />
+                                    <Label
+                                        Grid.Row="5"
+                                        Grid.Column="1"
+                                        HorizontalAlignment="Right"
+                                        Content="₱1"
+                                        Foreground="{StaticResource SemiColorPrimary}"
+                                        Theme="{StaticResource TitleLabel}" />
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!--  payment method  -->
+                    <StackPanel Spacing="8">
+                        <Label Content="Payment Method" Theme="{StaticResource TitleLabel}" />
+
+                        <StackPanel Spacing="12">
+                            <UniformGrid
+                                ColumnSpacing="8"
+                                RadioButton.Checked="PaymentMethodRadioButton_Checked"
+                                RowSpacing="8">
+                                <RadioButton Tag="cash" Theme="{DynamicResource PureCardRadioButton}">
+                                    <StackPanel>
+                                        <Svg Path="avares://pos/Assets/Icons/banknote.svg" />
+                                        <AccessText Text="Cash" />
+                                    </StackPanel>
+                                </RadioButton>
+                                <RadioButton Tag="gcash" Theme="{DynamicResource PureCardRadioButton}">
+                                    <StackPanel>
+                                        <Svg Path="avares://pos/Assets/Icons/gcash.svg" />
+                                        <AccessText Text="Gcash" />
+                                    </StackPanel>
+                                </RadioButton>
+                                <RadioButton Tag="card" Theme="{DynamicResource PureCardRadioButton}">
+                                    <StackPanel>
+                                        <Svg Path="avares://pos/Assets/Icons/credit-card.svg" />
+                                        <AccessText Text="Card" />
+                                    </StackPanel>
+                                </RadioButton>
+                                <RadioButton Tag="voucher" Theme="{DynamicResource PureCardRadioButton}">
+                                    <StackPanel>
+                                        <Svg Path="avares://pos/Assets/Icons/ticket-percent.svg" />
+                                        <AccessText Text="Voucher" />
+                                    </StackPanel>
+                                </RadioButton>
+                            </UniformGrid>
+
+                            <StackPanel Spacing="8">
+                                <Grid ColumnDefinitions="* auto" ColumnSpacing="8">
+                                    <TextBox
+                                        Grid.Column="0"
+                                        Classes="Large Bordered"
+                                        InnerLeftContent="₱"
+                                        Watermark="0.00" />
+                                    <Button
+                                        Grid.Column="1"
+                                        HorizontalAlignment="Stretch"
+                                        Classes="Large"
+                                        Theme="{StaticResource SolidButton}">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <PathIcon Data="{StaticResource SemiIconPlus}" Theme="{StaticResource InnerPathIcon}" />
+                                            <AccessText Text="Add payment" />
+                                        </StackPanel>
+                                    </Button>
+                                </Grid>
+                            </StackPanel>
+                            <TextBox
+                                Name="referenceSection"
+                                Classes="Large Bordered"
+                                IsVisible="False"
+                                Watermark="Enter reference no." />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!--  payment history  -->
+                    <StackPanel Spacing="8">
+                        <Label Content="Payment History" Theme="{StaticResource TitleLabel}" />
+
+                        <ItemsControl Name="PaymentHistoryItemsControl" ItemsSource="{Binding PaymentHistoryList}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Spacing="8" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border
+                                        Margin="0"
+                                        Padding="16,12"
+                                        Theme="{StaticResource CardBorder}">
+                                        <Grid
+                                            HorizontalAlignment="Stretch"
+                                            ColumnDefinitions="auto * auto"
+                                            ColumnSpacing="12">
+                                            <Svg
+                                                Grid.Row="0"
+                                                Grid.Column="0"
+                                                Height="20"
+                                                Classes.card="{Binding Method, Converter={StaticResource equalsConverter}, ConverterParameter='Card'}"
+                                                Classes.cash="{Binding Method, Converter={StaticResource equalsConverter}, ConverterParameter='Cash'}"
+                                                Classes.gcash="{Binding Method, Converter={StaticResource equalsConverter}, ConverterParameter='Gcash'}"
+                                                Classes.voucher="{Binding Method, Converter={StaticResource equalsConverter}, ConverterParameter='Voucher'}" />
+
+                                            <TextBlock
+                                                Grid.Row="0"
+                                                Grid.Column="1"
+                                                LineSpacing="-2">
+                                                <Run Text="{Binding Method}" />
+                                                <LineBreak />
+                                                <Run
+                                                    FontSize="{StaticResource SemiFontSizeSmall}"
+                                                    Foreground="{StaticResource SemiColorText2}"
+                                                    Text="{Binding Amount, StringFormat=₱{0:F2}}" />
+                                            </TextBlock>
+
+                                            <Button
+                                                Grid.Column="2"
+                                                Width="24"
+                                                Padding="0"
+                                                HorizontalAlignment="Right"
+                                                BorderThickness="1"
+                                                Classes="Small Danger"
+                                                Theme="{StaticResource SolidButton}">
+                                                <PathIcon
+                                                    Height="16"
+                                                    Data="{DynamicResource SemiIconClose}"
+                                                    Theme="{StaticResource InnerPathIcon}" />
+                                            </Button>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </ScrollViewer>
+
+        <Border
+            Grid.Row="2"
+            Padding="{StaticResource SemiThicknessBase}"
+            BorderBrush="{StaticResource SemiColorBorder}"
+            BorderThickness="0,1,0,0">
+            <UniformGrid ColumnSpacing="8" Rows="1">
+                <Button
+                    HorizontalAlignment="Stretch"
+                    Classes="Large"
+                    Click="CloseDialogButton_Click"
+                    Content="Cancel"
+                    Theme="{StaticResource OutlineButton}" />
+                <Button
+                    Name="confirmButton"
+                    HorizontalAlignment="Stretch"
+                    Classes="Large Success"
+                    Click="ConfirmButton_Click"
+                    Content="Complete Payment"
+                    IsEnabled="False"
+                    Theme="{StaticResource SolidButton}" />
+            </UniformGrid>
+        </Border>
+    </Grid>
 </UserControl>

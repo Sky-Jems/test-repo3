@@ -1,4 +1,3 @@
-using System;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using AvaloniaDialogs.Views;
@@ -12,13 +11,17 @@ public partial class PaymentMethodDialog : BaseDialog<string>
     public PaymentMethodDialog()
     {
         InitializeComponent();
+        DataContext = new PaymentMethodDialogViewModel();
     }
+
+    private void CloseDialogButton_Click(object sender, RoutedEventArgs args) => Close();
 
     private void PaymentMethodRadioButton_Checked(object sender, RoutedEventArgs args)
     {
-        if (sender is RadioButton rb && rb.Tag is string method)
+        if (args.Source is RadioButton rb && rb.Tag is string method)
         {
             selectedPaymentMethod = method;
+            referenceSection.IsVisible = method != "cash";
             confirmButton.IsEnabled = true;
         }
     }

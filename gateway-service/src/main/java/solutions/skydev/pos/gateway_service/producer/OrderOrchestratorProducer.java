@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 import org.springframework.kafka.requestreply.RequestReplyFuture;
 import org.springframework.stereotype.Component;
+import solutions.skydev.pos.common.discount_service.dto.request.DiscountOrderRequestDto;
 import solutions.skydev.pos.common.billing_service.dto.response.BillingRequestResponseDto;
 import solutions.skydev.pos.common.order_orchestrator_service.dto.request.OrderPaymentRequestDto;
 import solutions.skydev.pos.common.order_orchestrator_service.dto.response.OrderTransactionResponseDto;
@@ -20,7 +21,7 @@ public class OrderOrchestratorProducer {
     private final ReplyingKafkaTemplate<String, Object, Object> orderTransactionCreatedReplyingTemplate;
     private final ReplyingKafkaTemplate<String, Object, Object> orderTransactionUpdatedReplyingTemplate;
     private final ReplyingKafkaTemplate<String, Object, Object> orderPaymentCreatedReplyingTemplate;
-    
+
     private static final Duration timeoutForInitialization = Duration.ofSeconds(1000);
 
     @Autowired
@@ -32,7 +33,7 @@ public class OrderOrchestratorProducer {
         this.orderTransactionUpdatedReplyingTemplate = orderTransactionUpdatedReplyingTemplate;
         this.orderPaymentCreatedReplyingTemplate = orderPaymentCreatedReplyingTemplate;
     }
-    
+
     private void waitForInitialization(ReplyingKafkaTemplate<String, Object, Object> replyingTemplate) throws InterruptedException {
         if (!replyingTemplate.waitForAssignment(OrderOrchestratorProducer.timeoutForInitialization)) {
             throw new IllegalStateException("Reply container did not initialize");
@@ -95,7 +96,7 @@ public class OrderOrchestratorProducer {
             throw new RuntimeException("Failed to send add line item command", e);
         }
     }
-    
+
     public OrderTransactionResponseDto sendRemoveLineItemCommand(LineItemRequestDto requestBody) {
         ProducerRecord<String, Object> record = new ProducerRecord<>("remove-order-line-item-command", requestBody);
         try {
@@ -108,7 +109,7 @@ public class OrderOrchestratorProducer {
             throw new RuntimeException("Failed to send remove line item command", e);
         }
     }
-    
+
     public OrderTransactionResponseDto sendClearLineItemsCommand(OrderRequestDto requestBody) {
         ProducerRecord<String, Object> record = new ProducerRecord<>("clear-order-line-items-command", requestBody);
         try {
@@ -121,7 +122,7 @@ public class OrderOrchestratorProducer {
             throw new RuntimeException("Failed to send clear line items command", e);
         }
     }
-    
+
     public BillingRequestResponseDto sendOrderPaymentCommand(OrderPaymentRequestDto requestBody) {
         ProducerRecord<String, Object> record = new ProducerRecord<>("create-order-payment-command", requestBody);
         try {
@@ -132,6 +133,45 @@ public class OrderOrchestratorProducer {
             return (BillingRequestResponseDto) response.value();
         } catch (Exception e) {
             throw new RuntimeException("Failed to send order payment command", e);
+        }
+    }
+
+    public OrderTransactionResponseDto sendApplyDiscountOrderCommand(DiscountOrderRequestDto requestBody) {
+        ProducerRecord<String, Object> record = new ProducerRecord<>("apply-tagged-discount-command", requestBody);
+        try {
+            waitForInitialization(orderTransactionUpdatedReplyingTemplate);
+            RequestReplyFuture<String, Object, Object> future = this.orderTransactionUpdatedReplyingTemplate.sendAndReceive(record);
+            ConsumerRecord<String, Object> response = future.get(10,
+                    TimeUnit.SECONDS);
+            return (OrderTransactionResponseDto) response.value();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to send apply tagged discount command", e);
+        }
+    }
+
+    public OrderTransactionResponseDto sendRemoveLineItemDiscount(DiscountOrderRequestDto requestBody) {
+        ProducerRecord<String, Object> record = new ProducerRecord<>("delete-tagged-line-item-discount-order-command", requestBody);
+        try {
+            waitForInitialization(orderTransactionUpdatedReplyingTemplate);
+            RequestReplyFuture<String, Object, Object> future = this.orderTransactionUpdatedReplyingTemplate.sendAndReceive(record);
+            ConsumerRecord<String, Object> response = future.get(10,
+                    TimeUnit.SECONDS);
+            return (OrderTransactionResponseDto) response.value();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to remove line items discount command", e);
+        }
+    }
+
+    public OrderTransactionResponseDto sendRemoveOrderDiscount(DiscountOrderRequestDto requestBody) {
+        ProducerRecord<String, Object> record = new ProducerRecord<>("delete-tagged-discount-order-command", requestBody);
+        try {
+            waitForInitialization(orderTransactionUpdatedReplyingTemplate);
+            RequestReplyFuture<String, Object, Object> future = this.orderTransactionUpdatedReplyingTemplate.sendAndReceive(record);
+            ConsumerRecord<String, Object> response = future.get(10,
+                    TimeUnit.SECONDS);
+            return (OrderTransactionResponseDto) response.value();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to remove order discount command", e);
         }
     }
 }

@@ -2,6 +2,8 @@ package solutions.skydev.pos.discount_service.service;
 
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import solutions.skydev.pos.common.discount_service.dto.response.LineItemLevelDiscountOrderResponseDto;
+import solutions.skydev.pos.discount_service.model.DiscountOrderSummary;
 import solutions.skydev.pos.discount_service.model.entity.*;
 import solutions.skydev.pos.discount_service.repository.DiscountOrderRepository;
 import solutions.skydev.pos.discount_service.repository.DiscountRepository;
@@ -12,6 +14,7 @@ import solutions.skydev.pos.discount_service.service.strategy.scope.DiscountScop
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class DiscountOrderServiceImpl implements DiscountOrderService {
@@ -32,11 +35,40 @@ public class DiscountOrderServiceImpl implements DiscountOrderService {
     }
 
     @Override
-    public List<DiscountOrder> findAllByOrderId(Long id) {
-        if (id == null) {
-            throw new IllegalArgumentException("Order ID cannot be null");
-        }
-        return discountOrderRepository.findAllByOrderId(id);
+    public DiscountOrderSummary getDiscountOrderSummary(Long orderId) {
+        List<DiscountOrder> allDiscounts = discountOrderRepository.findAllByOrderId(orderId);
+
+        BigDecimal discountAmount = calculateTotalDiscountAmount(allDiscounts);
+        Long discountId = extractOrderLevelDiscountId(allDiscounts);
+
+        return DiscountOrderSummary.builder()
+                .orderId(orderId)
+                .discountAmount(discountAmount)
+                .discountId(discountId)
+                .discountOrders(allDiscounts)
+                .build();
+    }
+
+    private BigDecimal calculateTotalDiscountAmount(List<DiscountOrder> discountOrders) {
+        return discountOrders.stream()
+                .filter(d -> d instanceof OrderLevelDiscountOrder)
+                .map(DiscountOrder::getDiscountAmount)
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElseGet(() ->
+                        discountOrders.stream()
+                                .filter(d -> d instanceof LineItemLevelDiscountOrder)
+                                .map(DiscountOrder::getDiscountAmount)
+                                .filter(Objects::nonNull)
+                                .reduce(BigDecimal.ZERO, BigDecimal::add));
+    }
+
+    private Long extractOrderLevelDiscountId(List<DiscountOrder> discountOrders) {
+        return discountOrders.stream()
+                .filter(d -> d instanceof OrderLevelDiscountOrder)
+                .map(d -> d.getDiscount().getId())
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
@@ -101,20 +133,32 @@ public class DiscountOrderServiceImpl implements DiscountOrderService {
 
         DiscountOrder existing = discountOrderRepository.findFirstByOrderId(orderId);
         if (existing != null && !(existing instanceof LineItemLevelDiscountOrder)) {
-            throw new IllegalArgumentException("Cannot create LINE_ITEM-level discount: ORDER-level discount already exists for orderId " + orderId);
+            throw new IllegalArgumentException(
+                    "Cannot create LINE_ITEM-level discount: ORDER-level discount already exists for orderId " + orderId);
         }
+
         List<LineItemLevelDiscountOrder> results = new ArrayList<>();
         for (LineItemLevelDiscountOrder item : discountOrders) {
-            if (item.getDiscount() == null) {
-                throw new IllegalArgumentException("Each line-item discount must have a discount reference.");
-            }
-
-            Discount discount = discountRepository.findById(item.getDiscount().getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Discount not found with ID: " + item.getDiscount().getId()));
 
             LineItemLevelDiscountOrder toSave = lineItemLevelDiscountOrderRepository
                     .findByOrderIdAndLineItemId(orderId, item.getLineItemId())
                     .orElseGet(LineItemLevelDiscountOrder::new);
+
+            Discount discount;
+            if (item.getDiscount() == null) {
+                if (toSave.getId() == null) {
+                    continue;
+                }
+                discount = toSave.getDiscount();
+                if (discount == null) {
+                    throw new IllegalStateException(
+                            "Existing line-item found but has no discount stored.");
+                }
+            } else {
+                discount = discountRepository.findById(item.getDiscount().getId())
+                        .orElseThrow(() -> new IllegalArgumentException(
+                                "Discount not found with ID: " + item.getDiscount().getId()));
+            }
 
             toSave.setOrderId(orderId);
             toSave.setLineItemId(item.getLineItemId());

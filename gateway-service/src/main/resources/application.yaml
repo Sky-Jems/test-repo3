@@ -70,5 +70,17 @@ spring:
               - Path=/billings-requests/**
               - Method=GET
 
+          - id: discount_order_route
+            uri: http://localhost:8088/discount-order
+            predicates:
+              - Path=/discount-order/**
+              - Method=GET
+
+          - id: discount_route
+            uri: http://localhost:8086/discounts
+            predicates:
+              - Path=/discounts/**
+              - Method=GET
+
 jwt:
   secret: sample_secret_key_sample_32_char

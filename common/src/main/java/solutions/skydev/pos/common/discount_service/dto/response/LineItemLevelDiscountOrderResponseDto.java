@@ -19,5 +19,6 @@ public class LineItemLevelDiscountOrderResponseDto {
     private Long lineItemId;
     @JsonProperty("discount_amount")
     private BigDecimal discountAmount;
+    @JsonProperty("discount_id")
     private Long discountId;
 }

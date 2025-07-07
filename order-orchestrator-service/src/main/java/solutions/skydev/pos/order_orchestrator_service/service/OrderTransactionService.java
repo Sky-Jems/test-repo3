@@ -3,6 +3,7 @@ package solutions.skydev.pos.order_orchestrator_service.service;
 import org.springframework.stereotype.Service;
 import solutions.skydev.pos.common.order_service.dto.request.LineItemRequestDto;
 import solutions.skydev.pos.common.order_service.dto.request.OrderRequestDto;
+import solutions.skydev.pos.common.discount_service.dto.request.DiscountOrderRequestDto;
 import solutions.skydev.pos.order_orchestrator_service.model.entity.OrderTransaction;
 
 import java.util.List;
@@ -17,6 +18,9 @@ public interface OrderTransactionService {
     OrderTransaction clearLineItems(OrderRequestDto orderRequestDto);
     OrderTransaction markOrderAsPaid(Long orderId);
 //    OrderTransaction tagDiscount(DiscountOrderRequestDto discountOrderRequestDto);
+    OrderTransaction applyDiscountOrder(DiscountOrderRequestDto discountOrderRequestDto);
+    OrderTransaction removeOrderDiscount(DiscountOrderRequestDto discountOrderRequestDto);
+    OrderTransaction removeLineItemDiscount(DiscountOrderRequestDto discountOrderRequestDto);
     List<OrderTransaction> getAllOrderTransactions();
     List<OrderTransaction> getOrderTransactionsByOrderId(Long orderId);
     List<OrderTransaction> getOrderTransactionsByOrderStatus(String orderStatus);

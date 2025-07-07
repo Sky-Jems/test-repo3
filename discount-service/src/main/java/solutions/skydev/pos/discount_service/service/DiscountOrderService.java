@@ -1,4 +1,5 @@
 package solutions.skydev.pos.discount_service.service;
+import solutions.skydev.pos.discount_service.model.DiscountOrderSummary;
 import solutions.skydev.pos.discount_service.model.entity.DiscountOrder;
 import solutions.skydev.pos.discount_service.model.entity.LineItemLevelDiscountOrder;
 import solutions.skydev.pos.discount_service.model.entity.Order;
@@ -11,6 +12,6 @@ public interface DiscountOrderService {
     List<LineItemLevelDiscountOrder> create(List<LineItemLevelDiscountOrder> discountOrders, Long orderId);
     DiscountOrder findByOrderId(Long id);
     List<DiscountOrder> deleteByOrderId(Long id);
-    List<DiscountOrder> findAllByOrderId(Long id);
+    DiscountOrderSummary getDiscountOrderSummary(Long id);
     List<LineItemLevelDiscountOrder> deleteByLineItems(Long orderId, List<LineItemLevelDiscountOrder> lineItemIds);
 }

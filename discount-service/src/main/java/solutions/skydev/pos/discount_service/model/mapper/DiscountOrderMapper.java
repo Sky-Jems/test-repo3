@@ -7,10 +7,12 @@ import solutions.skydev.pos.common.discount_service.dto.request.DiscountOrderLin
 import solutions.skydev.pos.common.discount_service.dto.request.DiscountOrderRequestDto;
 import solutions.skydev.pos.common.discount_service.dto.response.DiscountOrderUpdatedResponseDto;
 import solutions.skydev.pos.common.discount_service.dto.response.LineItemLevelDiscountOrderResponseDto;
+import solutions.skydev.pos.discount_service.model.DiscountOrderSummary;
 import solutions.skydev.pos.discount_service.model.entity.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
@@ -36,10 +38,10 @@ public interface DiscountOrderMapper {
     LineItem toLineItem(DiscountOrderLineItemRequestDto lineItemDto);
 
     @Mapping(target = "orderId", source = "orderId")
-    @Mapping(target = "lineItems", expression = "java(toLineItemLevelDiscountOrderResponseDtoList(discountOrders))")
-    @Mapping(target = "discountAmount", expression = "java(extractOrderLevelDiscountAmount(discountOrders))")
-    @Mapping(target = "discountId", expression = "java(extractOrderLevelDiscountId(discountOrders))")
-    DiscountOrderUpdatedResponseDto toDto(List<DiscountOrder> discountOrders, Long orderId);
+    @Mapping(target = "discountAmount", source = "discountAmount")
+    @Mapping(target = "discountId", source = "discountId")
+    @Mapping(target = "lineItems", expression = "java(toLineItemLevelDiscountOrderResponseDtoList(summary.getDiscountOrders()))")
+    DiscountOrderUpdatedResponseDto toDto(DiscountOrderSummary summary);
 
     @Mapping(target = "discountId", source = "discount.id")
     LineItemLevelDiscountOrderResponseDto toLineItemLevelDiscountOrderResponseDto(LineItemLevelDiscountOrder discountOrder);
@@ -49,21 +51,5 @@ public interface DiscountOrderMapper {
                 .filter(d -> d instanceof LineItemLevelDiscountOrder)
                 .map(d -> toLineItemLevelDiscountOrderResponseDto((LineItemLevelDiscountOrder) d))
                 .collect(Collectors.toList());
-    }
-
-    default BigDecimal extractOrderLevelDiscountAmount(List<DiscountOrder> discountOrders) {
-        return discountOrders.stream()
-                .filter(d -> d instanceof OrderLevelDiscountOrder)
-                .map(DiscountOrder::getDiscountAmount)
-                .findFirst()
-                .orElse(null);
-    }
-
-    default Long extractOrderLevelDiscountId(List<DiscountOrder> discountOrders) {
-        return discountOrders.stream()
-                .filter(d -> d instanceof OrderLevelDiscountOrder)
-                .map(d -> ((OrderLevelDiscountOrder) d).getDiscount().getId())
-                .findFirst()
-                .orElse(null);
     }
 }

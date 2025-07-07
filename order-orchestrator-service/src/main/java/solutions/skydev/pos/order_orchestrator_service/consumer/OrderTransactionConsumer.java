@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import solutions.skydev.pos.common.order_service.dto.request.OrderRequestDto;
 import solutions.skydev.pos.common.order_service.dto.request.LineItemRequestDto;
 import solutions.skydev.pos.common.order_orchestrator_service.dto.response.OrderTransactionResponseDto;
+import solutions.skydev.pos.common.discount_service.dto.request.DiscountOrderRequestDto;
 import solutions.skydev.pos.order_orchestrator_service.model.entity.OrderTransaction;
 import solutions.skydev.pos.order_orchestrator_service.model.mapper.OrderTransactionMapper;
 import solutions.skydev.pos.order_orchestrator_service.service.OrderTransactionService;
@@ -69,19 +70,32 @@ public class OrderTransactionConsumer {
         OrderTransaction orderTransaction = orderTransactionService.removeLineItem(record.value());
         return orderTransactionMapper.toResponseDto(orderTransaction);
     }
-    
+
     @KafkaListener(topics = "clear-order-line-items-command")
     @SendTo("order-transaction.updated")
     public OrderTransactionResponseDto clearLineItemsCommand(ConsumerRecord<String, OrderRequestDto> record) {
         OrderTransaction orderTransaction = orderTransactionService.clearLineItems(record.value());
         return orderTransactionMapper.toResponseDto(orderTransaction);
     }
-    
 
-//    @KafkaListener(topics = "tag-discount-command")
-//    @SendTo("order-transaction.updated")
-//    public OrderTransactionResponseDto tagDiscountCommand(ConsumerRecord<String, DiscountOrderRequestDto> record) {
-//        OrderTransaction orderTransaction = orderTransactionService.tagDiscount(record.value());
-//        return orderTransactionMapper.toResponseDto(orderTransaction);
-//    }
+    @KafkaListener(topics = "apply-tagged-discount-command")
+    @SendTo("order-transaction.updated")
+    public OrderTransactionResponseDto applyDiscountOrderCommand(ConsumerRecord<String, DiscountOrderRequestDto> record) {
+        OrderTransaction orderTransaction = orderTransactionService.applyDiscountOrder(record.value());
+        return orderTransactionMapper.toResponseDto(orderTransaction);
+    }
+
+    @KafkaListener(topics = "delete-tagged-discount-order-command")
+    @SendTo("order-transaction.updated")
+    public OrderTransactionResponseDto deleteDiscountOrderCommand(ConsumerRecord<String, DiscountOrderRequestDto> record) {
+        OrderTransaction orderTransaction = orderTransactionService.removeOrderDiscount(record.value());
+        return orderTransactionMapper.toResponseDto(orderTransaction);
+    }
+
+    @KafkaListener(topics = "delete-tagged-line-item-discount-order-command")
+    @SendTo("order-transaction.updated")
+    public OrderTransactionResponseDto deleteLineItemDiscountOrderCommand(ConsumerRecord<String, DiscountOrderRequestDto> record) {
+        OrderTransaction orderTransaction = orderTransactionService.removeLineItemDiscount(record.value());
+        return orderTransactionMapper.toResponseDto(orderTransaction);
+    }
 }

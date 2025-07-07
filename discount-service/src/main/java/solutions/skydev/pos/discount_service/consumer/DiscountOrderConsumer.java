@@ -10,7 +10,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Component;
 import solutions.skydev.pos.common.discount_service.dto.request.DiscountOrderRequestDto;
 import solutions.skydev.pos.common.discount_service.dto.response.DiscountOrderUpdatedResponseDto;
-import solutions.skydev.pos.discount_service.model.entity.DiscountOrder;
+import solutions.skydev.pos.discount_service.model.DiscountOrderSummary;
 import solutions.skydev.pos.discount_service.model.entity.LineItemLevelDiscountOrder;
 import solutions.skydev.pos.discount_service.model.entity.Order;
 import solutions.skydev.pos.discount_service.model.entity.OrderLevelDiscountOrder;
@@ -55,8 +55,8 @@ public class DiscountOrderConsumer {
             throw new IllegalArgumentException("Invalid discount order request: " + discountOrderRequestDto);
         }
 
-        List<DiscountOrder> allDiscounts = discountOrderService.findAllByOrderId(discountOrderRequestDto.getOrderId());
-        return discountOrderMapper.toDto(allDiscounts, discountOrderRequestDto.getOrderId());
+        DiscountOrderSummary summary = discountOrderService.getDiscountOrderSummary(discountOrderRequestDto.getOrderId());
+        return discountOrderMapper.toDto(summary);
     }
 
     @KafkaListener(topics = "delete-discount-order-command",
@@ -73,8 +73,8 @@ public class DiscountOrderConsumer {
             throw new IllegalArgumentException("Order ID cannot be null");
         }
         discountOrderService.deleteByOrderId(discountOrderRequestDto.getOrderId());
-        List<DiscountOrder> allDiscounts = discountOrderService.findAllByOrderId(discountOrderRequestDto.getOrderId());
-        return discountOrderMapper.toDto(allDiscounts, discountOrderRequestDto.getOrderId());
+        DiscountOrderSummary summary = discountOrderService.getDiscountOrderSummary(discountOrderRequestDto.getOrderId());
+        return discountOrderMapper.toDto(summary);
     }
 
     @KafkaListener(topics = "delete-discount-order-line-item-command",
@@ -96,7 +96,7 @@ public class DiscountOrderConsumer {
                 discountOrderMapper.toLineItemLevelEntities(discountOrderRequestDto.getLineItems(), discountOrderRequestDto.getOrderId())
         );
 
-        List<DiscountOrder> allDiscounts = discountOrderService.findAllByOrderId(discountOrderRequestDto.getOrderId());
-        return discountOrderMapper.toDto(allDiscounts, discountOrderRequestDto.getOrderId());
+        DiscountOrderSummary summary = discountOrderService.getDiscountOrderSummary(discountOrderRequestDto.getOrderId());
+        return discountOrderMapper.toDto(summary);
     }
 }

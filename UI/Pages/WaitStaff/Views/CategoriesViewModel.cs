@@ -18,7 +18,7 @@ public class CategoriesViewModel : ReactiveObject, IRoutableViewModel
     public IScreen HostScreen { get; }
     private readonly ICategoryService _categoryService;
     public ObservableCollection<Category> Categories { get; } = new ();
-    private ReactiveCommand<Unit, Unit> LoadCategoriesCommand { get; }
+    public ReactiveCommand<Unit, Unit> LoadCategoriesCommand { get; }
     public ICommand CategoryCardClickedCommand { get; }
 
     public CategoriesViewModel(IScreen screen)
@@ -28,7 +28,6 @@ public class CategoriesViewModel : ReactiveObject, IRoutableViewModel
 
         LoadCategoriesCommand = ReactiveCommand.CreateFromTask(LoadCategoriesAsync);
         CategoryCardClickedCommand = ReactiveCommand.Create<Category>(HandleClickCategory);
-        LoadCategoriesCommand.Execute().Subscribe();
     }
 
     private async Task LoadCategoriesAsync()

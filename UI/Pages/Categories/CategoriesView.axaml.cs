@@ -48,7 +48,7 @@ public partial class CategoriesView : ReactiveUserControl<CategoriesViewModel>
     {
         TwofoldDialog dialog = new()
         {
-            Message = "Delete this category?",
+            Message = "Deleting this category will also affect the products it contains. Would you like to confirm?",
             PositiveText = "Delete",
             NegativeText = "Cancel"
         };

@@ -59,12 +59,20 @@
                 <StackPanel Orientation="Vertical" Spacing="12">
 
                     <StackPanel Orientation="Vertical" Spacing="4">
-                        <Label Content="Name" />
+                        <Label Content="Product Name" />
                         <TextBox
                             x:Name="ProductName"
                             Classes="Large Bordered"
+                            MaxLength="250"
                             Text="{Binding ProductName, Mode=TwoWay}"
+                            TextChanged="ProductBox_TextChanged"
                             Watermark="Enter product name" />
+                        <TextBlock
+                            Name="ProductCounter"
+                            Margin="0,4,0,0"
+                            HorizontalAlignment="Right"
+                            FontSize="12"
+                            Foreground="Gray" />
                     </StackPanel>
 
                     <StackPanel Orientation="Vertical" Spacing="4">
@@ -74,9 +82,17 @@
                             Height="100"
                             AcceptsReturn="True"
                             Classes="TextArea Bordered"
+                            MaxLength="500"
                             Text="{Binding DescriptionName, Mode=TwoWay}"
+                            TextChanged="DescriptionBox_TextChanged"
                             TextWrapping="Wrap"
                             Watermark="Enter description name" />
+                        <TextBlock
+                            Name="DescriptionCounter"
+                            Margin="0,4,0,0"
+                            HorizontalAlignment="Right"
+                            FontSize="12"
+                            Foreground="Gray" />
                     </StackPanel>
 
                     <!-- <StackPanel Orientation="Vertical" Spacing="4">
@@ -103,40 +119,60 @@
                         <Label Content="Category" />
 
                         <!--  TODO: convert as custom control  -->
-                        <Button
-                            Padding="4,0"
-                            HorizontalAlignment="Stretch"
-                            HorizontalContentAlignment="Left"
-                            Classes="Large"
-                            Theme="{StaticResource OutlineButton}">
-                            <ItemsControl x:Name="selectedCategoriesItemsControl" ItemsSource="{Binding SelectedCategoryList}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel Orientation="Horizontal" Spacing="4" />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
+                        <Border
+                            Background="White"
+                            BorderBrush="#141C1F23"
+                            BorderThickness="1"
+                            CornerRadius="4">
+                            <Button
+                                Padding="4,0"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch"
+                                Classes="Large Bordered"
+                                Theme="{StaticResource BorderlessButton}">
+                                <Grid VerticalAlignment="Center" ColumnDefinitions="*,Auto">
+                                    <ItemsControl x:Name="selectedCategoriesItemsControl" ItemsSource="{Binding SelectedCategoryList}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel Orientation="Horizontal" Spacing="4" />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
 
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Button
-                                            Classes="Primary"
-                                            Command="{Binding $parent[UserControl].DataContext.RemoveCategoryFromListCommand}"
-                                            CommandParameter="{Binding .}"
-                                            Theme="{StaticResource SolidButton}">
-                                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                                <AccessText Text="{Binding Name}" />
-                                                <PathIcon
-                                                    Height="16"
-                                                    Data="{StaticResource SemiIconClear}"
-                                                    Theme="{StaticResource InnerPathIcon}" />
-                                            </StackPanel>
-                                        </Button>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Button
+                                                    Classes="Primary"
+                                                    Command="{Binding $parent[UserControl].DataContext.RemoveCategoryFromListCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    Theme="{StaticResource SolidButton}">
+                                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                                        <AccessText Text="{Binding Name}" />
+                                                        <PathIcon
+                                                            Height="16"
+                                                            Data="{StaticResource SemiIconClear}"
+                                                            Theme="{StaticResource InnerPathIcon}" />
+                                                    </StackPanel>
+                                                </Button>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+
+                                    <PathIcon
+                                        x:Name="CategoryDropdownIcon"
+                                        Grid.Column="1"
+                                        Width="16"
+                                        Height="16"
+                                        Margin="8,0,4,0"
+                                        VerticalAlignment="Center"
+                                        Data="{DynamicResource SemiIconChevronDown}"
+                                        Theme="{StaticResource InnerPathIcon}" />
+                                </Grid>
 
                             <Button.Flyout>
-                                <Flyout Placement="BottomEdgeAlignedLeft">
+                                <Flyout 
+                                    Opened="OnButtonFlyoutOpened"
+                                    Placement="BottomEdgeAlignedLeft"
+                                    Closed="OnButtonFlyoutClosed">
                                     <ListBox
                                         ItemsSource="{Binding CategoryList}"
                                         SelectedItems="{Binding SelectedCategoryList}"
@@ -150,6 +186,7 @@
                                 </Flyout>
                             </Button.Flyout>
                         </Button>
+                    </Border>
                     </StackPanel>
                     <StackPanel Orientation="Vertical" Spacing="4">
                         <Label Content="Price" />

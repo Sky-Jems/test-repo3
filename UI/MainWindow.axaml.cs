@@ -1,21 +1,19 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.ReactiveUI;
-using Pos.Pages;
-using System.Reactive;
+using Avalonia.Controls.Notifications;
 using System.Reactive.Linq;
-using ReactiveUI;
 using System;
-using pos.Extensions;
-using pos.Api;
-using Microsoft.Extensions.DependencyInjection;
+using pos.Models.EventArgs;
 
 namespace Pos;
 
 public partial class MainWindow : Window
 {
+    public static WindowNotificationManager? NotificationManager { get; private set; }
+
     public MainWindow()
     {
+        NotificationManager = new WindowNotificationManager(TopLevel.GetTopLevel(this)) { MaxItems = 3 };
         DataContext = new MainWindowViewModel();
         InitializeComponent();
         if (DataContext is MainWindowViewModel viewModel)
@@ -69,5 +67,15 @@ public partial class MainWindow : Window
             ErrorTextBlock.Text = $"Login failed";
             ErrorTextBlock.IsVisible = true;
         }
+    }
+
+    public static void NotificationMessage(object? sender, NotificationEventArgs args)
+    {
+        MainWindow.NotificationManager?.Show(
+            new Notification("New Message", args.Message),
+            (NotificationType)args.NotifType,
+            TimeSpan.FromSeconds(5),
+            classes: args.Classes
+        );
     }
 }

@@ -30,8 +30,6 @@ public partial class WaitStaffView : ReactiveUserControl<WaitStaffViewModel>
         set => SetValue(CartCommandProperty, value);
     }
 
-    private WindowNotificationManager? _manager;
-
     public WaitStaffView()
     {
         InitializeComponent();
@@ -42,24 +40,9 @@ public partial class WaitStaffView : ReactiveUserControl<WaitStaffViewModel>
     {
         base.OnAttachedToVisualTree(e);
         var topLevel = TopLevel.GetTopLevel(this);
-        _manager = new WindowNotificationManager(topLevel)
-        {
-            MaxItems = 3,
-            Position = NotificationPosition.TopRight
-        };
         Dispatcher.UIThread.Post(() =>
         {
-            (DataContext as WaitStaffViewModel)!.TriggerNotif += NotificationMessage;
+            (DataContext as WaitStaffViewModel)!.TriggerNotif += MainWindow.NotificationMessage;
         });
-    }
-
-    private void NotificationMessage(object? sender, NotificationEventArgs args)
-    {
-        _manager?.Show(
-            new Notification("New Message", args.Message),
-            (NotificationType)args.NotifType,
-            TimeSpan.FromSeconds(1),
-            classes: args.Classes
-        );
     }
 }

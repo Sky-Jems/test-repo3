@@ -80,7 +80,8 @@ public partial class MainViewModel : ReactiveObject, IRoutableViewModel
 
     public void LoadProductList()
     {
-        LoadProductCommand.Execute().Subscribe();
+        LoadProductCommand.Execute();
+        LoadCategoriesCommand.Execute();
     }
 
     private async Task LoadAllProductsAsync()
@@ -106,7 +107,7 @@ public partial class MainViewModel : ReactiveObject, IRoutableViewModel
                     }
                 }
 
-                product.Categories = categoryList;
+                product.Categories = categoryList.OrderBy(c => c.Name).ToList();;
                 _allProducts.Add(product);
                 _allProducts = _allProducts
                .GroupBy(p => p.Id)
@@ -142,7 +143,7 @@ public partial class MainViewModel : ReactiveObject, IRoutableViewModel
         {
             var categories = await _categoryService.GetAllCategoriesAsync();
             ComboBoxItems.Clear();
-            ComboBoxItems.Add(new Category { Id = 0, Name = "All Items" });
+            ComboBoxItems.Add(new Category { Id = 0, Name = "Select Category" });
 
             foreach (var category in categories)
             {
@@ -176,7 +177,7 @@ public partial class MainViewModel : ReactiveObject, IRoutableViewModel
             filtered = _allProducts.Where(p => p.Name?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) == true);
         }
 
-        if (SelectedComboBoxItem?.Name != null && SelectedComboBoxItem.Name != "All Items")
+        if (SelectedComboBoxItem?.Name != null && SelectedComboBoxItem.Name != "Select Category")
         {
             filtered = filtered.Where(p => p.CategoryNames.Contains(SelectedComboBoxItem.Name));
         }

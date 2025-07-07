@@ -1,9 +1,8 @@
-using Avalonia;
 using pos.Api;
-using pos.Models.EventArgs;
 using Pos.Util;
 using Pos.Models;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,49 +10,43 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using pos.Models.EventArgs;
 
 namespace Pos.Pages.Products;
 
 public partial class CreateProductViewModel : ReactiveObject, IRoutableViewModel
 {
+    #region Observables
     public ObservableCollection<OptionGroup> ProductOptions { get; set; } = [];
     public ObservableCollection<Category> CategoryList { get; set; } = [];
     public ObservableCollection<Category> SelectedCategoryList { get; set; } = [];
     public ObservableCollection<string> AttributeList { get; set; }
+
+    [Reactive] public string ProductName { get; set; } = string.Empty;
+    [Reactive] public string Price { get; set; } = string.Empty;
+    [Reactive] public string DescriptionName { get; set; } = string.Empty;
+    [Reactive] public long? AddedProductId { get;  set; }
+    #endregion
+
+    #region ReactiveCommands
     public ReactiveCommand<Unit, Unit> NextCommand { get; }
     public ReactiveCommand<Category, Unit> RemoveCategoryFromListCommand { get; }
     public ReactiveCommand<Unit, Unit> LoadCategoryCommand { get; }
-    public IScreen HostScreen { get; }
+    #endregion
+
+    #region Services
     public readonly IProductService _productService;
     public readonly ICategoryService _categoryService;
+    #endregion
 
+    #region Other Variables
+    public IScreen HostScreen { get; }
     public event EventHandler<NotificationEventArgs> TriggerNotif;
-    public string? UrlPathSegment => throw new System.NotImplementedException();
-    private string _productName = string.Empty;
-    private string _descriptionName = string.Empty;
+    public string? UrlPathSegment => throw new NotImplementedException();
     private long? _editingProductId = null;
-    public string ProductName
-    {
-        get => _productName;
-        set => this.RaiseAndSetIfChanged(ref _productName, value);
-    }
-    private string _price = string.Empty;
-    public string Price
-    {
-        get => _price;
-        set => this.RaiseAndSetIfChanged(ref _price, value);
-    }
-    public string DescriptionName
-    {
-        get => _descriptionName;
-        set => this.RaiseAndSetIfChanged(ref _descriptionName, value);
-    }
-    private long? _addedProductId;
-    public long? AddedProductId
-    {
-        get => _addedProductId;
-        private set => this.RaiseAndSetIfChanged(ref _addedProductId, value);
-    }
+    #endregion
+
+
     public CreateProductViewModel(IScreen screen, IProductService productService, ICategoryService categoryService)
     {
         HostScreen = screen;
@@ -62,6 +55,7 @@ public partial class CreateProductViewModel : ReactiveObject, IRoutableViewModel
         RemoveCategoryFromListCommand = ReactiveCommand.Create<Category>(RemoveCategoryFromList);
         LoadCategoryCommand = ReactiveCommand.CreateFromTask(LoadCategoryAsync);
     }
+
     private async Task LoadCategoryAsync()
     {
         List<Category> categories = await _categoryService.GetAllCategoriesAsync();

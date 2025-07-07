@@ -1,49 +1,40 @@
 using System;
-using Avalonia;
 using System.IO;
 using Avalonia.Controls;
-using Avalonia.Controls.Notifications;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
 using Avalonia.Threading;
-using pos.Models.EventArgs;
 using System.Linq;
 using Avalonia.Input;
+using Avalonia.Markup.Xaml.MarkupExtensions;
 
 namespace Pos.Pages.Products;
 
 public partial class CreateProductView : ReactiveUserControl<CreateProductViewModel>
 {
-    private WindowNotificationManager? _manager;
-
     public CreateProductView()
     {
         InitializeComponent();
 
         Dispatcher.UIThread.Post(() =>
         {
-            ViewModel.TriggerNotif += NotificationMessage;
+            ViewModel.TriggerNotif += MainWindow.NotificationMessage;
             ViewModel.LoadCategoryCommand.Execute().Subscribe();
         });
 
         PriceTextBox.AddHandler(TextInputEvent, PriceTextBox_TextInput, RoutingStrategies.Tunnel);
     }
 
-    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
-    {
-        base.OnAttachedToVisualTree(e);
-        var topLevel = TopLevel.GetTopLevel(this);
-        _manager = new WindowNotificationManager(topLevel) { MaxItems = 3 };
-    }
-
     public async void NextButton_Click(object sender, RoutedEventArgs args)
     {
+        NextButton.IsEnabled = false;
         var success = await ViewModel!.AddOrEditProductAsync();
         if (success)
         {
             ViewModel.GoBack.Execute();
         }
+        NextButton.IsEnabled = true;
     }
 
     private void PriceTextBox_TextInput(object? sender, TextInputEventArgs e)
@@ -75,13 +66,26 @@ public partial class CreateProductView : ReactiveUserControl<CreateProductViewMo
             var fileContent = await streamReader.ReadToEndAsync();
         }
     }
-    private void NotificationMessage(object? sender, NotificationEventArgs args)
+
+    private void DescriptionBox_TextChanged(object? sender, TextChangedEventArgs e)
     {
-        _manager?.Show(
-            new Notification("New Message", args.Message),
-            (NotificationType)args.NotifType,
-            TimeSpan.FromSeconds(1),
-            classes: args.Classes
-        );
+        var currentLength = DescriptionName.Text?.Length ?? 0;
+        DescriptionCounter.Text = $"{currentLength} / 500 Characters";
+    }
+
+    private void ProductBox_TextChanged(object? sender, TextChangedEventArgs e)
+    {
+        var currentLength = ProductName.Text?.Length ?? 0;
+        ProductCounter.Text = $"{currentLength} / 250 Characters";
+    }
+
+    private void OnButtonFlyoutOpened(object sender, EventArgs e)
+    {
+        CategoryDropdownIcon.Bind(PathIcon.DataProperty, new DynamicResourceExtension("SemiIconChevronRight"));
+    }
+
+    private void OnButtonFlyoutClosed(object sender, EventArgs e)
+    {
+        CategoryDropdownIcon.Bind(PathIcon.DataProperty, new DynamicResourceExtension("SemiIconChevronDown"));
     }
 }

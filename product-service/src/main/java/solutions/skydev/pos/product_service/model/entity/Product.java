@@ -27,6 +27,8 @@ public class Product {
     private BigDecimal price;
 
     private String name;
+
+    @Column(length=500)
     private String description;
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(

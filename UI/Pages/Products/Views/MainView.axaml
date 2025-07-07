@@ -91,22 +91,25 @@
                     <DataGridTemplateColumn Width="*" Header="Product Name">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <StackPanel Orientation="Horizontal">
-                                    <!-- <Image Width="42" Height="42">
-                                        <Image.Source>
-                                            <SvgImage />
-                                        </Image.Source>
-                                    </Image>-->
-                                    <TextBlock VerticalAlignment="Center" Text="{Binding Name}" />
-                                </StackPanel>
+                                <TextBlock 
+                                    VerticalAlignment="Center"
+                                    TextTrimming="CharacterEllipsis"
+                                    TextWrapping="NoWrap"
+                                    Text="{Binding Name}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
-                    <DataGridTextColumn
-                        Width="*"
-                        Binding="{Binding Description}"
-                        Header="Description" />
+                    <DataGridTemplateColumn Width="*" Header="Description">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock
+                                    Text="{Binding Description}"
+                                    TextTrimming="CharacterEllipsis"
+                                    TextWrapping="NoWrap" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
 
                     <DataGridTextColumn
                         Width="*"
@@ -115,8 +118,11 @@
 
                     <DataGridTextColumn
                         Width="*"
-                        Binding="{Binding Price}"
-                        Header="Price" />
+                        Header="Price">
+                        <DataGridTextColumn.Binding>
+                            <Binding Path="Price" StringFormat="₱ {0}"/>
+                        </DataGridTextColumn.Binding>
+                    </DataGridTextColumn>
 
                     <DataGridTemplateColumn Header="none" Tag="Actions">
                         <DataGridTemplateColumn.CellTemplate>

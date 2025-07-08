@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Pos.Models;
 
@@ -11,7 +10,7 @@ public interface IOrderService
  Task<GetOrderResponseDto> UpdateLineItem(LineItemDto lineItemDto);
  Task<GetOrderResponseDto> RemoveLineItem(long productId);
  Task<GetOrderResponseDto> ClearLineItems(long orderId);
- Task<UpdateOrderDto> PayOrder(long? orderId, string paymentMethod);
+ Task<PaymentResponseDto> PayOrder(Payment payment);
  Task<UpdateOrderDto> UpdateCustomer(UpdateOrderDto updateOrderDto);
  Task<GetOrderResponseDto> GetOrderTransaction(long id);
 }

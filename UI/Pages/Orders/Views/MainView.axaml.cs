@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -72,9 +71,6 @@ public partial class MainView : ReactiveUserControl<MainViewModel>
         }
 
         orderDetailsPane.IsPaneOpen = true;
-
-        OrderTransaction CurrentRowData = (OrderTransaction)args.Row.DataContext!;
-        ViewModel!.PopulateOrderCartPanel(CurrentRowData.Id);
     }
 
     private void AddOrdersButton_Click(object sender, RoutedEventArgs args)

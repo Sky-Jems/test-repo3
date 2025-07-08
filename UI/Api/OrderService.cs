@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using pos.Handlers.Interfaces;
@@ -15,13 +14,6 @@ public class OrderService : IOrderService
     {
         _httpClient = httpClient;
     }
-
-    public static Dictionary<string, string> OrderStatus = new Dictionary<string, string>
-    {
-        { OrderStatusType.PENDING.ToString(), "P" },
-        { OrderStatusType.COMPLETED.ToString(), "CO" },
-        { OrderStatusType.CANCELED.ToString(), "CA" },
-    };
 
     public async Task<GetOrderResponseDto> AddOrder(Order order)
     {
@@ -53,19 +45,10 @@ public class OrderService : IOrderService
         return await _httpClient.ReadJsonResponseAsync<GetOrderResponseDto>(response);
     }
 
-    public async Task<UpdateOrderDto> PayOrder(long? orderId, string paymentMethod)
+    public async Task<PaymentResponseDto> PayOrder(Payment payment)
     {
-        // var rawResponse = await _httpClient.PostJsonAsync("orders/pay", orderId);
-        // var response = await _httpClient.ReadJsonResponseAsync<OrderResponse>(rawResponse);
-        var guid = Guid.NewGuid();
-        var guidBytes = guid.ToByteArray();
-        long tempId = BitConverter.ToInt64(guidBytes, 0);
-        var responseDto = new UpdateOrderDto
-        {
-            Id = tempId,
-            Customer = "Customer-" + tempId,
-        };
-        return responseDto;
+        var rawResponse = await _httpClient.PostJsonAsync("payment", payment);
+        return await _httpClient.ReadJsonResponseAsync<PaymentResponseDto>(rawResponse);
     }
 
     public async Task<UpdateOrderDto> UpdateCustomer(UpdateOrderDto updateOrderDto)

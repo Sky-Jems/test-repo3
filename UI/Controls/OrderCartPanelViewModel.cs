@@ -8,8 +8,10 @@ using AvaloniaDialogs.Views;
 using DynamicData.Binding;
 using Microsoft.Extensions.DependencyInjection;
 using pos.Api;
+using Pos.Dialogs;
 using pos.Extensions;
 using Pos.Models;
+using pos.Models.EventArgs;
 using ReactiveUI;
 
 namespace Pos.Controls;
@@ -48,8 +50,9 @@ public class OrderCartPanelViewModel : ReactiveObject
     public ReactiveCommand<Unit, Unit> ClearLineItemsCommand { get; }
     public ReactiveCommand<Unit, Unit> PayLaterCommand { get; }
     public ReactiveCommand<Unit, Unit> UpdateOrderCommand { get; }
-    public ReactiveCommand<Unit, Unit> LoadOrderToCartCommand { get; }
-
+    private ReactiveCommand<Unit, Unit> LoadOrderToCartCommand { get; }
+    public ReactiveCommand<Unit, Unit> PayOrderCommand { get; }
+    public event EventHandler<NotificationEventArgs>? TriggerNotif;
 
     public OrderCartPanelViewModel()
     {
@@ -87,6 +90,7 @@ public class OrderCartPanelViewModel : ReactiveObject
         PayLaterCommand = ReactiveCommand.Create(PayLater);
         UpdateOrderCommand = ReactiveCommand.CreateFromTask(SaveCustomerAsync);
         LoadOrderToCartCommand = ReactiveCommand.CreateFromTask(LoadOrderToCartAsync);
+        PayOrderCommand = ReactiveCommand.Create(PayOrder);
     }
 
     private async Task LoadOrderToCartAsync()
@@ -181,6 +185,8 @@ public class OrderCartPanelViewModel : ReactiveObject
 
     private async Task ClearLineItemsAsync()
     {
+        if (_cartService.OrderId is null) return;
+
         _cartService.Items.Clear();
         await _orderService.ClearLineItems(_cartService.OrderId.Value);
     }
@@ -212,5 +218,30 @@ public class OrderCartPanelViewModel : ReactiveObject
             Customer = Customer
         };
         await _orderService.UpdateCustomer(updateOrderDto);
+    }
+
+    private async void PayOrder()
+    {
+        PaymentMethodDialog dialog = new();
+        if (dialog.DataContext is PaymentMethodDialogViewModel vm)
+        {
+            vm.TriggerNotif -= OnPaymentNotifReceived;
+            vm.TriggerNotif += OnPaymentNotifReceived;
+            
+            void HandleRequestClose()
+            {
+                vm.RequestClose -= HandleRequestClose; // unsubscribe once used
+                dialog.Close();
+            }
+
+            // Subscribe the close handler
+            vm.RequestClose += HandleRequestClose;
+        }
+        await dialog.ShowAsync();
+    }
+    
+    private void OnPaymentNotifReceived(object? sender, NotificationEventArgs e)
+    {
+        TriggerNotif?.Invoke(this, e);
     }
 }

@@ -16,6 +16,7 @@
 
     <UserControl.Resources>
         <converters:EqualsConverter x:Key="equalsConverter" />
+        <converters:StringEqualsConverter x:Key="stringEqualsConverter" />
     </UserControl.Resources>
 
     <UserControl.Styles>
@@ -132,7 +133,7 @@
                                         Grid.Column="1"
                                         HorizontalAlignment="Right"
                                         Classes="description"
-                                        Content="Customer name" />
+                                        Content="{Binding Customer}" />
 
                                     <Label
                                         Grid.Row="1"
@@ -144,7 +145,7 @@
                                         Grid.Column="1"
                                         HorizontalAlignment="Right"
                                         Classes="description"
-                                        Content="1" />
+                                        Content="{Binding ItemsCount}" />
 
                                     <Label
                                         Grid.Row="2"
@@ -156,7 +157,7 @@
                                         Grid.Column="1"
                                         HorizontalAlignment="Right"
                                         Classes="H6 description"
-                                        Content="₱1" />
+                                        Content="{Binding Total, StringFormat='₱{0:N2}'}" />
 
                                     <Label
                                         Grid.Row="3"
@@ -168,7 +169,7 @@
                                         Grid.Column="1"
                                         HorizontalAlignment="Right"
                                         Classes="H6 description"
-                                        Content="₱1"
+                                        Content="{Binding AmountPaid, StringFormat='₱{0:N2}'}"
                                         Foreground="{StaticResource SemiGreen5Color}" />
 
                                     <Rectangle
@@ -188,7 +189,7 @@
                                         Grid.Row="5"
                                         Grid.Column="1"
                                         HorizontalAlignment="Right"
-                                        Content="₱1"
+                                        Content="{Binding RemainingBalance, StringFormat='₱{0:N2}'}"
                                         Foreground="{StaticResource SemiColorPrimary}"
                                         Theme="{StaticResource TitleLabel}" />
                                 </Grid>
@@ -203,27 +204,33 @@
                         <StackPanel Spacing="12">
                             <UniformGrid
                                 ColumnSpacing="8"
-                                RadioButton.Checked="PaymentMethodRadioButton_Checked"
                                 RowSpacing="8">
-                                <RadioButton Tag="cash" Theme="{DynamicResource PureCardRadioButton}">
+                                <RadioButton Tag="cash"
+                                             IsChecked="{Binding PaymentMethod, Mode=TwoWay, Converter={StaticResource stringEqualsConverter}, ConverterParameter=cash}"
+                                             Theme="{DynamicResource PureCardRadioButton}">
                                     <StackPanel>
                                         <Svg Path="avares://pos/Assets/Icons/banknote.svg" />
                                         <AccessText Text="Cash" />
                                     </StackPanel>
                                 </RadioButton>
-                                <RadioButton Tag="gcash" Theme="{DynamicResource PureCardRadioButton}">
+                                <RadioButton Tag="gcash"
+                                             IsChecked="{Binding PaymentMethod, Mode=TwoWay, Converter={StaticResource stringEqualsConverter}, ConverterParameter=gcash}"
+                                             Theme="{DynamicResource PureCardRadioButton}">
                                     <StackPanel>
                                         <Svg Path="avares://pos/Assets/Icons/gcash.svg" />
                                         <AccessText Text="Gcash" />
                                     </StackPanel>
                                 </RadioButton>
-                                <RadioButton Tag="card" Theme="{DynamicResource PureCardRadioButton}">
+                                <RadioButton Tag="card"
+                                             IsChecked="{Binding PaymentMethod, Mode=TwoWay, Converter={StaticResource stringEqualsConverter}, ConverterParameter=card}"
+                                             Theme="{DynamicResource PureCardRadioButton}">
                                     <StackPanel>
                                         <Svg Path="avares://pos/Assets/Icons/credit-card.svg" />
                                         <AccessText Text="Card" />
                                     </StackPanel>
                                 </RadioButton>
-                                <RadioButton Tag="voucher" Theme="{DynamicResource PureCardRadioButton}">
+                                <RadioButton Tag="voucher" IsChecked="{Binding PaymentMethod, Mode=TwoWay, Converter={StaticResource stringEqualsConverter}, ConverterParameter=voucher}"
+                                             Theme="{DynamicResource PureCardRadioButton}">
                                     <StackPanel>
                                         <Svg Path="avares://pos/Assets/Icons/ticket-percent.svg" />
                                         <AccessText Text="Voucher" />
@@ -237,11 +244,13 @@
                                         Grid.Column="0"
                                         Classes="Large Bordered"
                                         InnerLeftContent="₱"
-                                        Watermark="0.00" />
+                                        Watermark="0.00"
+                                        Text="{Binding AmountText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                     <Button
                                         Grid.Column="1"
                                         HorizontalAlignment="Stretch"
                                         Classes="Large"
+                                        Command="{Binding AddPaymentCommand}"
                                         Theme="{StaticResource SolidButton}">
                                         <StackPanel Orientation="Horizontal" Spacing="6">
                                             <PathIcon Data="{StaticResource SemiIconPlus}" Theme="{StaticResource InnerPathIcon}" />
@@ -253,8 +262,9 @@
                             <TextBox
                                 Name="referenceSection"
                                 Classes="Large Bordered"
-                                IsVisible="False"
-                                Watermark="Enter reference no." />
+                                IsVisible="True"
+                                Watermark="Enter reference no."
+                                Text="{Binding Notes, Mode=TwoWay}" />
                         </StackPanel>
                     </StackPanel>
 
@@ -262,7 +272,7 @@
                     <StackPanel Spacing="8">
                         <Label Content="Payment History" Theme="{StaticResource TitleLabel}" />
 
-                        <ItemsControl Name="PaymentHistoryItemsControl" ItemsSource="{Binding PaymentHistoryList}">
+                        <ItemsControl Name="PaymentHistoryItemsControl" ItemsSource="{Binding Payments}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <StackPanel Spacing="8" />
@@ -283,16 +293,16 @@
                                                 Grid.Row="0"
                                                 Grid.Column="0"
                                                 Height="20"
-                                                Classes.card="{Binding Method, Converter={StaticResource equalsConverter}, ConverterParameter='Card'}"
-                                                Classes.cash="{Binding Method, Converter={StaticResource equalsConverter}, ConverterParameter='Cash'}"
-                                                Classes.gcash="{Binding Method, Converter={StaticResource equalsConverter}, ConverterParameter='Gcash'}"
-                                                Classes.voucher="{Binding Method, Converter={StaticResource equalsConverter}, ConverterParameter='Voucher'}" />
+                                                Classes.card="{Binding PaymentMethod, Converter={StaticResource equalsConverter}, ConverterParameter='card'}"
+                                                Classes.cash="{Binding PaymentMethod, Converter={StaticResource equalsConverter}, ConverterParameter='cash'}"
+                                                Classes.gcash="{Binding PaymentMethod, Converter={StaticResource equalsConverter}, ConverterParameter='gcash'}"
+                                                Classes.voucher="{Binding PaymentMethod, Converter={StaticResource equalsConverter}, ConverterParameter='voucher'}" />
 
                                             <TextBlock
                                                 Grid.Row="0"
                                                 Grid.Column="1"
                                                 LineSpacing="-2">
-                                                <Run Text="{Binding Method}" />
+                                                <Run Text="{Binding PaymentMethod}" />
                                                 <LineBreak />
                                                 <Run
                                                     FontSize="{StaticResource SemiFontSizeSmall}"
@@ -300,19 +310,19 @@
                                                     Text="{Binding Amount, StringFormat=₱{0:F2}}" />
                                             </TextBlock>
 
-                                            <Button
-                                                Grid.Column="2"
-                                                Width="24"
-                                                Padding="0"
-                                                HorizontalAlignment="Right"
-                                                BorderThickness="1"
-                                                Classes="Small Danger"
-                                                Theme="{StaticResource SolidButton}">
-                                                <PathIcon
-                                                    Height="16"
-                                                    Data="{DynamicResource SemiIconClose}"
-                                                    Theme="{StaticResource InnerPathIcon}" />
-                                            </Button>
+                                            <!-- <Button -->
+                                            <!--     Grid.Column="2" -->
+                                            <!--     Width="24" -->
+                                            <!--     Padding="0" -->
+                                            <!--     HorizontalAlignment="Right" -->
+                                            <!--     BorderThickness="1" -->
+                                            <!--     Classes="Small Danger" -->
+                                            <!--     Theme="{StaticResource SolidButton}"> -->
+                                            <!--     <PathIcon -->
+                                            <!--         Height="16" -->
+                                            <!--         Data="{DynamicResource SemiIconClose}" -->
+                                            <!--         Theme="{StaticResource InnerPathIcon}" /> -->
+                                            <!-- </Button> -->
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
@@ -341,7 +351,7 @@
                     Classes="Large Success"
                     Click="ConfirmButton_Click"
                     Content="Complete Payment"
-                    IsEnabled="False"
+                    IsEnabled="True"
                     Theme="{StaticResource SolidButton}" />
             </UniformGrid>
         </Border>

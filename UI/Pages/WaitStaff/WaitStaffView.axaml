@@ -13,8 +13,7 @@
         <Border BorderBrush="{StaticResource SemiColorBorder}" BorderThickness="0,0,1,0">
             <controls:OrderCartPanel
                 DataContext="{Binding OrderCartPanelViewModel}"
-                IsEditable="True"
-                SummaryButtonCommand="{Binding $parent.DataContext.SummaryButtonCommand}" />
+                IsEditable="True" />
         </Border>
 
         <ScrollViewer Grid.Column="1">

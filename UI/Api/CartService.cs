@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Pos.Models;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace pos.Api;
 
@@ -16,29 +17,19 @@ public enum PaymentStatus
 
 public class CartService: ReactiveObject, ICartService
 {
-     private long? _orderId;
-     public long? OrderId
-     {
-          get => _orderId;
-          set => this.RaiseAndSetIfChanged(ref _orderId, value);
-     }
-
-     private PaymentStatus _paymentStatus = PaymentStatus.PENDING;
-
-     public PaymentStatus PaymentStatus
-     {
-          get => _paymentStatus;
-          set => this.RaiseAndSetIfChanged(ref _paymentStatus, value);
-     }
-
+     [Reactive] public long? OrderId { get; set; }
+     [Reactive] public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.PENDING;
+     [Reactive] public string Customer { get; set; } = string.Empty;
      public ObservableCollection<LineItem> Items { get; set; } = new();
-
-     private string _customerName = string.Empty;
-     public string Customer
-     {
-          get => _customerName;
-          set => this.RaiseAndSetIfChanged(ref _customerName, value);
-     }
+     public decimal Total => Items.Sum(lineItem => lineItem.Quantity * lineItem.Price);
+     [Reactive] public LineItem? SelectedItem { get; set; }
+     public bool CanModifyItems => PaymentStatus == PaymentStatus.PENDING;
+     [Reactive] public decimal AmountPaid { get; set; }
+     public decimal RemainingBalance => Total - AmountPaid;
+     [Reactive] public decimal Amount { get; set; }
+     [Reactive] public string PaymentMethod { get; set; } = "cash";
+     [Reactive] public string Notes { get; set; } = string.Empty;
+     public ObservableCollection<Payment> Payments { get; set; } = new();
 
      public CartService()
      {
@@ -108,15 +99,6 @@ public class CartService: ReactiveObject, ICartService
           this.RaisePropertyChanged(nameof(Total));
      }
 
-     public decimal Total => Items.Sum(lineItem => lineItem.Quantity * lineItem.Price);
-
-     private LineItem? _selectedItem;
-     public LineItem? SelectedItem
-     {
-          get => _selectedItem;
-          set => this.RaiseAndSetIfChanged(ref _selectedItem, value);
-     }
-
      public void LoadOrder(GetOrderResponseDto orderResponse)
      {
           OrderId = orderResponse.OrderId;
@@ -134,9 +116,25 @@ public class CartService: ReactiveObject, ICartService
                var lineItem = LineItemMapper.FromDto(lineItemDto);
                Items.Add(lineItem);
           }
+          
+          Payments.Clear();
+          AmountPaid = 0;
+          foreach (var paymentDto in orderResponse.Payments ?? Enumerable.Empty<PaymentListResponseDto>())
+          {
+               var payment = new Payment
+               {
+                    OrderId = orderResponse.OrderId,
+                    Amount = paymentDto.Amount,
+                    PaymentMethod = paymentDto.PaymentMethod,
+                    Notes = paymentDto.Notes
+               };
+               Payments.Add(payment);
+               AmountPaid += payment.Amount;
+          }
 
           this.RaisePropertyChanged(nameof(Items));
           this.RaisePropertyChanged(nameof(Total));
+          this.RaisePropertyChanged(nameof(RemainingBalance));
      }
 
      public void ResetOrder()
@@ -144,6 +142,33 @@ public class CartService: ReactiveObject, ICartService
           ClearItems();
           OrderId = null;
      }
+
+     public void ResetPayments()
+     {
+          Payments.Clear();
+          AmountPaid = 0;
+          this.RaisePropertyChanged(nameof(RemainingBalance));
+     }
+
+     public Payment MakePayment()
+     {
+          return new Payment
+          {
+               OrderId = OrderId!.Value,
+               Amount = Amount,
+               PaymentMethod = PaymentMethod,
+               Notes = Notes
+          };
+     }
      
-     public bool CanModifyItems => PaymentStatus == PaymentStatus.PENDING;
+     public void AddPayment(Payment payment)
+     {
+          if (payment.Amount < 0 || payment.OrderId != OrderId)
+               return;
+
+          Payments.Insert(0, payment);
+          AmountPaid += payment.Amount;
+
+          this.RaisePropertyChanged(nameof(RemainingBalance));
+     }
 }

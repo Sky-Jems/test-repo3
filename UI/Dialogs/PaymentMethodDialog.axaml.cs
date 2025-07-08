@@ -1,3 +1,4 @@
+using System;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using AvaloniaDialogs.Views;
@@ -16,19 +17,12 @@ public partial class PaymentMethodDialog : BaseDialog<string>
 
     private void CloseDialogButton_Click(object sender, RoutedEventArgs args) => Close();
 
-    private void PaymentMethodRadioButton_Checked(object sender, RoutedEventArgs args)
-    {
-        if (args.Source is RadioButton rb && rb.Tag is string method)
-        {
-            selectedPaymentMethod = method;
-            referenceSection.IsVisible = method != "cash";
-            confirmButton.IsEnabled = true;
-        }
-    }
-
     private async void ConfirmButton_Click(object? sender, RoutedEventArgs e)
     {
-        if (selectedPaymentMethod is not null)
-            Close(selectedPaymentMethod);
+        if (sender is Button)
+        {
+            var vm = DataContext as PaymentMethodDialogViewModel;
+            vm?.CompletePaymentCommand?.Execute().Subscribe();
+        }
     }
 }

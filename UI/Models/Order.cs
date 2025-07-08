@@ -59,6 +59,8 @@ public class GetOrderResponseDto
 
     [JsonPropertyName("net_amount")]
     public decimal NetAmount { get; set; }
+    [JsonPropertyName("payments")]
+    public List<PaymentListResponseDto>? Payments { get; set; }
 }
 
 public class OrderDto

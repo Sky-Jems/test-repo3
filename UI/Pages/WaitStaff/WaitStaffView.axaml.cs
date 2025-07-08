@@ -1,11 +1,7 @@
-using System;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Notifications;
 using Avalonia.ReactiveUI;
-using Avalonia.Threading;
-using pos.Models.EventArgs;
 using Pos.Models;
 
 namespace Pos.Pages.WaitStaff;
@@ -39,10 +35,21 @@ public partial class WaitStaffView : ReactiveUserControl<WaitStaffViewModel>
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
-        var topLevel = TopLevel.GetTopLevel(this);
-        Dispatcher.UIThread.Post(() =>
+        TopLevel.GetTopLevel(this);
+        if (DataContext is WaitStaffViewModel vm)
         {
-            (DataContext as WaitStaffViewModel)!.TriggerNotif += MainWindow.NotificationMessage;
-        });
+            vm.TriggerNotif -= MainWindow.NotificationMessage; // Prevent duplicates
+            vm.TriggerNotif += MainWindow.NotificationMessage;
+        }
+    }
+    
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnDetachedFromVisualTree(e);
+
+        if (DataContext is WaitStaffViewModel vm)
+        {
+            vm.TriggerNotif -= MainWindow.NotificationMessage;
+        }
     }
 }

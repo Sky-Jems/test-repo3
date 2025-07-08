@@ -274,8 +274,8 @@
                         <Button
                             HorizontalAlignment="Stretch"
                             Classes="Large Success"
-                            Command="{Binding SummaryButtonCommand, ElementName=root}"
-                            Content="{Binding SummaryButtonText, ElementName=root}"
+                            Click="OnPayOrderButtonClick"
+                            Content="Pay Order"
                             Theme="{StaticResource SolidButton}" />
                         <Button
                             HorizontalAlignment="Stretch"

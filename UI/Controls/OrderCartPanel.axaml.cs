@@ -99,7 +99,6 @@ public partial class OrderCartPanel : UserControl
         }
     }
 
-
     private async void OnRemoveLineItemButtonClick(object? sender, RoutedEventArgs e)
     {
         if (sender is Button button && button.Tag is LineItem lineItem)
@@ -224,5 +223,27 @@ public partial class OrderCartPanel : UserControl
             dialog.FindControl<Button>("PositiveButton")!.Classes.Add("Danger");
             await dialog.ShowAsync();
         }
+    }
+
+    private async void OnPayOrderButtonClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not Button) return;
+
+        var vm = DataContext as OrderCartPanelViewModel;
+        if (vm == null) return;
+
+        if (!vm.OrderList.Any())
+        {
+            var emptyDialog = new SingleActionDialog
+            {
+                Message = "Please add at least one item.",
+                ButtonText = "OK"
+            };
+
+            await emptyDialog.ShowAsync();
+            return;
+        }
+        
+        vm.PayOrderCommand?.Execute().Subscribe();
     }
 }

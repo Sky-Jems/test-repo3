@@ -16,7 +16,7 @@ namespace Pos.Dialogs;
 
 public class PaymentMethodDialogViewModel : ReactiveObject
 {
-    private readonly ICartService _cartService;
+    public readonly ICartService _cartService;
     private readonly IOrderService _orderService;
     public ObservableCollection<Payment> Payments => _cartService.Payments;
     public ReactiveCommand<Unit, Unit> CompletePaymentCommand { get; }
@@ -155,6 +155,11 @@ public class PaymentMethodDialogViewModel : ReactiveObject
         if (parsedAmount > _cartService.RemainingBalance)
             return $"Amount exceeds the remaining balance of ₱{_cartService.RemainingBalance:N2}.";
 
+        if (PaymentMethod != "cash" && String.IsNullOrWhiteSpace(_cartService.Notes))
+        {
+            return "Reference Number cannot be empty.";
+        }
+        
         return null;
     }
 }

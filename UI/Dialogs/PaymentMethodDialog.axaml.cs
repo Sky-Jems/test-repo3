@@ -7,12 +7,12 @@ namespace Pos.Dialogs;
 
 public partial class PaymentMethodDialog : BaseDialog<string>
 {
-    private string? selectedPaymentMethod;
-
+    private PaymentMethodDialogViewModel vm { get; set; }
     public PaymentMethodDialog()
     {
         InitializeComponent();
         DataContext = new PaymentMethodDialogViewModel();
+        vm = DataContext as PaymentMethodDialogViewModel;
     }
 
     private void CloseDialogButton_Click(object sender, RoutedEventArgs args) => Close();
@@ -21,8 +21,15 @@ public partial class PaymentMethodDialog : BaseDialog<string>
     {
         if (sender is Button)
         {
-            var vm = DataContext as PaymentMethodDialogViewModel;
             vm?.CompletePaymentCommand?.Execute().Subscribe();
+        }
+    }
+
+    private void PaymentMethodClicked(object? sender, RoutedEventArgs args)
+    {
+        if (vm is not null && sender is Button btn)
+        {
+            vm._cartService.PaymentMethod = (string)btn.Tag;
         }
     }
 }

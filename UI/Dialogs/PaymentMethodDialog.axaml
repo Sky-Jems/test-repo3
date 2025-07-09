@@ -207,7 +207,8 @@
                                 RowSpacing="8">
                                 <RadioButton Tag="cash"
                                              IsChecked="{Binding PaymentMethod, Mode=TwoWay, Converter={StaticResource stringEqualsConverter}, ConverterParameter=cash}"
-                                             Theme="{DynamicResource PureCardRadioButton}">
+                                             Theme="{DynamicResource PureCardRadioButton}"
+                                             Checked="PaymentMethodClicked">
                                     <StackPanel>
                                         <Svg Path="avares://pos/Assets/Icons/banknote.svg" />
                                         <AccessText Text="Cash" />
@@ -215,7 +216,8 @@
                                 </RadioButton>
                                 <RadioButton Tag="gcash"
                                              IsChecked="{Binding PaymentMethod, Mode=TwoWay, Converter={StaticResource stringEqualsConverter}, ConverterParameter=gcash}"
-                                             Theme="{DynamicResource PureCardRadioButton}">
+                                             Theme="{DynamicResource PureCardRadioButton}"
+                                             Checked="PaymentMethodClicked">
                                     <StackPanel>
                                         <Svg Path="avares://pos/Assets/Icons/gcash.svg" />
                                         <AccessText Text="Gcash" />
@@ -223,14 +225,16 @@
                                 </RadioButton>
                                 <RadioButton Tag="card"
                                              IsChecked="{Binding PaymentMethod, Mode=TwoWay, Converter={StaticResource stringEqualsConverter}, ConverterParameter=card}"
-                                             Theme="{DynamicResource PureCardRadioButton}">
+                                             Theme="{DynamicResource PureCardRadioButton}"
+                                             Checked="PaymentMethodClicked">
                                     <StackPanel>
                                         <Svg Path="avares://pos/Assets/Icons/credit-card.svg" />
                                         <AccessText Text="Card" />
                                     </StackPanel>
                                 </RadioButton>
                                 <RadioButton Tag="voucher" IsChecked="{Binding PaymentMethod, Mode=TwoWay, Converter={StaticResource stringEqualsConverter}, ConverterParameter=voucher}"
-                                             Theme="{DynamicResource PureCardRadioButton}">
+                                             Theme="{DynamicResource PureCardRadioButton}"
+                                             Checked="PaymentMethodClicked">
                                     <StackPanel>
                                         <Svg Path="avares://pos/Assets/Icons/ticket-percent.svg" />
                                         <AccessText Text="Voucher" />

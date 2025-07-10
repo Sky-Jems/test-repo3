@@ -11,24 +11,44 @@
 
     <Border Padding="32">
         <StackPanel Spacing="12">
-            <StackPanel
-                Margin="0,0,0,12"
-                VerticalAlignment="Center"
-                Orientation="Horizontal"
-                Spacing="16">
+            <Grid Margin="0,0,0,12" VerticalAlignment="Center" ColumnDefinitions="Auto,Auto,*">
                 <Button
                     Width="40"
                     Height="40"
-                    Command="{Binding GoBack}">
+                    Command="{Binding GoBack}"
+                    Grid.Column="0">
                     <PathIcon
                         Width="16"
                         Data="{StaticResource SemiIconArrowLeft}"
                         Theme="{DynamicResource InnerPathIcon}" />
                 </Button>
-                <Label Classes="H2" Theme="{StaticResource TitleLabel}">
+
+                <Label
+                    Classes="H2"
+                    Theme="{StaticResource TitleLabel}"
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    Margin="16,0">
                     Products
                 </Label>
-            </StackPanel>
+
+                <TextBox
+                    Name="search_box"
+                    MinWidth="200"
+                    HorizontalAlignment="Right"
+                    Grid.Column="2"
+                    Classes="Large Bordered"
+                    Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    Watermark="Search...">
+                    <TextBox.InnerRightContent>
+                        <PathIcon
+                            Height="16"
+                            Data="{StaticResource SemiIconSearch}"
+                            Theme="{StaticResource InnerPathIcon}" />
+                    </TextBox.InnerRightContent>
+                </TextBox>
+            </Grid>
+
 
             <ItemsRepeater
                 Margin="0,0,0,20"

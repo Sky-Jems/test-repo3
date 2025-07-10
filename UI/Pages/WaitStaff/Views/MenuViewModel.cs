@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
@@ -37,6 +38,20 @@ public class MenuViewModel : ReactiveObject, IRoutableViewModel
     }
     public string SelectedItemQuantityDisplay => $"( {SelectedItemQuantity} )";
     private bool _isProcessingProduct = false;
+    
+    private List<Product> _products = new();
+
+
+    private string _searchText = "";
+    public string SearchText
+    {
+        get => _searchText;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _searchText, value);
+            FilterProducts();
+        }
+    }
 
     public MenuViewModel(IScreen screen, Category category)
     {
@@ -97,12 +112,13 @@ public class MenuViewModel : ReactiveObject, IRoutableViewModel
     {
         try
         {
-            var products = await _productService.GetProductsByCategoryAsync(Category);
+            _products = await _productService.GetProductsByCategoryAsync(Category);
             Products.Clear();
-            foreach (var product in products)
+            foreach (var product in _products)
             {
                 Products.Add(product);
             }
+            FilterProducts();
             UpdateProductSelection(_cartService.SelectedItem);
         }
         catch (Exception e)
@@ -167,6 +183,24 @@ public class MenuViewModel : ReactiveObject, IRoutableViewModel
         {
             _isProcessingProduct = false;
         }
+    }
+
+    public void FilterProducts()
+    {
+        _products = _products.Distinct().ToList();
+        Products.Clear();
+        IEnumerable<Product> filtered;
+        if (string.IsNullOrWhiteSpace(SearchText))
+        {
+            filtered = _products;
+        }
+        else
+        {
+            filtered = _products.Where(p => p.Name?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) == true);
+        }
+
+        foreach (var product in filtered)
+            Products.Add(product);
     }
 
     public ReactiveCommand<Unit, IRoutableViewModel> GoBack => HostScreen.Router.NavigateBack;

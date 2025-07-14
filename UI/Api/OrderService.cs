@@ -1,8 +1,6 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using pos.Handlers.Interfaces;
 using Pos.Models;
-using static Pos.Util.Constants;
 
 namespace pos.Api;
 

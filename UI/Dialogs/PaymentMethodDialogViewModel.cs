@@ -27,13 +27,15 @@ public class PaymentMethodDialogViewModel : ReactiveObject
     private readonly ObservableAsPropertyHelper<decimal> _amountPaid;
     public decimal AmountPaid => _amountPaid.Value;
     private readonly ObservableAsPropertyHelper<decimal> _remainingBalance;
+    public bool CanAddPayment => RemainingBalance > 0;
+    public bool CanCompletePayment => RemainingBalance <= 0;
     public decimal RemainingBalance => _remainingBalance.Value;
     public string PaymentMethod
     {
         get => _cartService.PaymentMethod;
         set => _cartService.PaymentMethod = value;
     }
-    private string _amountText = "0.00";
+    private string _amountText;
     public string AmountText
     {
         get => _amountText;
@@ -55,10 +57,19 @@ public class PaymentMethodDialogViewModel : ReactiveObject
     public string Notes
     {
         get => _cartService.Notes;
-        set => _cartService.Notes = value;
+        set
+        {
+            if (_cartService.Notes != value)
+            {
+                _cartService.Notes = value;
+                this.RaisePropertyChanged();
+            }
+        }
     }
     public event EventHandler<NotificationEventArgs>? TriggerNotif;
     public event Action? RequestClose;
+    private readonly ObservableAsPropertyHelper<string?> _notePrefix;
+    public string? NotePrefix => _notePrefix.Value;
 
     public PaymentMethodDialogViewModel()
     {
@@ -77,12 +88,35 @@ public class PaymentMethodDialogViewModel : ReactiveObject
             .WhenAnyValue(x => x.RemainingBalance)
             .ObserveOn(RxApp.MainThreadScheduler)
             .ToProperty(this, x => x.RemainingBalance, out _remainingBalance);
-    
+
+        this.WhenAnyValue(x => x.RemainingBalance)
+            .Subscribe(_ =>
+            {
+                this.RaisePropertyChanged(nameof(CanAddPayment));
+                this.RaisePropertyChanged(nameof(CanCompletePayment));
+            });
+
         _cartService.Payments.CollectionChanged += (_, _) =>
         {
             this.RaisePropertyChanged(nameof(AmountPaid));
             this.RaisePropertyChanged(nameof(RemainingBalance));
         };
+        
+        _cartService.WhenAnyValue(x => x.PaymentMethod)
+            .Select(method => string.Equals(method, "cash", StringComparison.OrdinalIgnoreCase) ? null : "*")
+            .ToProperty(this, x => x.NotePrefix, out _notePrefix);
+
+        AddPaymentCommand.ThrownExceptions
+            .Subscribe(ex =>
+            {
+                Console.Error.WriteLine($"[Command Error] {ex}");
+
+                TriggerNotif?.Invoke(this, new NotificationEventArgs
+                {
+                    Message = "Failed to make payment.",
+                    NotifType = Constants.NotifType.Error
+                });
+            });
     }
 
     private void CompletePaymentAsync()
@@ -120,12 +154,16 @@ public class PaymentMethodDialogViewModel : ReactiveObject
         Payment payment = _cartService.MakePayment();
         PaymentResponseDto paymentResponse = await _orderService.PayOrder(payment);
         _cartService.AddPayment(payment);
+        _cartService.ApplyPayment(paymentResponse);
+
+        PaymentMethod = PaymentMethod;
+        this.RaisePropertyChanged(nameof(PaymentMethod));
 
         var message = $"Order has been paid with {payment.PaymentMethod} for ₱{payment.Amount:N2}.";
         if (paymentResponse.OrderId == _cartService.OrderId && paymentResponse.RemainingAmount <= 0)
         {
-            message = $"Order has been fully paid with {payment.PaymentMethod}.";
-            _cartService.ResetOrder();
+            message = $"Order has been fully paid with {payment.PaymentMethod} and moved to Completed Orders.";
+            _cartService.PaymentStatus = PaymentStatus.COMPLETED;
         }
 
         TriggerNotif?.Invoke(this, new NotificationEventArgs
@@ -133,6 +171,8 @@ public class PaymentMethodDialogViewModel : ReactiveObject
             Message = message,
             NotifType = Constants.NotifType.Success
         });
+        AmountText = "";
+        Notes = "";
     }
     
     private string? ValidatePaymentAmount()

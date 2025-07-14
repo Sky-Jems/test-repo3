@@ -12,6 +12,7 @@ using Pos.Dialogs;
 using pos.Extensions;
 using Pos.Models;
 using pos.Models.EventArgs;
+using Pos.Util;
 using ReactiveUI;
 
 namespace Pos.Controls;
@@ -39,10 +40,14 @@ public class OrderCartPanelViewModel : ReactiveObject
         get => _cartService.Customer;
         set => _cartService.Customer = value;
     }
+    private readonly ObservableAsPropertyHelper<bool> _showItems;
     private readonly ObservableAsPropertyHelper<bool> _canPay;
     public bool CanPay => _canPay.Value;
+    public bool CanShowItems => _showItems.Value;
     public bool CanModifyItems => _cartService.CanModifyItems;
+    public bool IsCompleted => _cartService.PaymentStatus != PaymentStatus.PENDING;
     public event Action<LineItem>? CartItemClicked;
+    public event Action NavigateToCategory;
     public ReactiveCommand<LineItem, Unit> NavigateToMenuCommand { get; }
     public ReactiveCommand<LineItem, Unit> ClickPlusCommand { get; }
     public ReactiveCommand<LineItem, Unit> ClickMinusCommand { get; }
@@ -52,7 +57,9 @@ public class OrderCartPanelViewModel : ReactiveObject
     public ReactiveCommand<Unit, Unit> UpdateOrderCommand { get; }
     private ReactiveCommand<Unit, Unit> LoadOrderToCartCommand { get; }
     public ReactiveCommand<Unit, Unit> PayOrderCommand { get; }
+    public ReactiveCommand<Unit, Unit> NewOrderCommand { get; }
     public event EventHandler<NotificationEventArgs>? TriggerNotif;
+    private bool _isModifyingOrder;
 
     public OrderCartPanelViewModel()
     {
@@ -82,6 +89,11 @@ public class OrderCartPanelViewModel : ReactiveObject
         _cartService.WhenAnyValue(x => x.Customer)
             .Subscribe(_ => this.RaisePropertyChanged(nameof(Customer)));
 
+        _cartService.WhenAnyValue(x => x.PaymentStatus)
+                .Select(status => status == PaymentStatus.PENDING)
+                .Do(_ => this.RaisePropertyChanged(nameof(IsCompleted)))
+                .ToProperty(this, x => x.CanShowItems, out _showItems);
+
         NavigateToMenuCommand = ReactiveCommand.Create<LineItem>(HandleClickLineItem);
         ClickPlusCommand = ReactiveCommand.CreateFromTask<LineItem>(HandleClickPlusAsync);
         ClickMinusCommand = ReactiveCommand.CreateFromTask<LineItem>(HandleClickMinusAsync);
@@ -90,21 +102,30 @@ public class OrderCartPanelViewModel : ReactiveObject
         PayLaterCommand = ReactiveCommand.Create(PayLater);
         UpdateOrderCommand = ReactiveCommand.CreateFromTask(SaveCustomerAsync);
         LoadOrderToCartCommand = ReactiveCommand.CreateFromTask(LoadOrderToCartAsync);
-        PayOrderCommand = ReactiveCommand.Create(PayOrder);
+        PayOrderCommand = ReactiveCommand.CreateFromTask(PayOrder);
+        NewOrderCommand = ReactiveCommand.Create(StartNewOrder);
+        
+        ClickPlusCommand.ThrownExceptions
+            .Subscribe(ex => HandleCommandError("Failed to increase quantity.", ex));
+        ClickMinusCommand.ThrownExceptions
+            .Subscribe(ex => HandleCommandError("Failed to decrease quantity.", ex));
+        RemoveLineItemCommand.ThrownExceptions
+            .Subscribe(ex => HandleCommandError("Failed to remove item.", ex));
+        ClearLineItemsCommand.ThrownExceptions
+            .Subscribe(ex => HandleCommandError("Failed to clear items.", ex));
+        UpdateOrderCommand.ThrownExceptions
+            .Subscribe(ex => HandleCommandError("Failed to save customer information.", ex));
+        LoadOrderToCartCommand.ThrownExceptions
+            .Subscribe(ex => HandleCommandError("Failed to load order to cart.", ex));
+        PayOrderCommand.ThrownExceptions
+            .Subscribe(ex => HandleCommandError("Failed to open payment dialog.", ex));
+
     }
 
     private async Task LoadOrderToCartAsync()
     {
-        try
-        {
-            var order = await _orderService.GetOrderTransaction(OrderTransactionId);
-            _cartService.LoadOrder(order);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
+        var order = await _orderService.GetOrderTransaction(OrderTransactionId);
+        _cartService.LoadOrder(order);
     }
 
     public void LoadOrderToCart(long orderTransactionId)
@@ -120,66 +141,68 @@ public class OrderCartPanelViewModel : ReactiveObject
 
     private async Task RemoveLineItemAsync(LineItem lineItem)
     {
-        _cartService.Items.Remove(lineItem);
-        await _orderService.RemoveLineItem(lineItem.Id);
+        if (!CheckCanModify())
+            return;
+
+        var updatedOrder = await _orderService.RemoveLineItem(lineItem.Id);
+        _cartService.LoadOrder(updatedOrder);
     }
 
     private async Task HandleClickPlusAsync(LineItem item)
     {
-        if (!_cartService.CanModifyItems)
+        if (!CheckCanModify())
+            return;
+
+        if (_isModifyingOrder || _cartService.OrderId is null)
+            return;
+
+        try
         {
-            var lockedDialog = new SingleActionDialog
-            {
-                Message = "Items cannot be modified because the order is already completed or partially paid.",
-                ButtonText = "OK"
-            };
+            _isModifyingOrder = true;
+            var lineItemDto = LineItemMapper.ToDto(item, _cartService.OrderId);
+            lineItemDto.Quantity++;
+            var updatedOrder = await _orderService.UpdateLineItem(lineItemDto);
+            _cartService.LoadOrder(updatedOrder);
 
-            await lockedDialog.ShowAsync();
-            return;
+            _cartService.SelectedItem = _cartService.Items
+                .FirstOrDefault(x => x.ProductId == item.ProductId);
         }
-
-        _cartService.AddItem(item);
-
-        if (_cartService.OrderId is null)
-            return;
-
-        var updatedOrder = await _orderService.UpdateLineItem(LineItemMapper.ToDto(item, _cartService.OrderId));
-        _cartService.LoadOrder(updatedOrder);
-
-        _cartService.SelectedItem = _cartService.Items
-            .FirstOrDefault(x => x.ProductId == item.ProductId);
+        finally
+        {
+            _isModifyingOrder = false;
+        }
     }
 
     private async Task HandleClickMinusAsync(LineItem item)
     {
-        if (!_cartService.CanModifyItems)
+        if (!CheckCanModify())
+            return;
+
+        if (_isModifyingOrder || _cartService.OrderId is null)
+            return;
+
+        try
         {
-            var lockedDialog = new SingleActionDialog
+            _isModifyingOrder = true;
+            var previousQuantity = item.Quantity;
+            var lineItemDto = LineItemMapper.ToDto(item, _cartService.OrderId);
+            lineItemDto.Quantity--;
+
+            var updatedOrder = previousQuantity == 1
+                ? await _orderService.RemoveLineItem(item.Id)
+                : await _orderService.UpdateLineItem(lineItemDto);
+
+            _cartService.LoadOrder(updatedOrder);
+
+            if (previousQuantity > 1)
             {
-                Message = "Items cannot be modified because the order is already completed or partially paid.",
-                ButtonText = "OK"
-            };
-
-            await lockedDialog.ShowAsync();
-            return;
+                _cartService.SelectedItem = _cartService.Items
+                    .FirstOrDefault(x => x.ProductId == item.ProductId);
+            }
         }
-
-        var previousQuantity = item.Quantity;
-        _cartService.RemoveItem(item);
-
-        if (_cartService.OrderId is null)
-            return;
-
-        var updatedOrder = previousQuantity == 1
-            ? await _orderService.RemoveLineItem(item.Id)
-        : await _orderService.UpdateLineItem(LineItemMapper.ToDto(item, _cartService.OrderId));
-
-        _cartService.LoadOrder(updatedOrder);
-
-        if (previousQuantity > 1)
+        finally
         {
-            _cartService.SelectedItem = _cartService.Items
-                .FirstOrDefault(x => x.ProductId == item.ProductId);
+            _isModifyingOrder = false;
         }
     }
 
@@ -187,13 +210,19 @@ public class OrderCartPanelViewModel : ReactiveObject
     {
         if (_cartService.OrderId is null) return;
 
-        _cartService.Items.Clear();
-        await _orderService.ClearLineItems(_cartService.OrderId.Value);
+        var updatedOrder = await _orderService.ClearLineItems(_cartService.OrderId.Value);
+        _cartService.LoadOrder(updatedOrder);
     }
 
     private void PayLater()
     {
         _cartService.ResetOrder();
+        TriggerNotif?.Invoke(this, new NotificationEventArgs
+        {
+            Message = "Order has been moved to Pending Orders.",
+            NotifType = Constants.NotifType.Success
+        });
+        NavigateToCategory.Invoke();
     }
 
     private async Task SaveCustomerAsync()
@@ -220,14 +249,14 @@ public class OrderCartPanelViewModel : ReactiveObject
         await _orderService.UpdateCustomer(updateOrderDto);
     }
 
-    private async void PayOrder()
+    private async Task PayOrder()
     {
         PaymentMethodDialog dialog = new();
         if (dialog.DataContext is PaymentMethodDialogViewModel vm)
         {
             vm.TriggerNotif -= OnPaymentNotifReceived;
             vm.TriggerNotif += OnPaymentNotifReceived;
-            
+
             void HandleRequestClose()
             {
                 vm.RequestClose -= HandleRequestClose; // unsubscribe once used
@@ -239,9 +268,47 @@ public class OrderCartPanelViewModel : ReactiveObject
         }
         await dialog.ShowAsync();
     }
-    
+
     private void OnPaymentNotifReceived(object? sender, NotificationEventArgs e)
     {
         TriggerNotif?.Invoke(this, e);
+        this.RaisePropertyChanged(nameof(IsCompleted));
+    }
+
+    private void StartNewOrder()
+    {
+        _cartService.ResetOrder();
+        NavigateToCategory.Invoke();
+    }
+
+    private bool CheckCanModify()
+    {
+        if (_cartService.CanModifyItems)
+            return true;
+
+        ShowLockedDialog();
+        return false;
+    }
+
+    private static async void ShowLockedDialog()
+    {
+        var lockedDialog = new SingleActionDialog
+        {
+            Message = "Items cannot be modified because the order is already completed or partially paid.",
+            ButtonText = "OK"
+        };
+
+        await lockedDialog.ShowAsync();
+    }
+
+    private void HandleCommandError(string message, Exception ex)
+    {
+        Console.Error.WriteLine($"[Command Error] {ex}");
+
+        TriggerNotif?.Invoke(this, new NotificationEventArgs
+        {
+            Message = message,
+            NotifType = Constants.NotifType.Error
+        });
     }
 }

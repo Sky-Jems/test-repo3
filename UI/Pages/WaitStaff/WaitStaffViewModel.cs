@@ -19,6 +19,7 @@ public class WaitStaffViewModel : ReactiveObject, IScreen
         Router.Navigate.Execute(new CategoriesViewModel(this));
 
         OrderCartPanelViewModel.CartItemClicked += HandleCartItemClicked;
+        OrderCartPanelViewModel.NavigateToCategory += HandleNavigateToCategory;
         OrderCartPanelViewModel.TriggerNotif += (sender, args) =>
         {
             TriggerNotif?.Invoke(this, args);
@@ -37,6 +38,16 @@ public class WaitStaffViewModel : ReactiveObject, IScreen
         else
         {
             currentMenuVm.UpdateCategory(lineItem.Category);
+        }
+    }
+
+    private void HandleNavigateToCategory()
+    {
+        var currentVm = Router.NavigationStack.LastOrDefault();
+
+        if (currentVm is not CategoriesViewModel)
+        {
+            Router.Navigate.Execute(new CategoriesViewModel(this)).Subscribe();
         }
     }
 }

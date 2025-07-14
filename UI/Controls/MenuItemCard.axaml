@@ -2,50 +2,50 @@
     x:Class="Pos.Controls.MenuItemCard"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:Pos.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:converters="using:Pos.Converters"
     x:CompileBindings="False"
     mc:Ignorable="d">
-    
+
     <UserControl.Resources>
         <converters:BoolToBrushConverter x:Key="boolToBrushConverter" />
     </UserControl.Resources>
-    
+
     <Border
         x:Name="CardBorder"
-        CornerRadius="8"
-        BorderThickness="2"
         Padding="2"
-        BorderBrush="{Binding IsSelected, Converter={StaticResource boolToBrushConverter}}">
+        BorderBrush="{Binding IsSelected, Converter={StaticResource boolToBrushConverter}}"
+        BorderThickness="2"
+        CornerRadius="8">
         <Border.DataContext>
             <Binding Path="$parent.Product" />
         </Border.DataContext>
         <Button
-            Padding="24"
+            x:Name="productCard"
+            Padding="0"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
-            Click="OnButtonClick"
             Theme="{StaticResource SolidButton}">
             <Viewbox HorizontalAlignment="Center">
-                <StackPanel HorizontalAlignment="Center">
+                <StackPanel Margin="16" HorizontalAlignment="Center">
                     <AccessText
                         HorizontalAlignment="Center"
-                        FontSize="24"
+                        FontSize="{StaticResource SemiFontSizeHeader4}"
                         FontWeight="Bold"
-                        Text="{Binding Name}" />
+                        Text="{Binding TrimmedProductName}" />
                     <AccessText
                         HorizontalAlignment="Center"
-                        FontSize="20"
-                        Text="{Binding Description}" />
+                        FontSize="{StaticResource SemiFontSizeHeader6}"
+                        Text="{Binding TrimmedDescription}" />
                     <Label
                         Margin="0,8,0,0"
+                        Padding="12,4"
                         HorizontalAlignment="Center"
                         Classes="Circle White Ghost"
-                        FontSize="20"
-                        FontWeight="Bold"
-                        Padding="12,4"
                         Content="{Binding Price, StringFormat=₱{0:F2}}"
+                        FontSize="{StaticResource SemiFontSizeHeader4}"
+                        FontWeight="Bold"
                         Theme="{StaticResource TagLabel}" />
                 </StackPanel>
             </Viewbox>

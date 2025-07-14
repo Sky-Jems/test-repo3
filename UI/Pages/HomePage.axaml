@@ -139,14 +139,14 @@
                         <TabStripItem>
                             <StackPanel Classes="tabContainer">
                                 <PathIcon Data="{StaticResource SemiIconActivity}" />
-                                <TextBlock Text="Pending" />
+                                <TextBlock Text="Pending Orders" />
                             </StackPanel>
                         </TabStripItem>
 
                         <TabStripItem>
                             <StackPanel Classes="tabContainer">
                                 <PathIcon Data="{StaticResource SemiIconCheckList}" />
-                                <TextBlock Text="Completed" />
+                                <TextBlock Text="Completed Orders" />
                             </StackPanel>
                         </TabStripItem>
 

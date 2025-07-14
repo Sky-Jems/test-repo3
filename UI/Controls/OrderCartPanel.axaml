@@ -14,6 +14,7 @@
         <converters:EqualsConverter x:Key="equalsConverter" />
         <converters:IsZeroConverter x:Key="isZeroConverter" />
         <converters:IsGreaterThanZeroConverter x:Key="isGreaterThanZeroConverter" />
+        <converters:QuantityDisplayConverter x:Key="QuantityDisplayConverter" />
     </UserControl.Resources>
 
     <DockPanel>
@@ -25,8 +26,9 @@
             DockPanel.Dock="Top">
             <TextBox
                 Classes="Large Bordered"
-                Text="{Binding Customer, Mode=TwoWay}"
+                IsEnabled="{Binding CanShowItems}"
                 LostFocus="OnCustomerNameLostFocus"
+                Text="{Binding Customer, Mode=TwoWay}"
                 Watermark="Enter customer name" />
         </Grid>
 
@@ -45,7 +47,6 @@
                         Classes="Danger"
                         Click="OnClearButtonClick"
                         Content="Clear"
-                        IsVisible="{Binding IsEditable, ElementName=root}"
                         Theme="{StaticResource OutlineButton}" />
                 </Grid>
             </Border>
@@ -122,9 +123,10 @@
                                                         MinHeight="24"
                                                         Padding="0"
                                                         Classes.Danger="{Binding Quantity, Converter={StaticResource equalsConverter}, ConverterParameter=1}"
-                                                        Tag="{Binding}"
                                                         Click="OnMinusClick"
                                                         CommandParameter="{Binding}"
+                                                        IsVisible="{Binding DataContext.CanShowItems, ElementName=root}"
+                                                        Tag="{Binding}"
                                                         Theme="{StaticResource SolidButton}">
                                                         <Button.Styles>
                                                             <Style Selector="Button#minusButton &gt; PathIcon">
@@ -134,20 +136,24 @@
                                                                 <Setter Property="Data" Value="{StaticResource SemiIconDelete}" />
                                                             </Style>
                                                         </Button.Styles>
-
                                                         <PathIcon Width="12" Theme="{DynamicResource InnerPathIcon}" />
                                                     </Button>
-                                                    <Label
-                                                        Name="quantityLabel"
-                                                        VerticalContentAlignment="Center"
-                                                        Content="{Binding Quantity}" />
+                                                    <Label Name="quantityLabel" VerticalContentAlignment="Center">
+                                                        <Label.Content>
+                                                            <MultiBinding Converter="{StaticResource QuantityDisplayConverter}">
+                                                                <Binding Path="Quantity" />
+                                                                <Binding ElementName="root" Path="DataContext.CanShowItems" />
+                                                            </MultiBinding>
+                                                        </Label.Content>
+                                                    </Label>
                                                     <Button
                                                         Width="24"
                                                         MinHeight="24"
                                                         Padding="0"
-                                                        Tag="{Binding}"
                                                         Click="OnPlusClick"
                                                         CommandParameter="{Binding}"
+                                                        IsVisible="{Binding DataContext.CanShowItems, ElementName=root}"
+                                                        Tag="{Binding}"
                                                         Theme="{StaticResource SolidButton}">
                                                         <PathIcon
                                                             Width="12"
@@ -167,6 +173,7 @@
                                                     HorizontalAlignment="Left"
                                                     Click="DiscountLineItemButton_Click"
                                                     Content="%"
+                                                    IsVisible="{Binding DataContext.CanShowItems, ElementName=root}"
                                                     Theme="{StaticResource SolidButton}" />
                                                 <Label
                                                     Grid.Column="0"
@@ -201,92 +208,110 @@
             </Border>
 
             <!--  summary  -->
-            <Border
-                Grid.Row="2"
-                Padding="16"
-                Background="{StaticResource SemiColorPrimaryLight}"
-                CornerRadius="6 6 0 0">
-                <StackPanel Spacing="6">
-                    <StackPanel.Styles>
-                        <Style Selector="Label">
-                            <Setter Property="FontSize" Value="{StaticResource SemiFontSizeSmall}" />
-                            <Style Selector="^.title">
-                                <Setter Property="Foreground" Value="{StaticResource SemiColorText2}" />
+            <Grid Grid.Row="2">
+                <Border
+                    Padding="16"
+                    Background="{StaticResource SemiColorPrimaryLight}"
+                    CornerRadius="6 6 0 0">
+                    <StackPanel Spacing="6">
+                        <StackPanel.Styles>
+                            <Style Selector="Label">
+                                <Setter Property="FontSize" Value="{StaticResource SemiFontSizeSmall}" />
+                                <Style Selector="^.title">
+                                    <Setter Property="Foreground" Value="{StaticResource SemiColorText2}" />
+                                </Style>
+                                <Style Selector="^.description">
+                                    <Setter Property="HorizontalContentAlignment" Value="Right" />
+                                </Style>
                             </Style>
-                            <Style Selector="^.description">
-                                <Setter Property="HorizontalContentAlignment" Value="Right" />
-                            </Style>
-                        </Style>
-                    </StackPanel.Styles>
+                        </StackPanel.Styles>
 
-                    <Button
-                        Margin="0,0,0,4"
-                        HorizontalAlignment="Stretch"
-                        Click="ApplyDiscountButton_Click"
-                        IsVisible="{Binding IsEditable, ElementName=root}"
-                        Theme="{StaticResource OutlineButton}">
-                        <StackPanel Orientation="Horizontal" Spacing="6">
-                            <PathIcon Data="{StaticResource SemiIconPlus}" Theme="{StaticResource InnerPathIcon}" />
-                            <AccessText Text="Apply Discount" />
-                        </StackPanel>
-                    </Button>
-
-                    <Rectangle
-                        Margin="0,4"
-                        IsVisible="{Binding IsEditable, ElementName=root}"
-                        Stroke="{StaticResource SemiColorFill2}"
-                        StrokeDashArray="2,6"
-                        StrokeThickness="1" />
-
-                    <UniformGrid Columns="2" RowSpacing="6">
-                        <Label Classes="title" Content="Subtotal" />
-                        <Label Classes="description" Content="{Binding CartTotal, StringFormat='₱{0:N2}'}" />
-
-                        <Label Classes="title" Content="Discount" />
-                        <Label Classes="description" Content="₱0.00" />
-                    </UniformGrid>
-
-                    <Rectangle
-                        Margin="0,4"
-                        Stroke="{StaticResource SemiColorFill2}"
-                        StrokeDashArray="2,6"
-                        StrokeThickness="1" />
-
-                    <UniformGrid Rows="1">
-                        <Label
-                            HorizontalAlignment="Stretch"
-                            Content="Total"
-                            FontSize="{StaticResource SemiFontSizeRegular}"
-                            Theme="{StaticResource TitleLabel}" />
-                        <Label
-                            Classes="description"
-                            Content="{Binding CartTotal, StringFormat='₱{0:N2}'}"
-                            FontSize="{StaticResource SemiFontSizeRegular}"
-                            Theme="{StaticResource TitleLabel}" />
-                    </UniformGrid>
-
-                    <UniformGrid
-                        Margin="0,8,0,0"
-                        HorizontalAlignment="Stretch"
-                        ColumnSpacing="8"
-                        IsVisible="{Binding ShowButtons, ElementName=root}"
-                        Rows="1">
                         <Button
+                            Margin="0,0,0,4"
                             HorizontalAlignment="Stretch"
-                            Classes="Large Success"
-                            Click="OnPayOrderButtonClick"
-                            Content="Pay Order"
-                            Theme="{StaticResource SolidButton}" />
-                        <Button
+                            Click="ApplyDiscountButton_Click"
+                            IsVisible="{Binding CanShowItems}"
+                            Theme="{StaticResource OutlineButton}">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <PathIcon Data="{StaticResource SemiIconPlus}" Theme="{StaticResource InnerPathIcon}" />
+                                <AccessText Text="Apply Discount" />
+                            </StackPanel>
+                        </Button>
+
+                        <Rectangle
+                            Margin="0,4"
+                            IsVisible="{Binding CanShowItems}"
+                            Stroke="{StaticResource SemiColorFill2}"
+                            StrokeDashArray="2,6"
+                            StrokeThickness="1" />
+
+                        <UniformGrid Columns="2" RowSpacing="6">
+                            <Label Classes="title" Content="Subtotal" />
+                            <Label Classes="description" Content="{Binding CartTotal, StringFormat='₱{0:N2}'}" />
+
+                            <Label Classes="title" Content="Discount" />
+                            <Label Classes="description" Content="₱0.00" />
+                        </UniformGrid>
+
+                        <Rectangle
+                            Margin="0,4"
+                            Stroke="{StaticResource SemiColorFill2}"
+                            StrokeDashArray="2,6"
+                            StrokeThickness="1" />
+
+                        <UniformGrid Rows="1">
+                            <Label
+                                HorizontalAlignment="Stretch"
+                                Content="Total"
+                                FontSize="{StaticResource SemiFontSizeRegular}"
+                                Theme="{StaticResource TitleLabel}" />
+                            <Label
+                                Classes="description"
+                                Content="{Binding CartTotal, StringFormat='₱{0:N2}'}"
+                                FontSize="{StaticResource SemiFontSizeRegular}"
+                                Theme="{StaticResource TitleLabel}" />
+                        </UniformGrid>
+
+                        <UniformGrid
+                            Margin="0,8,0,0"
                             HorizontalAlignment="Stretch"
-                            Classes="Large"
-                            Click="OnPayLaterButtonClick"
-                            Content="Pay Later"
-                            IsVisible="{Binding IsEditable, ElementName=root}"
-                            Theme="{StaticResource SolidButton}" />
-                    </UniformGrid>
-                </StackPanel>
-            </Border>
+                            ColumnSpacing="8"
+                            IsVisible="{Binding ShowButtons, ElementName=root}"
+                            Rows="1">
+                            <Button
+                                HorizontalAlignment="Stretch"
+                                Classes="Large"
+                                IsVisible="{Binding DataContext.CanShowItems, ElementName=root}"
+                                Click="OnPayLaterButtonClick"
+                                Content="Pay Later"
+                                Theme="{StaticResource SolidButton}" />
+                            <Button
+                                HorizontalAlignment="Stretch"
+                                Classes="Large Success"
+                                IsVisible="{Binding DataContext.CanShowItems, ElementName=root}"
+                                Click="OnPayOrderButtonClick"
+                                Content="Pay Order"
+                                Theme="{StaticResource SolidButton}" />
+                            <Button
+                                HorizontalAlignment="Stretch"
+                                Classes="Large Success"
+                                IsVisible="{Binding DataContext.IsCompleted, ElementName=root}"
+                                Command="{Binding NewOrderCommand}"
+                                Content="New Order"
+                                Theme="{StaticResource SolidButton}" />
+                        </UniformGrid>
+                    </StackPanel>
+                </Border>
+                <Image
+                    Width="120"
+                    Height="120"
+                    Margin="5"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Top"
+                    IsVisible="{Binding IsCompleted}"
+                    Opacity="0.5"
+                    Source="avares://pos/Assets/paid.png" />
+            </Grid>
         </Grid>
     </DockPanel>
 </UserControl>

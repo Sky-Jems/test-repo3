@@ -18,12 +18,11 @@ public interface ICartService
     string PaymentMethod { get; set; }
     string Notes { get; set; }
     ObservableCollection<Payment> Payments { get; set; }
-    LineItem AddItem(LineItem lineItem, bool incrementIfExists = true);
-    void RemoveItem(LineItem lineItem);
     void ClearItems();
     void LoadOrder(GetOrderResponseDto order);
     void ResetOrder();
     void ResetPayments();
     Payment MakePayment();
     void AddPayment(Payment payment);
+    void ApplyPayment(PaymentResponseDto paymentResponseDto);
 }

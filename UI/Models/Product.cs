@@ -17,6 +17,9 @@ namespace Pos.Models
         ? string.Join(", ", Categories.Select(c => c.Name))
         : string.Empty;
 
+        public string TrimmedProductName => Name.Length > 30 ? Name.Substring(0, 30) + "..." : Name;
+        public string TrimmedDescription => Description.Length > 30 ? Description.Substring(0, 30) + "..." : Description;
+
         public decimal Price { get; set; }
 
         private bool _isSelected;

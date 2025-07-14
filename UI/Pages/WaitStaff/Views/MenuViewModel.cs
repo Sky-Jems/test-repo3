@@ -37,7 +37,7 @@ public class MenuViewModel : ReactiveObject, IRoutableViewModel
         }
     }
     public string SelectedItemQuantityDisplay => $"( {SelectedItemQuantity} )";
-    private bool _isProcessingProduct = false;
+    private bool _isProcessingProduct;
     
     private List<Product> _products = new();
 
@@ -130,14 +130,31 @@ public class MenuViewModel : ReactiveObject, IRoutableViewModel
 
     private async Task HandleClickProduct(Product product)
     {
-        if (_isProcessingProduct)
+        if (!_cartService.CanModifyItems)
+        {
+            var lockedDialog = new SingleActionDialog
+            {
+                Message = "Items cannot be modified because the order is already completed or partially paid.",
+                ButtonText = "OK"
+            };
+
+            await lockedDialog.ShowAsync();
+            return;
+        }
+
+        if (_isProcessingProduct || product.Id is null)
             return;
 
-        if (_cartService.Items.Any(x => x.ProductId == product.Id))
+        var existingItem = _cartService.Items.FirstOrDefault(x => x.ProductId == product.Id);
+        if (existingItem is not null)
+        {
+            _cartService.SelectedItem = existingItem;
             return;
+        }
 
         try
         {
+            _isProcessingProduct = true;
             var item = new LineItem
             {
                 ProductId = product.Id.Value,
@@ -148,8 +165,7 @@ public class MenuViewModel : ReactiveObject, IRoutableViewModel
                 Price = product.Price
             };
 
-            var addedItem = _cartService.AddItem(item, incrementIfExists: false);
-            _cartService.SelectedItem = addedItem;
+            _cartService.SelectedItem = item;
 
             long orderId;
 
@@ -177,7 +193,7 @@ public class MenuViewModel : ReactiveObject, IRoutableViewModel
             _cartService.LoadOrder(updatedOrder);
 
             _cartService.SelectedItem = _cartService.Items
-                .FirstOrDefault(x => x.ProductId == addedItem.ProductId);
+                .FirstOrDefault(x => x.ProductId == item.ProductId);
         }
         finally
         {
@@ -185,7 +201,7 @@ public class MenuViewModel : ReactiveObject, IRoutableViewModel
         }
     }
 
-    public void FilterProducts()
+    private void FilterProducts()
     {
         _products = _products.Distinct().ToList();
         Products.Clear();

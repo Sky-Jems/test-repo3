@@ -15,7 +15,7 @@ public enum PaymentStatus
      APPROVED,
 }
 
-public class CartService: ReactiveObject, ICartService
+public class CartService : ReactiveObject, ICartService
 {
      [Reactive] public long? OrderId { get; set; }
      [Reactive] public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.PENDING;
@@ -23,9 +23,12 @@ public class CartService: ReactiveObject, ICartService
      public ObservableCollection<LineItem> Items { get; set; } = new();
      public decimal Total => Items.Sum(lineItem => lineItem.Quantity * lineItem.Price);
      [Reactive] public LineItem? SelectedItem { get; set; }
-     public bool CanModifyItems => PaymentStatus == PaymentStatus.PENDING;
+     public bool CanModifyItems => PaymentStatus == PaymentStatus.PENDING && Payments.Count == 0;
      [Reactive] public decimal AmountPaid { get; set; }
-     public decimal RemainingBalance => Total - AmountPaid;
+     private decimal? _overrideRemainingBalance;
+     public decimal RemainingBalance =>
+          _overrideRemainingBalance ?? Total - AmountPaid;
+
      [Reactive] public decimal Amount { get; set; }
      [Reactive] public string PaymentMethod { get; set; } = "cash";
      [Reactive] public string Notes { get; set; } = string.Empty;
@@ -51,63 +54,23 @@ public class CartService: ReactiveObject, ICartService
           }
      }
 
-     public LineItem AddItem(LineItem item, bool incrementIfExists = true)
-     {
-          var existingItem  = Items.FirstOrDefault(lineItem => lineItem.ProductId == item.ProductId);
-          if (existingItem == null)
-          {
-               Items.Insert(0, item);
-               return item;
-          }
-
-          if (incrementIfExists)
-          {
-               var oldIndex = Items.IndexOf(existingItem);
-               if (oldIndex > 0)
-               {
-                    Items.Move(oldIndex, 0);
-               }
-               existingItem.Quantity++;
-          }
-          this.RaisePropertyChanged(nameof(Total));
-          return existingItem;
-     }
-
-     public void RemoveItem(LineItem item)
-     {
-          var existingItem = Items.FirstOrDefault(lineItem => lineItem.ProductId == item.ProductId);
-          if (existingItem == null)
-               return;
-
-          if (existingItem.Quantity > 1)
-          {
-               existingItem.Quantity--;
-          }
-          else
-          {
-               Items.Remove(existingItem);
-          }
-
-          this.RaisePropertyChanged(nameof(Total));
-     }
-
      public void ClearItems()
      {
           Items.Clear();
           Customer = string.Empty;
+          PaymentStatus = PaymentStatus.PENDING;
+          Payments.Clear();
           this.RaisePropertyChanged(nameof(Items));
           this.RaisePropertyChanged(nameof(Total));
+          this.RaisePropertyChanged(nameof(PaymentStatus));
+          
+          ClearRemainingBalanceOverride();
      }
 
      public void LoadOrder(GetOrderResponseDto orderResponse)
      {
           OrderId = orderResponse.OrderId;
           Customer = orderResponse.Order.Customer;
-
-          if (Enum.TryParse<PaymentStatus>(orderResponse.PaymentStatus, true, out var parsedStatus))
-          {
-               PaymentStatus = parsedStatus;
-          }
 
           Items.Clear();
 
@@ -116,9 +79,8 @@ public class CartService: ReactiveObject, ICartService
                var lineItem = LineItemMapper.FromDto(lineItemDto);
                Items.Add(lineItem);
           }
-          
+
           Payments.Clear();
-          AmountPaid = 0;
           foreach (var paymentDto in orderResponse.Payments ?? Enumerable.Empty<PaymentListResponseDto>())
           {
                var payment = new Payment
@@ -129,7 +91,17 @@ public class CartService: ReactiveObject, ICartService
                     Notes = paymentDto.Notes
                };
                Payments.Add(payment);
-               AmountPaid += payment.Amount;
+          }
+
+          if (orderResponse.Billing != null)
+          {
+               AmountPaid = orderResponse.Billing.PaidAmount;
+               _overrideRemainingBalance = orderResponse.Billing.RemainingAmount;
+          }
+          else
+          {
+               AmountPaid = Payments.Sum(p => p.Amount);
+               _overrideRemainingBalance = null;
           }
 
           this.RaisePropertyChanged(nameof(Items));
@@ -147,7 +119,8 @@ public class CartService: ReactiveObject, ICartService
      {
           Payments.Clear();
           AmountPaid = 0;
-          this.RaisePropertyChanged(nameof(RemainingBalance));
+
+          ClearRemainingBalanceOverride();
      }
 
      public Payment MakePayment()
@@ -160,15 +133,26 @@ public class CartService: ReactiveObject, ICartService
                Notes = Notes
           };
      }
-     
+
      public void AddPayment(Payment payment)
      {
-          if (payment.Amount < 0 || payment.OrderId != OrderId)
-               return;
+          if (payment.Amount < 0 || payment.OrderId != OrderId) return;
 
-          Payments.Insert(0, payment);
-          AmountPaid += payment.Amount;
+          Payments.Add(payment);
+     }
 
+     public void ApplyPayment(PaymentResponseDto paymentResponse)
+     {
+          if (paymentResponse.OrderId != OrderId) return;
+
+          AmountPaid = paymentResponse.PaidAmount;
+          _overrideRemainingBalance = paymentResponse.RemainingAmount;
+          this.RaisePropertyChanged(nameof(RemainingBalance));
+     }
+
+     private void ClearRemainingBalanceOverride()
+     {
+          _overrideRemainingBalance = null;
           this.RaisePropertyChanged(nameof(RemainingBalance));
      }
 }

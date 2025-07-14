@@ -99,17 +99,6 @@ public partial class OrderCartPanel : UserControl
         }
     }
 
-    private async void OnRemoveLineItemButtonClick(object? sender, RoutedEventArgs e)
-    {
-        if (sender is Button button && button.Tag is LineItem lineItem)
-        {
-            var vm = DataContext as OrderCartPanelViewModel;
-            if (await ShowLockedDialogIfNotModifiable(vm)) return;
-
-            vm?.RemoveLineItemCommand?.Execute(lineItem)?.Subscribe();
-        }
-    }
-
     private async void OnCustomerNameLostFocus(object? sender, RoutedEventArgs e)
     {
         var vm = DataContext as OrderCartPanelViewModel;
@@ -221,7 +210,17 @@ public partial class OrderCartPanel : UserControl
                 NegativeText = "Cancel"
             };
             dialog.FindControl<Button>("PositiveButton")!.Classes.Add("Danger");
-            await dialog.ShowAsync();
+            
+            var result = await dialog.ShowAsync();
+
+            if (result.HasValue && result.Value)
+            {
+                var border = sender as Border;
+                var lineItem = border?.Tag as LineItem;
+
+                var vm = DataContext as OrderCartPanelViewModel;
+                vm?.RemoveLineItemCommand?.Execute(lineItem)?.Subscribe();
+            }
         }
     }
 

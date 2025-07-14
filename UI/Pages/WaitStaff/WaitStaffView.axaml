@@ -9,14 +9,20 @@
     xmlns:rxui="http://reactiveui.net"
     x:DataType="app:WaitStaffViewModel"
     mc:Ignorable="d">
-    <Grid ColumnDefinitions="450 *">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="59*" MinWidth="450" />
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="40*" MinWidth="450" />
+        </Grid.ColumnDefinitions>
         <Border BorderBrush="{StaticResource SemiColorBorder}" BorderThickness="0,0,1,0">
-            <controls:OrderCartPanel
-                DataContext="{Binding OrderCartPanelViewModel}"
-                IsEditable="True" />
+            <controls:OrderCartPanel DataContext="{Binding OrderCartPanelViewModel}" IsEditable="True" />
         </Border>
-
-        <ScrollViewer Grid.Column="1">
+        <GridSplitter
+            Grid.Column="1"
+            Background="Transparent"
+            ResizeDirection="Columns" />
+        <ScrollViewer Grid.Column="2">
             <rxui:RoutedViewHost Router="{Binding Router}">
                 <rxui:RoutedViewHost.DefaultContent>
                     <TextBlock

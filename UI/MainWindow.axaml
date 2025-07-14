@@ -17,43 +17,52 @@
     <Panel>
         <rxui:RoutedViewHost Router="{Binding Router}">
             <rxui:RoutedViewHost.DefaultContent>
-                <StackPanel
-                    MaxWidth="350"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Center"
-                    Spacing="16">
+                <Grid ColumnDefinitions="*,*">
                     <Image
-                        Height="56"
-                        Margin="0,0,0,36"
-                        Source="avares://Pos/Assets/logo.png" />
-                    <TextBox
-                        x:Name="UsernameTextBox"
-                        Classes="Large Bordered"
-                        Watermark="Enter username" />
-                    <TextBox
-                        x:Name="PasswordTextBox"
-                        Margin="0,0,0,8"
-                        Classes="Large Bordered RevealPasswordButton"
-                        Watermark="Enter password" />
-                    <TextBlock
-                        x:Name="ErrorTextBlock"
-                        FontWeight="Bold"
-                        Foreground="Red"
-                        IsVisible="False"
-                        TextWrapping="Wrap" />
-                    <Button
+                        Grid.Column="0"
+                        Source="avares://Pos/Assets/poster.jpg"
+                        Stretch="Fill"
                         HorizontalAlignment="Stretch"
-                        Classes="Large"
-                        Click="onClickLogin"
-                        Content="Login"
-                        Theme="{StaticResource SolidButton}" />
-                    <Button
+                        VerticalAlignment="Stretch" />
+                    <StackPanel
+                        Grid.Column="1"
+                        MaxWidth="350"
                         HorizontalAlignment="Stretch"
-                        Classes="Large"
-                        Command="{Binding NavigateStaffLoginCommand}"
-                        Content="Staff Login"
-                        Theme="{StaticResource SolidButton}" />
-                </StackPanel>
+                        VerticalAlignment="Center"
+                        Spacing="16">
+                        <Image
+                            Height="56"
+                            Margin="0,0,0,36"
+                            Source="avares://Pos/Assets/logo.png" />
+                        <TextBox
+                            x:Name="UsernameTextBox"
+                            Classes="Large Bordered"
+                            Watermark="Enter username" />
+                        <TextBox
+                            x:Name="PasswordTextBox"
+                            Margin="0,0,0,8"
+                            Classes="Large Bordered RevealPasswordButton"
+                            Watermark="Enter password" />
+                        <TextBlock
+                            x:Name="ErrorTextBlock"
+                            FontWeight="Bold"
+                            Foreground="Red"
+                            IsVisible="False"
+                            TextWrapping="Wrap" />
+                        <Button
+                            HorizontalAlignment="Stretch"
+                            Classes="Large"
+                            Click="onClickLogin"
+                            Content="Login"
+                            Theme="{StaticResource SolidButton}" />
+                        <Button
+                            HorizontalAlignment="Stretch"
+                            Classes="Large"
+                            Command="{Binding NavigateStaffLoginCommand}"
+                            Content="Staff Login"
+                            Theme="{StaticResource SolidButton}" />
+                    </StackPanel>
+                </Grid>
             </rxui:RoutedViewHost.DefaultContent>
             <rxui:RoutedViewHost.ViewLocator>
                 <app:MainWindowViewLocator />

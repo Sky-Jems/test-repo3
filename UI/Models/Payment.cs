@@ -37,7 +37,7 @@ public class PaymentResponseDto
     public decimal NetAmount { get; set; }
     [JsonPropertyName("order_id")]
     public long OrderId { get; set; }
-    [JsonPropertyName("paid_method")]
+    [JsonPropertyName("paid_amount")]
     public decimal PaidAmount { get; set; }
     [JsonPropertyName("remaining_amount")]
     public decimal RemainingAmount { get; set; }

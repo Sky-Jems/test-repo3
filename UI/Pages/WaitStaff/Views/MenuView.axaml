@@ -11,12 +11,15 @@
 
     <Border Padding="32">
         <StackPanel Spacing="12">
-            <Grid Margin="0,0,0,12" VerticalAlignment="Center" ColumnDefinitions="Auto,Auto,*">
+            <Grid
+                Margin="0,0,0,12"
+                VerticalAlignment="Center"
+                ColumnDefinitions="Auto,Auto,*">
                 <Button
+                    Grid.Column="0"
                     Width="40"
                     Height="40"
-                    Command="{Binding GoBack}"
-                    Grid.Column="0">
+                    Command="{Binding GoBack}">
                     <PathIcon
                         Width="16"
                         Data="{StaticResource SemiIconArrowLeft}"
@@ -24,19 +27,19 @@
                 </Button>
 
                 <Label
-                    Classes="H2"
-                    Theme="{StaticResource TitleLabel}"
                     Grid.Column="1"
+                    Margin="16,0"
                     VerticalAlignment="Center"
-                    Margin="16,0">
+                    Classes="H2"
+                    Theme="{StaticResource TitleLabel}">
                     Products
                 </Label>
 
                 <TextBox
                     Name="search_box"
+                    Grid.Column="2"
                     MinWidth="200"
                     HorizontalAlignment="Right"
-                    Grid.Column="2"
                     Classes="Large Bordered"
                     Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     Watermark="Search...">

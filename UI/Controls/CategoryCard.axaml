@@ -7,23 +7,23 @@
     x:CompileBindings="False"
     mc:Ignorable="d">
     <Button
-        Padding="24"
+        x:Name="categoryCard"
+        Padding="0"
         HorizontalAlignment="Stretch"
         VerticalAlignment="Stretch"
-        Click="OnButtonClick"
         Theme="{StaticResource SolidButton}">
         <Button.DataContext>
             <Binding Path="$parent.Category" />
         </Button.DataContext>
 
         <Viewbox HorizontalAlignment="Left">
-            <StackPanel HorizontalAlignment="Left">
+            <StackPanel Margin="16" HorizontalAlignment="Left">
                 <Svg
                     MaxHeight="30"
                     HorizontalAlignment="Left"
                     Css="{Binding IconColor}"
                     Path="{Binding Icon}" />
-                <AccessText FontSize="16" Text="{Binding Name}" />
+                <AccessText FontSize="{StaticResource SemiFontSizeHeader4}" Text="{Binding TrimmedCategoryName}" />
             </StackPanel>
         </Viewbox>
     </Button>

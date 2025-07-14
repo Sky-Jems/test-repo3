@@ -7,62 +7,75 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     x:DataType="app:StaffLoginViewModel"
     mc:Ignorable="d">
-
-    <Grid
-        Width="350"
-        Margin="150"
-        ColumnDefinitions="*"
-        RowDefinitions="Auto,*,Auto">
-
-        <Border
-            Grid.Row="0"
-            Padding="12"
-            BorderBrush="#141C1F23"
-            BorderThickness="1,1,1,0"
-            CornerRadius="6,0">
-            <Label
-                HorizontalAlignment="Center"
-                Classes="H5"
-                Content="Select User"
-                Theme="{StaticResource TitleLabel}" />
-        </Border>
-
-        <Border
-            Grid.Row="1"
-            BorderBrush="#141C1F23"
-            BorderThickness="1">
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <ItemsControl ItemsSource="{Binding StaffList}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Button
-                                Margin="5,5"
-                                HorizontalAlignment="Stretch"
-                                Background="Transparent"
-                                Command="{Binding $parent[UserControl].DataContext.SelectStaffCommand}"
-                                CommandParameter="{Binding .}"
-                                Content="{Binding FullName}"
-                                FontSize="20" />
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
-        </Border>
-
-        <Border
-            Grid.Row="2"
-            Padding="12"
-            BorderBrush="#141C1F23"
-            BorderThickness="1,0,1,1"
-            CornerRadius="0,6">
-            <Button
-                Width="120"
-                Height="40"
-                HorizontalAlignment="Right"
-                Command="{Binding GoBack}"
-                Content="Back"
-                FontSize="14"
-                Theme="{StaticResource SolidButton}" />
-        </Border>
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Image
+            Grid.Column="0"
+            Source="avares://Pos/Assets/poster_staff.jpg"
+            Stretch="Fill"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch" />
+        <Grid
+            Grid.Column="1"
+            Width="350"
+            Margin="150"
+            ColumnDefinitions="*"
+            RowDefinitions="Auto,*,Auto">
+    
+            <Border
+                Grid.Row="0"
+                Padding="12"
+                BorderBrush="#141C1F23"
+                BorderThickness="1,1,1,0"
+                CornerRadius="6,0">
+                <Label
+                    HorizontalAlignment="Center"
+                    Classes="H5"
+                    Content="Select User"
+                    Theme="{StaticResource TitleLabel}" />
+            </Border>
+    
+            <Border
+                Grid.Row="1"
+                BorderBrush="#141C1F23"
+                BorderThickness="1">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding StaffList}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button
+                                    Margin="5,5"
+                                    HorizontalAlignment="Stretch"
+                                    Background="Transparent"
+                                    Command="{Binding $parent[UserControl].DataContext.SelectStaffCommand}"
+                                    CommandParameter="{Binding .}"
+                                    Content="{Binding FullName}"
+                                    FontSize="20" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Border>
+    
+            <Border
+                Grid.Row="2"
+                Padding="12"
+                BorderBrush="#141C1F23"
+                BorderThickness="1,0,1,1"
+                CornerRadius="0,6">
+                <Button
+                    Width="120"
+                    Height="40"
+                    HorizontalAlignment="Right"
+                    Command="{Binding GoBack}"
+                    Content="Back"
+                    FontSize="14"
+                    Theme="{StaticResource SolidButton}" />
+            </Border>
+            </Grid>
     </Grid>
 </UserControl>

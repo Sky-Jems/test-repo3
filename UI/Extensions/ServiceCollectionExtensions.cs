@@ -18,5 +18,7 @@ public static class ServiceCollectionExtensions
         collection.AddSingleton<ICategoryService, CategoryService>();
         collection.AddSingleton<IOrderService, OrderService>();
         collection.AddSingleton<OrderCartPanelViewModel>();
+        collection.AddSingleton<IOrderTransactionService, OrderTransactionService>();
+        collection.AddSingleton<IUIInteractionService, UIInteractionService>();
     }
 }

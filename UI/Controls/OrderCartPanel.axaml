@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:Pos.Controls"
+    xmlns:behaviors="clr-namespace:Pos.Behaviors"
     x:Name="root"
     x:DataType="vm:OrderCartPanelViewModel"
     mc:Ignorable="d">
@@ -29,7 +30,8 @@
                 IsEnabled="{Binding CanShowItems}"
                 LostFocus="OnCustomerNameLostFocus"
                 Text="{Binding Customer, Mode=TwoWay}"
-                Watermark="Enter customer name" />
+                Watermark="Please enter customer name before taking an order"
+                behaviors:FocusBehavior.IsFocused="{Binding ShouldFocusCustomer}" />
         </Grid>
 
         <Grid Grid.Column="0" RowDefinitions="auto * auto">

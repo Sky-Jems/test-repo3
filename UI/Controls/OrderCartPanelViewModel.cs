@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using AvaloniaDialogs.Views;
 using DynamicData.Binding;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +15,7 @@ using Pos.Models;
 using pos.Models.EventArgs;
 using Pos.Util;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace Pos.Controls;
 
@@ -21,6 +23,8 @@ public class OrderCartPanelViewModel : ReactiveObject
 {
     private readonly ICartService _cartService;
     private readonly IOrderService _orderService;
+    private readonly IOrderTransactionService _orderTransactionService;
+    private readonly IUIInteractionService _uiInteractionService;
     private long OrderTransactionId { get; set; }
     public ObservableCollection<LineItem> OrderList => _cartService.Items;
     private readonly ObservableAsPropertyHelper<decimal> _cartTotal;
@@ -35,14 +39,10 @@ public class OrderCartPanelViewModel : ReactiveObject
             _cartService.SelectedItem = value; // sync to service
         }
     }
-    public string Customer
-    {
-        get => _cartService.Customer;
-        set => _cartService.Customer = value;
-    }
+    [Reactive] public string? Customer { get; set; }
     private readonly ObservableAsPropertyHelper<bool> _showItems;
     private readonly ObservableAsPropertyHelper<bool> _canPay;
-    public bool CanPay => _canPay.Value;
+    private bool CanPay => _canPay.Value;
     public bool CanShowItems => _showItems.Value;
     public bool CanModifyItems => _cartService.CanModifyItems;
     public bool IsCompleted => _cartService.PaymentStatus != PaymentStatus.PENDING;
@@ -58,13 +58,18 @@ public class OrderCartPanelViewModel : ReactiveObject
     private ReactiveCommand<Unit, Unit> LoadOrderToCartCommand { get; }
     public ReactiveCommand<Unit, Unit> PayOrderCommand { get; }
     public ReactiveCommand<Unit, Unit> NewOrderCommand { get; }
+    public ReactiveCommand<Unit, bool> ValidateCustomerNameCommand { get; }
     public event EventHandler<NotificationEventArgs>? TriggerNotif;
     private bool _isModifyingOrder;
+    private string? _originalCustomer;
+    [Reactive] public bool ShouldFocusCustomer { get; set; }
 
     public OrderCartPanelViewModel()
     {
         _cartService = ServiceLocator.Services.GetRequiredService<ICartService>();
         _orderService = ServiceLocator.Services.GetRequiredService<IOrderService>();
+        _orderTransactionService = ServiceLocator.Services.GetRequiredService<IOrderTransactionService>();
+        _uiInteractionService = ServiceLocator.Services.GetRequiredService<IUIInteractionService>();
 
         _cartService
             .WhenAnyValue(x => x.Total)
@@ -93,6 +98,19 @@ public class OrderCartPanelViewModel : ReactiveObject
                 .Select(status => status == PaymentStatus.PENDING)
                 .Do(_ => this.RaisePropertyChanged(nameof(IsCompleted)))
                 .ToProperty(this, x => x.CanShowItems, out _showItems);
+        
+        _cartService.WhenAnyValue(x => x.Customer)
+            .Subscribe(customer =>
+            {
+                _originalCustomer = customer;
+                Customer = customer;
+            });
+        
+        _uiInteractionService.RequestFocus += field =>
+        {
+            if (field == "Customer")
+                ShouldFocusCustomer = true;
+        };
 
         NavigateToMenuCommand = ReactiveCommand.Create<LineItem>(HandleClickLineItem);
         ClickPlusCommand = ReactiveCommand.CreateFromTask<LineItem>(HandleClickPlusAsync);
@@ -104,7 +122,8 @@ public class OrderCartPanelViewModel : ReactiveObject
         LoadOrderToCartCommand = ReactiveCommand.CreateFromTask(LoadOrderToCartAsync);
         PayOrderCommand = ReactiveCommand.CreateFromTask(PayOrder);
         NewOrderCommand = ReactiveCommand.Create(StartNewOrder);
-        
+        ValidateCustomerNameCommand = ReactiveCommand.CreateFromTask(ValidateCustomerNameAsync);
+
         ClickPlusCommand.ThrownExceptions
             .Subscribe(ex => HandleCommandError("Failed to increase quantity.", ex));
         ClickMinusCommand.ThrownExceptions
@@ -119,7 +138,8 @@ public class OrderCartPanelViewModel : ReactiveObject
             .Subscribe(ex => HandleCommandError("Failed to load order to cart.", ex));
         PayOrderCommand.ThrownExceptions
             .Subscribe(ex => HandleCommandError("Failed to open payment dialog.", ex));
-
+        ValidateCustomerNameCommand.ThrownExceptions
+            .Subscribe(ex => HandleCommandError("Failed to validate customer name.", ex));
     }
 
     private async Task LoadOrderToCartAsync()
@@ -225,8 +245,47 @@ public class OrderCartPanelViewModel : ReactiveObject
         NavigateToCategory.Invoke();
     }
 
+    private async Task<bool> ValidateCustomerNameAsync()
+    {
+        var startDate = new DateTimeOffset(DateTime.UtcNow).DayStart();
+        var endDate = new DateTimeOffset(DateTime.UtcNow).DayEnd();
+        string start = HttpUtility.UrlEncode(startDate.ToISO8601());
+        string end = HttpUtility.UrlEncode(endDate.ToISO8601());
+        var pendingOrders = await _orderTransactionService
+            .GetFilteredOrderTransactionsByStatus(Constants.OrderStatusType.PENDING.ToString(), start, end);
+        if (string.IsNullOrWhiteSpace(Customer)) 
+            return false;
+
+        // Check if any order has the same customer name (case-insensitive)
+        var existingCustomer = pendingOrders
+            .Any(order => string.Equals(order.Order.Customer?.Trim(), Customer.Trim(), StringComparison.OrdinalIgnoreCase));
+
+        return existingCustomer;
+    }
+    
+    private bool HasCustomerNameChanged()
+    {
+        return !string.Equals(_originalCustomer?.Trim(), Customer?.Trim(), StringComparison.Ordinal);
+    }
+
     private async Task SaveCustomerAsync()
     {
+        if (!HasCustomerNameChanged()) return;
+
+        var isExistingCustomer = await ValidateCustomerNameAsync();
+        if (isExistingCustomer)
+        {
+            TriggerNotif?.Invoke(this, new NotificationEventArgs
+            {
+                Message = $"A pending order already exists for '{Customer}'. Please enter a different name.",
+                NotifType = Constants.NotifType.Error
+            });
+            
+            Customer = _originalCustomer;
+            ShouldFocusCustomer = true;
+            return;
+        }
+
         if (_cartService.OrderId is null)
         {
             var newOrder = new Order

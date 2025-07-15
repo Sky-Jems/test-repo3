@@ -132,13 +132,26 @@ public class MenuViewModel : ReactiveObject, IRoutableViewModel
     {
         if (!_cartService.CanModifyItems)
         {
-            var lockedDialog = new SingleActionDialog
+            await new SingleActionDialog
             {
                 Message = "Items cannot be modified because the order is already completed or partially paid.",
                 ButtonText = "OK"
-            };
-
-            await lockedDialog.ShowAsync();
+            }.ShowAsync();
+            
+            return;
+        }
+        
+        if (string.IsNullOrWhiteSpace(_cartService.Customer))
+        {
+            await new SingleActionDialog
+            {
+                Message = "Please enter a customer name before adding items.",
+                ButtonText = "OK"
+            }.ShowAsync();
+            
+            var uiInteractionService = ServiceLocator.Services.GetRequiredService<IUIInteractionService>();
+            uiInteractionService.FocusCustomerField();
+            
             return;
         }
 

@@ -1,8 +1,19 @@
 package solutions.skydev.pos.gateway_service.controller;
 
+import java.time.OffsetDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import solutions.skydev.pos.common.discount_service.dto.request.DiscountOrderRequestDto;
@@ -12,8 +23,6 @@ import solutions.skydev.pos.common.order_service.dto.request.OrderRequestDto;
 import solutions.skydev.pos.gateway_service.producer.OrderOrchestratorProducer;
 import solutions.skydev.pos.gateway_service.service.OrderOrchestratorEnrichmentService;
 import solutions.skydev.pos.gateway_service.service.OrderOrchestratorServiceClient;
-
-import java.time.OffsetDateTime;
 
 @RestController
 @RequestMapping("/order-transaction")
@@ -61,7 +70,7 @@ public class OrderOrchestratorController {
             @RequestParam("end_date") OffsetDateTime endDate) {
         Flux<OrderTransactionResponseDto> orderTransactionResponseDtoFlux = this.orderOrchestratorServiceClient.fetchOrderTransactionsByOrderStatus(orderStatus);
         Flux<OrderTransactionResponseDto> filteredFlux = orderOrchestratorEnrichmentService.enrichTransactionsWithDateFilter(orderTransactionResponseDtoFlux, startDate, endDate);
-        return filteredFlux.flatMap(dto -> orderOrchestratorEnrichmentService.enrichWithOrderProductBillingAndPayment(Mono.just(dto)));
+        return filteredFlux.flatMap(dto -> orderOrchestratorEnrichmentService.enrichWithOrderProductBillingAndPaymentAndDiscount(Mono.just(dto)));
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)

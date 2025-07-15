@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import solutions.skydev.pos.common.billing_service.dto.response.BillingRequestResponseDto;
+import solutions.skydev.pos.common.discount_service.dto.response.DiscountOrderUpdatedResponseDto;
 import solutions.skydev.pos.common.order_service.dto.response.OrderResponseDto;
 import solutions.skydev.pos.common.payment_service.dto.response.PaymentResponseDto;
 
@@ -19,30 +20,29 @@ import java.util.List;
 @NoArgsConstructor
 public class OrderTransactionResponseDto {
     Long id;
-    
+
     @JsonProperty("order_id")
     Long orderId;
-    
+
     @JsonProperty("order_status")
     String orderStatus;
-    
-    @JsonProperty("discount_status")
-    String discountStatus;
-    
+
     @JsonProperty("payment_status")
     String paymentStatus;
-    
+
     @JsonProperty("gross_amount")
     BigDecimal grossAmount;
-    
+
     @JsonProperty("discount_amount")
     BigDecimal discountAmount;
-    
+
     @JsonProperty("net_amount")
     BigDecimal netAmount;
-    
-    
+
+
     OrderResponseDto order;
     BillingRequestResponseDto billing;
+    @JsonProperty("discount_order")
+    DiscountOrderUpdatedResponseDto discountOrder;
     List<PaymentResponseDto> payments;
 }

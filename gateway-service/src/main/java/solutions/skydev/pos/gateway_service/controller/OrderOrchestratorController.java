@@ -38,7 +38,7 @@ public class OrderOrchestratorController {
     public Mono<OrderTransactionResponseDto> getOrderTransactionById(@PathVariable String id) {
 
         Mono<OrderTransactionResponseDto> orderTransactionResponseDtoMono = this.orderOrchestratorServiceClient.fetchOrderTransactionById(Long.valueOf(id));
-        return orderOrchestratorEnrichmentService.enrichWithOrderProductBillingAndPayment(orderTransactionResponseDtoMono);
+        return orderOrchestratorEnrichmentService.enrichWithOrderProductBillingAndPaymentAndDiscount(orderTransactionResponseDtoMono);
     }
 
     /**
@@ -51,7 +51,7 @@ public class OrderOrchestratorController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public Mono<OrderTransactionResponseDto> getOrderTransactionByOrderId(@RequestParam("order_id") String orderId) {
         Mono<OrderTransactionResponseDto> orderTransactionResponseDtoMono = this.orderOrchestratorServiceClient.fetchOrderTransactionByOrderId(Long.valueOf(orderId));
-        return orderOrchestratorEnrichmentService.enrichWithOrderProductBillingAndPayment(orderTransactionResponseDtoMono);
+        return orderOrchestratorEnrichmentService.enrichWithOrderProductBillingAndPaymentAndDiscount(orderTransactionResponseDtoMono);
     }
 
     @GetMapping(path= "/orders", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -69,7 +69,7 @@ public class OrderOrchestratorController {
         try {
             response = this.orderOrchestratorProducer.sendCreateOrderTransactionCommand(order);
 
-            return orderOrchestratorEnrichmentService.enrichWithOrderProductBillingAndPayment(Mono.just(response));
+            return orderOrchestratorEnrichmentService.enrichWithOrderProductBillingAndPaymentAndDiscount(Mono.just(response));
         } catch (Exception e) {
             return Mono.error(new RuntimeException("Failed to parse response: " + e.getMessage()));
         }
@@ -92,7 +92,7 @@ public class OrderOrchestratorController {
             Mono<OrderTransactionResponseDto> orderTransactionResponseDtoMono =
                 this.orderOrchestratorServiceClient.fetchOrderTransactionById(response.getId());
 
-            return this.orderOrchestratorEnrichmentService.enrichWithOrderProductBillingAndPayment(orderTransactionResponseDtoMono);
+            return this.orderOrchestratorEnrichmentService.enrichWithOrderProductBillingAndPaymentAndDiscount(orderTransactionResponseDtoMono);
         } catch (Exception e) {
             return Mono.error(new RuntimeException("Failed to update line item: " + e.getMessage()));
         }
@@ -107,7 +107,7 @@ public class OrderOrchestratorController {
             Mono<OrderTransactionResponseDto> orderTransactionResponseDtoMono =
                 this.orderOrchestratorServiceClient.fetchOrderTransactionByOrderId(responseDto.getOrderId());
 
-            return this.orderOrchestratorEnrichmentService.enrichWithOrderProductBillingAndPayment(orderTransactionResponseDtoMono);
+            return this.orderOrchestratorEnrichmentService.enrichWithOrderProductBillingAndPaymentAndDiscount(orderTransactionResponseDtoMono);
         } catch (Exception e) {
             return Mono.error(new RuntimeException("Failed to add line item: " + e.getMessage()));
         }
@@ -126,7 +126,7 @@ public class OrderOrchestratorController {
             Mono<OrderTransactionResponseDto> orderTransactionResponseDtoMono =
                 this.orderOrchestratorServiceClient.fetchOrderTransactionByOrderId(response.getOrderId());
 
-            return this.orderOrchestratorEnrichmentService.enrichWithOrderProductBillingAndPayment(orderTransactionResponseDtoMono);
+            return this.orderOrchestratorEnrichmentService.enrichWithOrderProductBillingAndPaymentAndDiscount(orderTransactionResponseDtoMono);
         } catch (Exception e) {
             return Mono.error(new RuntimeException("Failed to remove line item: " + e.getMessage()));
         }
@@ -141,7 +141,7 @@ public class OrderOrchestratorController {
             Mono<OrderTransactionResponseDto> orderTransactionResponseDtoMono =
                 this.orderOrchestratorServiceClient.fetchOrderTransactionByOrderId(response.getOrderId());
 
-            return this.orderOrchestratorEnrichmentService.enrichWithOrderProductBillingAndPayment(orderTransactionResponseDtoMono);
+            return this.orderOrchestratorEnrichmentService.enrichWithOrderProductBillingAndPaymentAndDiscount(orderTransactionResponseDtoMono);
         } catch (Exception e) {
             return Mono.error(new RuntimeException("Failed to clear line items: " + e.getMessage()));
         }
@@ -156,7 +156,7 @@ public class OrderOrchestratorController {
             Mono<OrderTransactionResponseDto> orderTransactionResponseDtoMono =
                 this.orderOrchestratorServiceClient.fetchOrderTransactionByOrderId(response.getOrderId());
 
-            return this.orderOrchestratorEnrichmentService.enrichWithOrderAndProduct(orderTransactionResponseDtoMono);
+            return this.orderOrchestratorEnrichmentService.enrichWithOrderProductBillingAndPaymentAndDiscount(orderTransactionResponseDtoMono);
         } catch (Exception e) {
             return Mono.error(new RuntimeException("Failed to apply discount: " + e.getMessage()));
         }
@@ -171,7 +171,7 @@ public class OrderOrchestratorController {
             Mono<OrderTransactionResponseDto> orderTransactionResponseDtoMono =
                     this.orderOrchestratorServiceClient.fetchOrderTransactionByOrderId(response.getOrderId());
 
-            return this.orderOrchestratorEnrichmentService.enrichWithOrderAndProduct(orderTransactionResponseDtoMono);
+            return this.orderOrchestratorEnrichmentService.enrichWithOrderProductBillingAndPaymentAndDiscount(orderTransactionResponseDtoMono);
         } catch (Exception e) {
             return Mono.error(new RuntimeException("Failed to remove line item discount: " + e.getMessage()));
         }
@@ -186,7 +186,7 @@ public class OrderOrchestratorController {
             Mono<OrderTransactionResponseDto> orderTransactionResponseDtoMono =
                     this.orderOrchestratorServiceClient.fetchOrderTransactionByOrderId(response.getOrderId());
 
-            return this.orderOrchestratorEnrichmentService.enrichWithOrderAndProduct(orderTransactionResponseDtoMono);
+            return this.orderOrchestratorEnrichmentService.enrichWithOrderProductBillingAndPaymentAndDiscount(orderTransactionResponseDtoMono);
         } catch (Exception e) {
             return Mono.error(new RuntimeException("Failed to remove line item discount: " + e.getMessage()));
         }

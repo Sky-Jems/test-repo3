@@ -21,7 +21,6 @@ public class DiscountOrderController {
         this.discountOrderService = discountOrderService;
     }
 
-
     @GetMapping("/{order-id}")
     public DiscountOrderUpdatedResponseDto getDiscountLineItemsByOrderId(@PathVariable("order-id") Long orderId) {
         DiscountOrderSummary summary = discountOrderService.getDiscountOrderSummary(orderId);

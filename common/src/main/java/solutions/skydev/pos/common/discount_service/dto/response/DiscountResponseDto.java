@@ -1,6 +1,7 @@
 package solutions.skydev.pos.common.discount_service.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
@@ -10,6 +11,7 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class DiscountResponseDto {
     Long id;
     String name;

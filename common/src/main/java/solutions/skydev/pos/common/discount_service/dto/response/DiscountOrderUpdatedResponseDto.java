@@ -20,8 +20,8 @@ public class DiscountOrderUpdatedResponseDto {
     private Long orderId;
     @JsonProperty("discount_amount")
     private BigDecimal discountAmount;
-    @JsonProperty("discount_id")
-    private Long discountId;
+    @JsonProperty("discount")
+    private DiscountResponseDto discount;
     @JsonProperty("line_items")
     private List<LineItemLevelDiscountOrderResponseDto> lineItems;
 }

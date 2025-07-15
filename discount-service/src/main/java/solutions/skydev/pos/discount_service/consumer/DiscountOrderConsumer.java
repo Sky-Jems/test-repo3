@@ -42,14 +42,14 @@ public class DiscountOrderConsumer {
     @KafkaAsyncOperationBinding
     @SendTo("discount-order.updated")
     public DiscountOrderUpdatedResponseDto applyDiscountOrderCommand(DiscountOrderRequestDto discountOrderRequestDto) {
-        if (discountOrderRequestDto.getLineItems() != null && !discountOrderRequestDto.getLineItems().isEmpty()) {
-            List<LineItemLevelDiscountOrder> entities =
-                    discountOrderMapper.toLineItemLevelEntities(discountOrderRequestDto.getLineItems(), discountOrderRequestDto.getOrderId());
-            discountOrderService.create(entities, discountOrderRequestDto.getOrderId());
-        } else if (discountOrderRequestDto.getTotalAmount() != null && discountOrderRequestDto.getDiscountId() != null) {
+        if (discountOrderRequestDto.getTotalAmount() != null && discountOrderRequestDto.getDiscountId() != null) {
             OrderLevelDiscountOrder entity = discountOrderMapper.toOrderLevelEntity(discountOrderRequestDto);
             Order order = discountOrderMapper.toOrderEntity(discountOrderRequestDto);
             discountOrderService.create(entity, order);
+        } else if (discountOrderRequestDto.getLineItems() != null && !discountOrderRequestDto.getLineItems().isEmpty()) {
+            List<LineItemLevelDiscountOrder> entities =
+                    discountOrderMapper.toLineItemLevelEntities(discountOrderRequestDto.getLineItems(), discountOrderRequestDto.getOrderId());
+            discountOrderService.create(entities, discountOrderRequestDto.getOrderId());
         } else {
             log.error("Invalid discount order request: {}", discountOrderRequestDto);
             throw new IllegalArgumentException("Invalid discount order request: " + discountOrderRequestDto);

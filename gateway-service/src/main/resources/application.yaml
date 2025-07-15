@@ -57,13 +57,13 @@ spring:
             predicates:
               - Path=/variants/**
               - Method=GET
-          
+
           - id: payment_route
             uri: http://localhost:8084/payments
             predicates:
               - Path=/payments/**
               - Method=GET
-          
+
           - id: billing_requests_route
             uri: http://localhost:8087/billing-requests
             predicates:
@@ -71,7 +71,7 @@ spring:
               - Method=GET
 
           - id: discount_order_route
-            uri: http://localhost:8088/discount-order
+            uri: http://localhost:8086/discount-order
             predicates:
               - Path=/discount-order/**
               - Method=GET

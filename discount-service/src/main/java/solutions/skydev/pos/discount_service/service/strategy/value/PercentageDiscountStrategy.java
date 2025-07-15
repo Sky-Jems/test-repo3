@@ -12,7 +12,7 @@ public class PercentageDiscountStrategy implements DiscountValueStrategy {
 
     @Override
     public BigDecimal calculate(BigDecimal originalAmount) {
-        return originalAmount.subtract(originalAmount.multiply(percentage).divide(BigDecimal.valueOf(100)));
+        return originalAmount.multiply(percentage).divide(BigDecimal.valueOf(100));
     }
 }
 

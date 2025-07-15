@@ -7,9 +7,6 @@ import reactor.core.publisher.Mono;
 import solutions.skydev.pos.common.billing_service.dto.response.BillingRequestResponseDto;
 import solutions.skydev.pos.common.order_orchestrator_service.dto.response.OrderTransactionResponseDto;
 import solutions.skydev.pos.common.order_service.dto.response.OrderResponseDto;
-import solutions.skydev.pos.common.payment_service.dto.response.PaymentResponseDto;
-
-import java.util.List;
 
 import java.time.OffsetDateTime;
 
@@ -19,13 +16,17 @@ public class OrderOrchestratorEnrichmentService {
     private final ProductEnrichmentService productEnrichmentService;
     private final BillingServiceClient billingServiceClient;
     private final PaymentServiceClient paymentServiceClient;
+    private final DiscountServiceClient discountServiceClient;
 
     @Autowired
-    public OrderOrchestratorEnrichmentService(OrderServiceClient orderServiceClient, ProductEnrichmentService productEnrichmentService, BillingServiceClient billingServiceClient, PaymentServiceClient paymentServiceClient) {
+    public OrderOrchestratorEnrichmentService(OrderServiceClient orderServiceClient, ProductEnrichmentService productEnrichmentService,
+                                              BillingServiceClient billingServiceClient, PaymentServiceClient paymentServiceClient,
+                                              DiscountServiceClient discountServiceClient) {
         this.orderServiceClient = orderServiceClient;
         this.productEnrichmentService = productEnrichmentService;
         this.billingServiceClient = billingServiceClient;
         this.paymentServiceClient = paymentServiceClient;
+        this.discountServiceClient = discountServiceClient;
     }
 
 
@@ -40,7 +41,18 @@ public class OrderOrchestratorEnrichmentService {
                         return transactionResponse;
                     }
             ).onErrorResume(e -> Mono.error(new RuntimeException("Error fetching order: " + e.getMessage())));
-        }); 
+        });
+    }
+
+    public Mono<OrderTransactionResponseDto> enrichWithDiscountOrder(Mono<OrderTransactionResponseDto> orderTransactionResponseDtoMono) {
+        return orderTransactionResponseDtoMono.flatMap(orderTransactionResponseDto -> {
+            Long orderId = orderTransactionResponseDto.getOrderId();
+            return discountServiceClient.getDiscountOrderByOrderId(orderId)
+                    .flatMap(discountOrder -> {
+                        orderTransactionResponseDto.setDiscountOrder(discountOrder);
+                        return Mono.just(orderTransactionResponseDto);
+                    }).onErrorResume(e -> Mono.error(new RuntimeException("Error fetching discount order: " + e.getMessage())));
+        });
     }
 
     public Flux<OrderTransactionResponseDto> enrichTransactionsWithDateFilter(Flux<OrderTransactionResponseDto> orderTransactionResponseDtoFlux, OffsetDateTime startDate, OffsetDateTime endDate) {
@@ -91,8 +103,12 @@ public class OrderOrchestratorEnrichmentService {
         });
     }
 
-    public Mono<OrderTransactionResponseDto> enrichWithOrderProductBillingAndPayment(Mono<OrderTransactionResponseDto> orderTransactionResponseDtoMono) {
+    public Mono<OrderTransactionResponseDto> enrichWithOrderProductBillingAndPaymentAndDiscount(
+            Mono<OrderTransactionResponseDto> orderTransactionResponseDtoMono) {
         return enrichWithOrderAndProduct(orderTransactionResponseDtoMono)
-                .flatMap(orderTransactionResponseDto -> enrichWithBillingAndPayment(Mono.just(orderTransactionResponseDto)));
+                .flatMap(orderTransactionResponseDto ->
+                        enrichWithBillingAndPayment(Mono.just(orderTransactionResponseDto)))
+                .flatMap(orderTransactionResponseDto ->
+                        enrichWithDiscountOrder(Mono.just(orderTransactionResponseDto)));
     }
 }

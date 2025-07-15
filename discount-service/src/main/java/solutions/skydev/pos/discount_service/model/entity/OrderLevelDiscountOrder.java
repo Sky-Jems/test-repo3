@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @Entity
 @DiscriminatorValue("ORDER")
 public class OrderLevelDiscountOrder extends DiscountOrder {
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "discount_id", nullable = false)
     private Discount discount;
 

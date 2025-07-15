@@ -16,7 +16,7 @@ public class LineItemLevelDiscountOrder extends DiscountOrder {
     @Column(nullable = false)
     private Long lineItemId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "discount_id", nullable = false)
     private Discount discount;
 

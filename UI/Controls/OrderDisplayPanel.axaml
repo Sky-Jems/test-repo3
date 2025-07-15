@@ -138,8 +138,11 @@
                     </StackPanel.Styles>
 
                     <UniformGrid Columns="2" RowSpacing="6">
-                        <Label Classes="title" Content="Subtotal" />
+                        <Label Classes="title" Content="Total Amount" />
                         <Label Classes="description" Content="{Binding OrderTransactionDetails.GrossAmount, StringFormat='₱{0:N2}'}" />
+
+                        <Label Classes="title" Content="Amount Paid" />
+                        <Label Classes="description" Content="{Binding OrderTransactionDetails.SafePaidAmount, StringFormat='₱{0:N2}'}" />
 
                         <Label Classes="title" Content="Discount" />
                         <Label Classes="description" Content="{Binding OrderTransactionDetails.DiscountAmount, StringFormat='₱{0:N2}'}" />
@@ -154,12 +157,12 @@
                     <UniformGrid Rows="1">
                         <Label
                             HorizontalAlignment="Stretch"
-                            Content="Total"
+                            Content="Remaining Balance"
                             FontSize="{StaticResource SemiFontSizeRegular}"
                             Theme="{StaticResource TitleLabel}" />
                         <Label
                             Classes="description"
-                            Content="{Binding OrderTransactionDetails.NetAmount, StringFormat='₱{0:N2}'}"
+                            Content="{Binding OrderTransactionDetails.SafeRemainingAmount, StringFormat='₱{0:N2}'}"
                             FontSize="{StaticResource SemiFontSizeRegular}"
                             Theme="{StaticResource TitleLabel}" />
                     </UniformGrid>

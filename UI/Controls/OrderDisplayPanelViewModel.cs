@@ -11,4 +11,9 @@ public class OrderDisplayPanelViewModel : ReactiveObject
         get => _OrderTransactionDetails;
         set => this.RaiseAndSetIfChanged(ref _OrderTransactionDetails, value);
     }
+
+    public void SetOrder(OrderTransaction order)
+    {
+        OrderTransactionDetails = order;
+    }
 }

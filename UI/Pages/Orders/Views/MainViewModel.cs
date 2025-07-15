@@ -12,6 +12,8 @@ using System.Linq;
 using static Pos.Util.Constants;
 using System.Web;
 using Microsoft.Extensions.DependencyInjection;
+using pos.Models.EventArgs;
+using Pos.Util;
 
 namespace Pos.Pages.Orders;
 
@@ -29,6 +31,8 @@ public partial class MainViewModel : ReactiveObject, IRoutableViewModel
         set => this.RaiseAndSetIfChanged(ref _Status, value);
     }
 
+    public event EventHandler<NotificationEventArgs>? TriggerNotif;
+
     private DateTimeOffset? _StartDate;
     public DateTimeOffset? StartDate
     {
@@ -43,7 +47,13 @@ public partial class MainViewModel : ReactiveObject, IRoutableViewModel
 
             IsDateFilterable = false;
             if (_StartDate > EndDate)
-                throw new DataValidationException("Start date cannot be late than end date");
+                TriggerNotif?.Invoke(this, new NotificationEventArgs
+                    {
+                        Message = "Start date cannot be late than end date",
+                        NotifType = Constants.NotifType.Error
+                    });
+            // If you want to throw an exception instead of triggering a notification, uncomment the line below
+                // throw new DataValidationException("Start date cannot be late than end date");
             else if (EndDate != null)
                 IsDateFilterable = true;
 
@@ -110,7 +120,11 @@ public partial class MainViewModel : ReactiveObject, IRoutableViewModel
         _ShowOrderCartPanelButton = status == OrderStatusType.PENDING.ToString();
         HostScreen = screen;
         _orderTransactionService = orderTransactionService;
-        AddOrdersButtonCommand = ReactiveCommand.Create(() => MessageBus.Current.SendMessage(new SelectedTabIndexMessage(0)));
+        AddOrdersButtonCommand = ReactiveCommand.Create(() =>
+        {
+            PopulateOrderCartPanel(OrderDisplayPanelViewModel.OrderTransactionDetails.Id);
+            MessageBus.Current.SendMessage(new SelectedTabIndexMessage(0));
+        });
         FilteredOrderTransactionsCommand = ReactiveCommand.CreateFromTask(LoadFilteredOrderTransactionsAsync);
     }
 
@@ -123,7 +137,8 @@ public partial class MainViewModel : ReactiveObject, IRoutableViewModel
                 OrderTransactions = [];
                 string start = HttpUtility.UrlEncode(StartDate.Value.ToISO8601());
                 string end = HttpUtility.UrlEncode(EndDate.Value.ToISO8601());
-                OrderTransactions = await _orderTransactionService.GetFilteredOrderTransactionsByStatus(Status, start, end);
+                OrderTransactions = (await _orderTransactionService.GetFilteredOrderTransactionsByStatus(Status, start, end))
+                    .OrderByDescending(transaction => transaction.Order.CreatedAt).ToList();
                 AmountOfSales = OrderTransactions.Sum(transaction => transaction.NetAmount);
             }
         }
@@ -135,7 +150,7 @@ public partial class MainViewModel : ReactiveObject, IRoutableViewModel
 
     public void PopulateOrderCartPanel(long orderTransactionId)
     {
-         var orderCartPanelViewModel = ServiceLocator.Services.GetRequiredService<OrderCartPanelViewModel>();
-         orderCartPanelViewModel.LoadOrderToCart(orderTransactionId);
+        var orderCartPanelViewModel = ServiceLocator.Services.GetRequiredService<OrderCartPanelViewModel>();
+        orderCartPanelViewModel.LoadOrderToCart(orderTransactionId);
     }
 }

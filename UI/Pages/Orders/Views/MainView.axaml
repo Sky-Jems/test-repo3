@@ -30,7 +30,7 @@
                 DataContext="{Binding OrderDisplayPanelViewModel}"
                 ShowSummaryButton="{Binding $parent.DataContext.ShowOrderCartPanelButton}"
                 SummaryButtonCommand="{Binding $parent.DataContext.AddOrdersButtonCommand}"
-                SummaryButtonText="Edit Order" />
+                SummaryButtonText="Manage Order" />
         </SplitView.Pane>
 
         <Border Padding="32">
@@ -197,8 +197,18 @@
                                 Header="Items" />
                             <DataGridTextColumn
                                 Width="auto"
-                                Binding="{Binding Order.Total, StringFormat='₱{0}'}"
-                                Header="Amount" />
+                                Binding="{Binding Order.Total, StringFormat='₱{00}'}"
+                                Header="Total Amount" />
+                            <DataGridTextColumn
+                                IsVisible="{Binding Status, Converter={StaticResource equalsConverter}, ConverterParameter={StaticResource OrderPending}}"
+                                Width="auto"
+                                Binding="{Binding SafeRemainingAmount, StringFormat='₱{00}'}"
+                                Header="Remaining Balance" />
+                            <DataGridTextColumn
+                                IsVisible="{Binding Status, Converter={StaticResource equalsConverter}, ConverterParameter={StaticResource OrderCompleted}}"
+                                Width="auto"
+                                Binding="{Binding PaymentMethodsDisplay}"
+                                Header="Payment Method" />
                             <DataGridTextColumn
                                 Width="2*"
                                 Binding="{Binding Order.CreatedAt, Converter={StaticResource dateTimeConverter}, ConverterParameter='M/d/yy - h:mm tt', Mode=OneWay}"

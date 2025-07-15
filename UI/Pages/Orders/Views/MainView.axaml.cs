@@ -1,8 +1,10 @@
 using System;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 using pos.Extensions;
 using Pos.Models;
@@ -21,6 +23,7 @@ public partial class MainView : ReactiveUserControl<MainViewModel>
             ViewModel.EndDate = new DateTimeOffset(DateTime.UtcNow).DayEnd();
             UpdateDateTimeButtonLabel();
             ViewModel.FilteredOrderTransactionsCommand.Execute();
+            ViewModel.TriggerNotif += MainWindow.NotificationMessage;      
         });
     }
 
@@ -70,7 +73,18 @@ public partial class MainView : ReactiveUserControl<MainViewModel>
             return;
         }
 
-        orderDetailsPane.IsPaneOpen = true;
+        if (args.PointerPressedEventArgs?.Source is Visual visual)
+        {
+            var row = visual.FindAncestorOfType<DataGridRow>();
+            if (row?.DataContext is OrderTransaction currentRowData)
+                {
+                    Dispatcher.UIThread.Post(() =>
+                    {
+                        ViewModel!.OrderDisplayPanelViewModel.SetOrder(currentRowData);
+                        orderDetailsPane.IsPaneOpen = true;
+                    });
+                }
+            }
     }
 
     private void AddOrdersButton_Click(object sender, RoutedEventArgs args)

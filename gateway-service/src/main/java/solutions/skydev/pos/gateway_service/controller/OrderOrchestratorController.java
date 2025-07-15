@@ -60,7 +60,8 @@ public class OrderOrchestratorController {
             @RequestParam("start_date") OffsetDateTime startDate,
             @RequestParam("end_date") OffsetDateTime endDate) {
         Flux<OrderTransactionResponseDto> orderTransactionResponseDtoFlux = this.orderOrchestratorServiceClient.fetchOrderTransactionsByOrderStatus(orderStatus);
-        return orderOrchestratorEnrichmentService.enrichTransactionsWithDateFilter(orderTransactionResponseDtoFlux, startDate, endDate);
+        Flux<OrderTransactionResponseDto> filteredFlux = orderOrchestratorEnrichmentService.enrichTransactionsWithDateFilter(orderTransactionResponseDtoFlux, startDate, endDate);
+        return filteredFlux.flatMap(dto -> orderOrchestratorEnrichmentService.enrichWithOrderProductBillingAndPayment(Mono.just(dto)));
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)

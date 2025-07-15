@@ -3,8 +3,10 @@ package solutions.skydev.pos.payment_service.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import solutions.skydev.pos.payment_service.model.entity.Payment;
+import solutions.skydev.pos.payment_service.error.domain.NegativePaymentException;
 import solutions.skydev.pos.payment_service.repository.PaymentRepository;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -17,6 +19,15 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     public Payment processPayment(Payment payment) {
+        // Proper validation of payment amount
+//        if (payment.getAmount() == null || payment.getAmount().compareTo(BigDecimal.ZERO) < 0) {
+//            throw new IllegalArgumentException("Payment amount cannot be negative or null.");
+//        }
+        
+        // Testing
+        if (payment.getAmount() == null || payment.getAmount().compareTo(BigDecimal.ZERO) < 0) {
+            throw new NegativePaymentException();
+        }
         return paymentRepository.save(payment);
     }
 

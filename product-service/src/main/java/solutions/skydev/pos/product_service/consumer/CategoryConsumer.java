@@ -17,11 +17,11 @@ import solutions.skydev.pos.product_service.service.CategoryService;
 
 @Component
 public class CategoryConsumer {
-    
+
     private final CategoryService categoryService;
     private final CategoryMapper categoryMapper;
     private final ProductMapper productMapper;
-    
+
     @Autowired
     public CategoryConsumer(CategoryService categoryService, CategoryMapper categoryMapper, ProductMapper productMapper) {
         this.categoryService = categoryService;
@@ -36,15 +36,14 @@ public class CategoryConsumer {
     public CategoryResponseDto createCategoryCommand(ConsumerRecord<String, CategoryRequestDto> record) {
         CategoryRequestDto categoryRequestDto = record.value();
         Category category = this.categoryMapper.toEntity(categoryRequestDto);
-        categoryService.addCategory(category);
-        return this.categoryMapper.toResponseDto(category);
+        Category addedCategory = categoryService.addCategory(category);
+        return this.categoryMapper.toResponseDto(addedCategory);
     }
 
     @KafkaListener(topics = "update-category-command")
     @AsyncListener(operation = @AsyncOperation(
             channelName = "update-category-command",
-            description = "Update category command",
-            payloadType = Category.class
+            description = "Update category command"
     ))
     @KafkaAsyncOperationBinding
     @SendTo("category.updated")

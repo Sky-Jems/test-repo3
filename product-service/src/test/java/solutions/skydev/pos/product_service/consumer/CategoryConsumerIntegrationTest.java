@@ -31,8 +31,8 @@ import java.util.*;
 @ActiveProfiles("test")
 @DirtiesContext
 @TestPropertySource(locations = "classpath:application-test.properties")
-@EmbeddedKafka(partitions = 1, topics = {"create-product-command", "product.created", "update-product-command", "product.updated", "delete-product-command", "product.deleted"})
-public class ProductConsumerIntegrationTest {
+@EmbeddedKafka(partitions = 1, topics = {"create-category-command", "category.created", "update-category-command", "category.updated", "delete-category-command", "category.deleted"})
+public class CategoryConsumerIntegrationTest {
 
     @Autowired
     ProductRepository productRepository;
@@ -48,9 +48,6 @@ public class ProductConsumerIntegrationTest {
 
     @Test
     void contextLoads() {
-        // Verify that the application context loads successfully
-        System.out.println("Application context loaded successfully");
-        System.out.println("Embedded Kafka broker is running at: " + embeddedKafkaBroker.getBrokersAsString());
     }
 
     @BeforeAll
@@ -65,7 +62,7 @@ public class ProductConsumerIntegrationTest {
         consumerProps.put(JsonDeserializer.USE_TYPE_INFO_HEADERS, true);
         consumerProps.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-
+        
         DefaultKafkaConsumerFactory<String, ProductResponseDto> cf = new DefaultKafkaConsumerFactory<>(consumerProps);
         Consumer<String, ProductResponseDto> consumer = cf.createConsumer();
         

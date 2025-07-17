@@ -32,8 +32,8 @@ public class ProductServiceImpl implements ProductService {
             throw new ValidationException("Product name cannot be empty");
         }
         
-        if (product.getName().length() > 50 || product.getName().length() < 3) {
-            throw new ValidationException("Product name must be between 3 and 50 characters long");
+        if (product.getName().length() > 250 || product.getName().length() < 3) {
+            throw new ValidationException("Product name must be between 3 and 250 characters long");
         }
         
         if (productRepository.existsByName(product.getName())) {
@@ -81,8 +81,8 @@ public class ProductServiceImpl implements ProductService {
             throw new ValidationException("Product name cannot be empty");
         }
 
-        if (productToUpdate.getName().length() > 50 || productToUpdate.getName().length() < 3) {
-            throw new ValidationException("Product name must be between 3 and 50 characters long");
+        if (productToUpdate.getName().length() > 250 || productToUpdate.getName().length() < 3) {
+            throw new ValidationException("Product name must be between 3 and 250 characters long");
         }
 
         if (productRepository.existsByName(productToUpdate.getName())) {

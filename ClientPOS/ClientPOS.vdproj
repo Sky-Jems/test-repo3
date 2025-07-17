@@ -15,6 +15,24 @@
     {
         "Entry"
         {
+        "MsmKey" = "8:_01137A35EAE44549B88C55857591AE3C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8BD4D2E165E3444D9111DDC6E80CE65D"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_981BF0613B6C4E4B8076D954873BEDE5"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_BAFFBED561064E37BF0D0957DAD3C8D5"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -116,6 +134,66 @@
         }
         "File"
         {
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_01137A35EAE44549B88C55857591AE3C"
+            {
+            "SourcePath" = "8:..\\UI\\bin\\Release\\net8.0\\win-x64\\publish\\libHarfBuzzSharp.dll"
+            "TargetName" = "8:libHarfBuzzSharp.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_53BB3E9F349F456B8C220E542C85916C"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8BD4D2E165E3444D9111DDC6E80CE65D"
+            {
+            "SourcePath" = "8:..\\UI\\bin\\Release\\net8.0\\win-x64\\publish\\libSkiaSharp.dll"
+            "TargetName" = "8:libSkiaSharp.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_53BB3E9F349F456B8C220E542C85916C"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_981BF0613B6C4E4B8076D954873BEDE5"
+            {
+            "SourcePath" = "8:..\\UI\\bin\\Release\\net8.0\\win-x64\\publish\\av_libglesv2.dll"
+            "TargetName" = "8:av_libglesv2.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_53BB3E9F349F456B8C220E542C85916C"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
         }
         "FileType"
         {
@@ -651,7 +729,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_BAFFBED561064E37BF0D0957DAD3C8D5"
             {
-            "SourcePath" = "8:..\\UI\\obj\\Debug\\net8.0\\apphost.exe"
+            "SourcePath" = "8:..\\UI\\obj\\Release\\net8.0\\apphost.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_53BB3E9F349F456B8C220E542C85916C"

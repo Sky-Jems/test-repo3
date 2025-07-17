@@ -491,3 +491,6 @@ services-app-pos/appsettings.json
 
 #ClientPOS configuration
 UI/appsettings.json
+
+#BUILD jars location
+jar-releases/

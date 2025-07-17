@@ -15,7 +15,13 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_042D7C911BEA4CD987A770D124B3E939"
+        "MsmKey" = "8:_0505BF90F801456D9C4E9C39258824DD"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_2B4C338D6ACC44EFBBFF414FC6541D30"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -27,7 +33,19 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_480725A41BB54229A4A9B88C62647AD3"
+        "MsmKey" = "8:_4B95F5E10E054BA4B80D4259868A166C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_4DC32C0B9F054510A2CA880B920CA373"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_5648020FA9AF41F4978E085C9266B478"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -39,19 +57,13 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_5CE085054AE1494098CC058E8A3176ED"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_61C7788590434C8480DEA09590205646"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_6AEBD060E8E2481E83A4BE4F915FF9C3"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_7A07810EECE8402391AAC6270E115AF2"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -64,6 +76,12 @@
         "Entry"
         {
         "MsmKey" = "8:_816E899B80CD4415888BA518984650BD"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8CEFBCDF7F744118B4639C91885E593A"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -87,25 +105,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_B81C1A7569B74448935FCF2C729F9371"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_BA3C9721E3554DC89636FE638188970E"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_C170234CA01046FCB326C153D64AD5DF"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_C2502D563E8B4CE18964DB2BC3D43726"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -135,7 +135,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_FF5953FFFBB64325B0AC3D38F526B25F"
+        "MsmKey" = "8:_FA1B87B7337F4DD884E249DBB501E16A"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -264,9 +264,29 @@
         }
         "File"
         {
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_042D7C911BEA4CD987A770D124B3E939"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0505BF90F801456D9C4E9C39258824DD"
             {
-            "SourcePath" = "8:..\\..\\..\\pos-jars\\auth-service-0.0.1-SNAPSHOT.jar"
+            "SourcePath" = "8:..\\jar-releases\\discount-service-0.0.1-SNAPSHOT.jar"
+            "TargetName" = "8:discount-service-0.0.1-SNAPSHOT.jar"
+            "Tag" = "8:"
+            "Folder" = "8:_62EC8354EF3440D19E893F20950C49F6"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2B4C338D6ACC44EFBBFF414FC6541D30"
+            {
+            "SourcePath" = "8:..\\jar-releases\\auth-service-0.0.1-SNAPSHOT.jar"
             "TargetName" = "8:auth-service-0.0.1-SNAPSHOT.jar"
             "Tag" = "8:"
             "Folder" = "8:_F794237B2EBC482198FCCC3DA119140A"
@@ -304,12 +324,52 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_480725A41BB54229A4A9B88C62647AD3"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4B95F5E10E054BA4B80D4259868A166C"
             {
-            "SourcePath" = "8:..\\..\\..\\pos-jars\\order-service-0.0.1-SNAPSHOT.jar"
-            "TargetName" = "8:order-service-0.0.1-SNAPSHOT.jar"
+            "SourcePath" = "8:..\\jar-releases\\payment-service-0.0.1-SNAPSHOT.jar"
+            "TargetName" = "8:payment-service-0.0.1-SNAPSHOT.jar"
             "Tag" = "8:"
-            "Folder" = "8:_1D8E0000CC83450388508FC36EF8CDA4"
+            "Folder" = "8:_B220FE0848494A6CA71F0D3D456FFAB1"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4DC32C0B9F054510A2CA880B920CA373"
+            {
+            "SourcePath" = "8:..\\jar-releases\\product-service-0.0.1-SNAPSHOT.jar"
+            "TargetName" = "8:product-service-0.0.1-SNAPSHOT.jar"
+            "Tag" = "8:"
+            "Folder" = "8:_8C27C44101C243FBBC96299B22E79C2F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5648020FA9AF41F4978E085C9266B478"
+            {
+            "SourcePath" = "8:..\\jar-releases\\gateway-service-0.0.1-SNAPSHOT.jar"
+            "TargetName" = "8:gateway-service-0.0.1-SNAPSHOT.jar"
+            "Tag" = "8:"
+            "Folder" = "8:_3A83713F2392436FB84CF970B05EC7D0"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -344,46 +404,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5CE085054AE1494098CC058E8A3176ED"
-            {
-            "SourcePath" = "8:..\\..\\..\\pos-jars\\product-service-0.0.1-SNAPSHOT.jar"
-            "TargetName" = "8:product-service-0.0.1-SNAPSHOT.jar"
-            "Tag" = "8:"
-            "Folder" = "8:_8C27C44101C243FBBC96299B22E79C2F"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_61C7788590434C8480DEA09590205646"
-            {
-            "SourcePath" = "8:..\\billing-service\\target\\billing-service-0.0.1-SNAPSHOT.jar"
-            "TargetName" = "8:billing-service-0.0.1-SNAPSHOT.jar"
-            "Tag" = "8:"
-            "Folder" = "8:_573B1041DBA44FE6A4D188BDF59B10DC"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6AEBD060E8E2481E83A4BE4F915FF9C3"
             {
             "SourcePath" = "8:..\\application.properties"
@@ -397,6 +417,26 @@
             "Hidden" = "11:TRUE"
             "System" = "11:FALSE"
             "Permanent" = "11:TRUE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7A07810EECE8402391AAC6270E115AF2"
+            {
+            "SourcePath" = "8:..\\jar-releases\\order-orchestrator-service-0.0.1-SNAPSHOT.jar"
+            "TargetName" = "8:order-orchestrator-service-0.0.1-SNAPSHOT.jar"
+            "Tag" = "8:"
+            "Folder" = "8:_B59C9063351B48F486E44B9741005076"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
             "SharedLegacy" = "11:FALSE"
             "PackageAs" = "3:1"
             "Register" = "3:1"
@@ -444,6 +484,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8CEFBCDF7F744118B4639C91885E593A"
+            {
+            "SourcePath" = "8:..\\jar-releases\\order-service-0.0.1-SNAPSHOT.jar"
+            "TargetName" = "8:order-service-0.0.1-SNAPSHOT.jar"
+            "Tag" = "8:"
+            "Folder" = "8:_1D8E0000CC83450388508FC36EF8CDA4"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A22EC225BA6D4A53BD99146B4FEAD7B9"
             {
             "SourcePath" = "8:..\\kafka-server-start.bat"
@@ -484,46 +544,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B81C1A7569B74448935FCF2C729F9371"
-            {
-            "SourcePath" = "8:..\\discount-service\\target\\discount-service-0.0.1-SNAPSHOT.jar"
-            "TargetName" = "8:discount-service-0.0.1-SNAPSHOT.jar"
-            "Tag" = "8:"
-            "Folder" = "8:_62EC8354EF3440D19E893F20950C49F6"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BA3C9721E3554DC89636FE638188970E"
-            {
-            "SourcePath" = "8:..\\..\\..\\pos-jars\\gateway-service-0.0.1-SNAPSHOT.jar"
-            "TargetName" = "8:gateway-service-0.0.1-SNAPSHOT.jar"
-            "Tag" = "8:"
-            "Folder" = "8:_3A83713F2392436FB84CF970B05EC7D0"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C170234CA01046FCB326C153D64AD5DF"
             {
             "SourcePath" = "8:..\\application.properties"
@@ -537,26 +557,6 @@
             "Hidden" = "11:TRUE"
             "System" = "11:FALSE"
             "Permanent" = "11:TRUE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C2502D563E8B4CE18964DB2BC3D43726"
-            {
-            "SourcePath" = "8:..\\payment-service\\target\\payment-service-0.0.1-SNAPSHOT.jar"
-            "TargetName" = "8:payment-service-0.0.1-SNAPSHOT.jar"
-            "Tag" = "8:"
-            "Folder" = "8:_B220FE0848494A6CA71F0D3D456FFAB1"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
             "SharedLegacy" = "11:FALSE"
             "PackageAs" = "3:1"
             "Register" = "3:1"
@@ -644,12 +644,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FF5953FFFBB64325B0AC3D38F526B25F"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FA1B87B7337F4DD884E249DBB501E16A"
             {
-            "SourcePath" = "8:..\\..\\..\\pos-jars\\order-orchestrator-service-0.0.1-SNAPSHOT.jar"
-            "TargetName" = "8:order-orchestrator-service-0.0.1-SNAPSHOT.jar"
+            "SourcePath" = "8:..\\jar-releases\\billing-service-0.0.1-SNAPSHOT.jar"
+            "TargetName" = "8:billing-service-0.0.1-SNAPSHOT.jar"
             "Tag" = "8:"
-            "Folder" = "8:_B59C9063351B48F486E44B9741005076"
+            "Folder" = "8:_573B1041DBA44FE6A4D188BDF59B10DC"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -809,7 +809,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:ServerPOS"
         "ProductCode" = "8:{72224919-F00C-4E0D-BEC0-8D5136DC6485}"
-        "PackageCode" = "8:{8C3EDD83-0A50-47CC-8782-70E9CD9CA463}"
+        "PackageCode" = "8:{F1D75CEE-B308-4CEF-98AA-7FBF3F00F496}"
         "UpgradeCode" = "8:{88DF82C2-9A8F-4D40-A0DB-086A15DF586D}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
@@ -1287,7 +1287,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_A24154231728408BA69A2581F7F3B626"
             {
-            "SourcePath" = "8:..\\services-app-pos\\obj\\Debug\\net8.0-windows\\apphost.exe"
+            "SourcePath" = "8:..\\services-app-pos\\obj\\Release\\net8.0-windows\\apphost.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_86EDB97C195B433CB3CE45BD94F2346A"

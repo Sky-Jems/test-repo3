@@ -1,6 +1,6 @@
 Option Explicit
 
-Dim kafkaDir, javaDir, postgreSQLUninstallerDir, mainDrive, command
+Dim kafkaDir, javaDir, postgreSQLDir, mainDrive, command
 Dim shell, fso
 
 Set shell = CreateObject("WScript.Shell")
@@ -15,7 +15,7 @@ End Function
 mainDrive = fso.GetDriveName(shell.ExpandEnvironmentStrings("%SystemRoot%"))
 kafkaDir = mainDrive & "\Kafka\kafka_2.12-3.9.1"
 javaDir = mainDrive & "\Java\jdk-24.0.1"
-postgreSQLUninstallerDir = Chr(34) & mainDrive & "\Program Files\PostgreSQL\17\uninstall-postgresql.exe" & Chr(34)
+postgreSQLDir = mainDrive & "\PostgreSQLBinary\pgsql"
 
 ' === Start Delete Kafka ===
 
@@ -43,8 +43,11 @@ DeleteDirectory javaDir
 
 
 ' === Start Uninstall PostgreSQL ===
+
+' Stop any postgres instance
 command = "cmd.exe /c taskkill /F /IM postgres.exe"
 shell.Run command, 0, True
 
-shell.Run postgreSQLUninstallerDir
+DeleteDirectory postgreSQLDir 
+
 ' === End Uninstall PostgreSQL

@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import solutions.skydev.pos.discount_service.model.entity.*;
 import solutions.skydev.pos.discount_service.repository.DiscountRepository;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DiscountServiceImpl implements DiscountService {
@@ -29,6 +30,11 @@ public class DiscountServiceImpl implements DiscountService {
     public Discount findById(Long id) {
         return discountRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Discount not found with id: " + id));
+    }
+
+    @Override
+    public Optional<Discount> findByName(String name) {
+        return discountRepository.findByName(name);
     }
 
     @Override

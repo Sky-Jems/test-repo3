@@ -18,9 +18,8 @@ public class DiscountStrategyResolver {
 
     public DiscountScopeStrategy resolve(DiscountScope scope, DiscountType type, BigDecimal value) {
         DiscountValueStrategy valueStrategy = switch (type) {
-//            case FIXED -> new FixedValueDiscountStrategy(value);
             case PERCENTAGE -> new PercentageDiscountStrategy(value);
-            case FIXED -> null;
+            case FIXED -> new FixedValueDiscountStrategy(value);
         };
 
         return switch (scope) {

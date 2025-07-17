@@ -14,6 +14,7 @@ using System.Web;
 using Microsoft.Extensions.DependencyInjection;
 using pos.Models.EventArgs;
 using Pos.Util;
+using Pos.Pages.Home;
 
 namespace Pos.Pages.Orders;
 

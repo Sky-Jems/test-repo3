@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using pos.Api;
 using pos.Extensions;
-using Pos.Pages;
+using Pos.Pages.Home;
 using ReactiveUI;
 using Pos.Util;
 

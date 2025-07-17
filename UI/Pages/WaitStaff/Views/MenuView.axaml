@@ -52,10 +52,10 @@
                 </TextBox>
             </Grid>
 
-
             <ItemsRepeater
                 Margin="0,0,0,20"
                 VerticalAlignment="Top"
+                ClipToBounds="False"
                 ItemsSource="{Binding Products}">
                 <ItemsRepeater.Layout>
                     <UniformGridLayout

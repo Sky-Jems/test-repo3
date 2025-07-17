@@ -23,12 +23,14 @@ public class PaymentMethodDialogViewModel : ReactiveObject
     public ReactiveCommand<Unit, Unit> AddPaymentCommand { get; }
     public string Customer => _cartService.Customer;
     public long ItemsCount => _cartService.Items.Count;
+    public decimal SubTotal => _cartService.SubTotal;
+    public decimal DiscountAmount => _cartService.DiscountAmount;
     public decimal Total => _cartService.Total;
     private readonly ObservableAsPropertyHelper<decimal> _amountPaid;
     public decimal AmountPaid => _amountPaid.Value;
     private readonly ObservableAsPropertyHelper<decimal> _remainingBalance;
-    public bool CanAddPayment => RemainingBalance > 0;
-    public bool CanCompletePayment => RemainingBalance <= 0;
+    public bool CanAddPayment => _cartService.PaymentStatus == PaymentStatus.PENDING;
+    public bool CanCompletePayment => _cartService.PaymentStatus == PaymentStatus.COMPLETED;
     public decimal RemainingBalance => _remainingBalance.Value;
     public string PaymentMethod
     {
@@ -75,21 +77,23 @@ public class PaymentMethodDialogViewModel : ReactiveObject
     {
         _cartService = ServiceLocator.Services.GetRequiredService<ICartService>();
         _orderService = ServiceLocator.Services.GetRequiredService<IOrderService>();
-        
+
         CompletePaymentCommand = ReactiveCommand.Create(CompletePaymentAsync);
         AddPaymentCommand = ReactiveCommand.CreateFromTask(AddPaymentAsync);
-        
+
         _cartService
             .WhenAnyValue(x => x.AmountPaid)
             .ObserveOn(RxApp.MainThreadScheduler)
             .ToProperty(this, x => x.AmountPaid, out _amountPaid);
-        
+
         _cartService
             .WhenAnyValue(x => x.RemainingBalance)
             .ObserveOn(RxApp.MainThreadScheduler)
             .ToProperty(this, x => x.RemainingBalance, out _remainingBalance);
-
-        this.WhenAnyValue(x => x.RemainingBalance)
+        
+        _cartService
+            .WhenAnyValue(x => x.PaymentStatus)
+            .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe(_ =>
             {
                 this.RaisePropertyChanged(nameof(CanAddPayment));
@@ -101,7 +105,7 @@ public class PaymentMethodDialogViewModel : ReactiveObject
             this.RaisePropertyChanged(nameof(AmountPaid));
             this.RaisePropertyChanged(nameof(RemainingBalance));
         };
-        
+
         _cartService.WhenAnyValue(x => x.PaymentMethod)
             .Select(method => string.Equals(method, "cash", StringComparison.OrdinalIgnoreCase) ? null : "*")
             .ToProperty(this, x => x.NotePrefix, out _notePrefix);
@@ -174,10 +178,10 @@ public class PaymentMethodDialogViewModel : ReactiveObject
         AmountText = "";
         Notes = "";
     }
-    
+
     private string? ValidatePaymentAmount()
     {
-        if (_cartService.OrderId is null || _cartService.RemainingBalance <= 0)
+        if (_cartService.OrderId is null || _cartService.PaymentStatus == PaymentStatus.COMPLETED)
             return "Order has already been completed.";
 
         if (string.IsNullOrWhiteSpace(AmountText))
@@ -189,8 +193,8 @@ public class PaymentMethodDialogViewModel : ReactiveObject
         if (!decimal.TryParse(AmountText, out var parsedAmount))
             return "Invalid amount format.";
 
-        if (parsedAmount <= 0)
-            return "Amount must be greater than 0.";
+        if (parsedAmount < 0)
+            return "Amount must be a positive value or zero.";
 
         if (parsedAmount > _cartService.RemainingBalance)
             return $"Amount exceeds the remaining balance of ₱{_cartService.RemainingBalance:N2}.";
@@ -199,7 +203,7 @@ public class PaymentMethodDialogViewModel : ReactiveObject
         {
             return "Reference Number cannot be empty.";
         }
-        
+
         return null;
     }
 }

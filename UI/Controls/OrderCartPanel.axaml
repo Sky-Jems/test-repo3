@@ -62,6 +62,7 @@
                 <Grid>
                     <ScrollViewer IsVisible="{Binding OrderList.Count, Converter={StaticResource isGreaterThanZeroConverter}}">
                         <ListBox
+                            Name="LineItemListBox"
                             IsHitTestVisible="{Binding IsEditable, ElementName=root}"
                             ItemsSource="{Binding OrderList}"
                             SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
@@ -169,20 +170,68 @@
                                                 Stroke="{StaticResource SemiColorFill2}"
                                                 StrokeDashArray="2,6"
                                                 StrokeThickness="1" />
-                                            <Grid>
+
+                                            <Grid ColumnDefinitions="* auto">
                                                 <Button
-                                                    Grid.Row="0"
+                                                    Name="ApplyLineItemDiscountButton"
                                                     HorizontalAlignment="Left"
-                                                    Click="DiscountLineItemButton_Click"
-                                                    Content="%"
-                                                    IsVisible="{Binding DataContext.CanShowItems, ElementName=root}"
-                                                    Theme="{StaticResource SolidButton}" />
-                                                <Label
-                                                    Grid.Column="0"
-                                                    HorizontalAlignment="Right"
                                                     VerticalAlignment="Center"
-                                                    Content="{Binding ItemTotal, StringFormat='₱{0:N2}'}"
-                                                    Theme="{StaticResource TitleLabel}" />
+                                                    Classes.Success="{Binding Discount, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                                    Click="DiscountLineItemButton_Click"
+                                                    IsVisible="{Binding DataContext.CanShowItems, ElementName=root}"
+                                                    Tag="{Binding Id}"
+                                                    Theme="{StaticResource SolidButton}">
+                                                    <Button.Styles>
+                                                        <Style Selector="Button#ApplyLineItemDiscountButton">
+                                                            <Style Selector="^:not(.Success)">
+                                                                <Setter Property="Padding" Value="0" />
+                                                                <Setter Property="Width" Value="32" />
+                                                                <Setter Property="Content" Value="%" />
+                                                            </Style>
+
+                                                            <Style Selector="^.Success">
+                                                                <Setter Property="Content" Value="{Binding Discount.Discount.Name, StringFormat='Applied - {0}'}}" />
+                                                            </Style>
+                                                        </Style>
+                                                    </Button.Styles>
+                                                </Button>
+
+                                                <StackPanel
+                                                    Grid.Column="1"
+                                                    VerticalAlignment="Center"
+                                                    Orientation="Horizontal"
+                                                    Spacing="2">
+                                                    <StackPanel.Styles>
+                                                        <Style Selector="TextBlock">
+                                                            <Setter Property="FontSize" Value="{StaticResource SemiFontSizeRegular}" />
+
+                                                            <Style Selector="^#DiscountedItemTotal">
+                                                                <Setter Property="IsVisible" Value="false" />
+                                                            </Style>
+                                                            <Style Selector="^#DiscountedItemTotal.discounted">
+                                                                <Setter Property="IsVisible" Value="true" />
+                                                            </Style>
+
+                                                            <Style Selector="^#ItemTotal.discounted">
+                                                                <Setter Property="Foreground" Value="{StaticResource SemiColorText2}" />
+                                                                <Setter Property="FontSize" Value="{StaticResource SemiFontSizeSmall}" />
+                                                                <Setter Property="TextDecorations" Value="Strikethrough" />
+                                                            </Style>
+                                                        </Style>
+                                                    </StackPanel.Styles>
+
+                                                    <TextBlock
+                                                        Name="DiscountedItemTotal"
+                                                        VerticalAlignment="Bottom"
+                                                        Classes.discounted="{Binding DiscountedAmount, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                                        Text="{Binding DiscountedAmount, StringFormat=₱{0:F2}}" />
+                                                    <TextBlock
+                                                        Name="ItemTotal"
+                                                        Grid.Column="1"
+                                                        VerticalAlignment="Bottom"
+                                                        Classes.discounted="{Binding Discount, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                                        Text="{Binding ItemTotal, StringFormat=₱{0:F2}}" />
+                                                </StackPanel>
                                             </Grid>
                                         </StackPanel>
                                     </Border>
@@ -229,15 +278,31 @@
                         </StackPanel.Styles>
 
                         <Button
+                            Name="ApplyDiscountButton"
                             Margin="0,0,0,4"
                             HorizontalAlignment="Stretch"
+                            Classes.Success="{Binding DiscountOrder?.Discount, Converter={x:Static ObjectConverters.IsNotNull}}"
                             Click="ApplyDiscountButton_Click"
                             IsVisible="{Binding CanShowItems}"
                             Theme="{StaticResource OutlineButton}">
-                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                <PathIcon Data="{StaticResource SemiIconPlus}" Theme="{StaticResource InnerPathIcon}" />
-                                <AccessText Text="Apply Discount" />
-                            </StackPanel>
+                            <Button.Styles>
+                                <Style Selector="Button#ApplyDiscountButton">
+                                    <Style Selector="^:not(.Success)">
+                                        <Setter Property="Content">
+                                            <Template>
+                                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                                    <PathIcon Data="{StaticResource SemiIconPlus}" Theme="{StaticResource InnerPathIcon}" />
+                                                    <AccessText Text="Apply Discount" />
+                                                </StackPanel>
+                                            </Template>
+                                        </Setter>
+                                    </Style>
+
+                                    <Style Selector="^.Success">
+                                        <Setter Property="Content" Value="{Binding DiscountOrder?.Discount.Name, StringFormat='Applied - {0}'}}" />
+                                    </Style>
+                                </Style>
+                            </Button.Styles>
                         </Button>
 
                         <Rectangle
@@ -249,10 +314,10 @@
 
                         <UniformGrid Columns="2" RowSpacing="6">
                             <Label Classes="title" Content="Subtotal" />
-                            <Label Classes="description" Content="{Binding CartTotal, StringFormat='₱{0:N2}'}" />
+                            <Label Classes="description" Content="{Binding CartSubTotal, StringFormat='₱{0:N2}'}" />
 
                             <Label Classes="title" Content="Discount" />
-                            <Label Classes="description" Content="₱0.00" />
+                            <Label Classes="description" Content="{Binding DiscountTotal, StringFormat='₱{0:N2}'}" />
                         </UniformGrid>
 
                         <Rectangle
@@ -283,23 +348,23 @@
                             <Button
                                 HorizontalAlignment="Stretch"
                                 Classes="Large"
-                                IsVisible="{Binding DataContext.CanShowItems, ElementName=root}"
                                 Click="OnPayLaterButtonClick"
                                 Content="Pay Later"
+                                IsVisible="{Binding DataContext.CanShowItems, ElementName=root}"
                                 Theme="{StaticResource SolidButton}" />
                             <Button
                                 HorizontalAlignment="Stretch"
                                 Classes="Large Success"
-                                IsVisible="{Binding DataContext.CanShowItems, ElementName=root}"
                                 Click="OnPayOrderButtonClick"
                                 Content="Pay Order"
+                                IsVisible="{Binding DataContext.CanShowItems, ElementName=root}"
                                 Theme="{StaticResource SolidButton}" />
                             <Button
                                 HorizontalAlignment="Stretch"
                                 Classes="Large Success"
-                                IsVisible="{Binding DataContext.IsCompleted, ElementName=root}"
                                 Command="{Binding NewOrderCommand}"
                                 Content="New Order"
+                                IsVisible="{Binding DataContext.IsCompleted, ElementName=root}"
                                 Theme="{StaticResource SolidButton}" />
                         </UniformGrid>
                     </StackPanel>

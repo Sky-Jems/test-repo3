@@ -1,0 +1,72 @@
+<UserControl
+    x:Class="Pos.Dialogs.ConfirmationDialog"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:app="using:Pos.Dialogs"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    MinWidth="350"
+    Padding="{StaticResource SemiThicknessBaseLoose}"
+    x:DataType="app:ConfirmationDialog"
+    CornerRadius="{StaticResource SemiBorderRadiusMedium}"
+    mc:Ignorable="d">
+    <DockPanel>
+        <Canvas Margin="0,-12,-12,0" DockPanel.Dock="Top">
+            <Button
+                Canvas.Top="0"
+                Canvas.Right="0"
+                Width="24"
+                MinHeight="24"
+                Padding="0"
+                Classes="Danger"
+                Click="CloseDialog"
+                CornerRadius="{StaticResource SemiBorderRadiusFull}">
+                <PathIcon Height="12" Data="{DynamicResource SemiIconClose}" />
+            </Button>
+        </Canvas>
+
+        <TextBlock
+            Margin="24,6,24,-12"
+            HorizontalAlignment="Center"
+            Classes="H4"
+            DockPanel.Dock="Top"
+            IsVisible="{Binding Title, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+            Text="{Binding Title}"
+            TextAlignment="Center"
+            TextWrapping="Wrap"
+            Theme="{StaticResource TitleTextBlock}" />
+
+        <TextBlock
+            Name="DialogMessage"
+            Margin="4,16,4,20"
+            HorizontalAlignment="Center"
+            DockPanel.Dock="Top"
+            Foreground="{StaticResource SemiColorText2}"
+            Text="{Binding Message}"
+            TextAlignment="Center"
+            TextWrapping="Wrap" />
+
+        <Grid
+            Name="PART_GridButtons"
+            HorizontalAlignment="{Binding HorizontalButtonAlignment}"
+            ColumnDefinitions="* *"
+            ColumnSpacing="8">
+            <Button
+                Name="NegativeButton"
+                Grid.Column="0"
+                HorizontalAlignment="Stretch"
+                Classes="Large"
+                Click="NegativeButtonClicked"
+                Content="{Binding NegativeText}"
+                Theme="{StaticResource OutlineButton}" />
+            <Button
+                Name="PositiveButton"
+                Grid.Column="1"
+                HorizontalAlignment="Stretch"
+                Classes="Large"
+                Click="PositiveButtonClicked"
+                Content="{Binding PositiveText}"
+                Theme="{StaticResource SolidButton}" />
+        </Grid>
+    </DockPanel>
+</UserControl>

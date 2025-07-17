@@ -4,7 +4,7 @@ using System.Reactive;
 using System.Threading.Tasks;
 using pos.Api;
 using Pos.Models;
-using Pos.Pages;
+using Pos.Pages.Home;
 using ReactiveUI;
 using Pos.Util;
 

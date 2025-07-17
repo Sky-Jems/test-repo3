@@ -9,6 +9,6 @@ public interface IHttpHandler
     Task<TValue> GetJsonAsync<TValue>(string endpoint, object? caller = null);
     Task<HttpResponseMessage> PostJsonAsync(string endpoint, object postData, object? caller = null);
     Task<HttpResponseMessage> PutJsonAsync(string endpoint, object putData, object? caller = null);
-    Task<HttpResponseMessage> DeleteAsync(string endpoint, object? caller = null);
+    Task<HttpResponseMessage> DeleteAsync(string endpoint, object? deleteData = null, object? caller = null);
     Task<T> ReadJsonResponseAsync<T>(HttpResponseMessage response);
 }

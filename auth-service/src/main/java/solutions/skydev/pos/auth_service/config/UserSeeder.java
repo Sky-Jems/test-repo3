@@ -16,31 +16,24 @@ public class UserSeeder {
         return args -> {
             Account account1 = new Account();
             account1.setUsername("admin");
-            account1.setPassword("password123");
+            account1.setPassword("t3mp0r@ry");
             account1.setAdmin(true);
             try {
                 authService.register(account1);
             } catch (Exception ignored) {}
 
             User user1 = new User();
-            user1.setFirstName("Employee");
-            user1.setLastName("1");
+            user1.setFirstName("Renna");
+            user1.setLastName("");
             try {
                 userService.createUser(user1);
             } catch (Exception ignored) {}
 
             User user2 = new User();
-            user2.setFirstName("Employee");
-            user2.setLastName("2");
+            user2.setFirstName("Mau");
+            user2.setLastName("");
             try {
                 userService.createUser(user2);
-            } catch (Exception ignored) {}
-
-            User user3 = new User();
-            user3.setFirstName("Employee");
-            user3.setLastName("3");
-            try {
-                userService.createUser(user3);
             } catch (Exception ignored) {}
         };
     }

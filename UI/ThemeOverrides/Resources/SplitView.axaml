@@ -1,0 +1,4 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <x:TimeSpan x:Key="SplitViewPaneAnimationOpenDuration">00:00:00.3</x:TimeSpan>
+    <x:TimeSpan x:Key="SplitViewPaneAnimationCloseDuration">00:00:00.2</x:TimeSpan>
+</ResourceDictionary>

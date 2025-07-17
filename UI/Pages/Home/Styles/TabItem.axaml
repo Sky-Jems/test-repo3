@@ -1,0 +1,20 @@
+<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style Selector="TabStripItem.homeTabItem">
+        <Setter Property="Padding" Value="12" />
+        <Setter Property="Margin" Value="0" />
+    </Style>
+
+    <Style Selector="TabStripItem.homeTabItem &gt; StackPanel.tabContainer">
+        <Setter Property="Orientation" Value="Horizontal" />
+        <Setter Property="Spacing" Value="16" />
+
+        <Style Selector="^ &gt; PathIcon">
+            <Setter Property="Theme" Value="{StaticResource InnerPathIcon}" />
+            <Setter Property="Width" Value="20" />
+            <Setter Property="Height" Value="20" />
+        </Style>
+        <Style Selector="^ &gt; TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+    </Style>
+</Styles>

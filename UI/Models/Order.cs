@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using ReactiveUI.Fody.Helpers;
 
 namespace Pos.Models;
 
@@ -63,6 +64,8 @@ public class GetOrderResponseDto
     public List<PaymentListResponseDto>? Payments { get; set; }
     [JsonPropertyName("billing")]
     public PaymentResponseDto? Billing { get; set; }
+    [JsonPropertyName("discount_order")]
+    public DiscountOrder? DiscountOrder { get; set; }
 }
 
 public class OrderDto

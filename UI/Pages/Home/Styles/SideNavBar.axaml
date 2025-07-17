@@ -1,0 +1,107 @@
+<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style Selector="SplitView#homePageSplitView:left:compactinline /template/ Panel#PART_PaneRoot">
+        <Setter Property="ClipToBounds" Value="False" />
+    </Style>
+
+    <Style Selector="SplitView#homePageSplitView:open">
+        <Style Selector="^ /template/ Panel#PART_PaneRoot">
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition
+                        Easing="{StaticResource SplitViewPaneAnimationEasing}"
+                        Property="Width"
+                        Duration="{StaticResource SplitViewPaneAnimationOpenDuration}" />
+                </Transitions>
+            </Setter>
+            <Setter Property="Width" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=OpenPaneLength}" />
+        </Style>
+        <Style Selector="^ /template/ Rectangle#LightDismissLayer">
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition
+                        Easing="{StaticResource SplitViewPaneAnimationEasing}"
+                        Property="Opacity"
+                        Duration="{StaticResource SplitViewPaneAnimationOpenDuration}" />
+                </Transitions>
+            </Setter>
+            <Setter Property="Opacity" Value="1.0" />
+        </Style>
+    </Style>
+
+    <Style Selector="SplitView#homePageSplitView:closed">
+        <Style Selector="^ /template/ Panel#PART_PaneRoot">
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition
+                        Easing="{StaticResource SplitViewPaneAnimationEasing}"
+                        Property="Width"
+                        Duration="{StaticResource SplitViewPaneAnimationCloseDuration}" />
+                </Transitions>
+            </Setter>
+            <Setter Property="Width" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TemplateSettings.ClosedPaneWidth}" />
+        </Style>
+
+        <Style Selector="^ /template/ Rectangle#LightDismissLayer">
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition
+                        Easing="{StaticResource SplitViewPaneAnimationEasing}"
+                        Property="Opacity"
+                        Duration="{StaticResource SplitViewPaneAnimationCloseDuration}" />
+                </Transitions>
+            </Setter>
+            <Setter Property="Opacity" Value="0.0" />
+        </Style>
+    </Style>
+
+    <Style Selector="SplitView#homePageSplitView Border#splitViewBorder">
+        <Setter Property="Transitions">
+            <Transitions>
+                <ThicknessTransition
+                    Easing="{StaticResource SplitViewPaneAnimationEasing}"
+                    Property="Padding"
+                    Duration="{StaticResource SplitViewPaneAnimationOpenDuration}" />
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <Style Selector="SplitView#homePageSplitView Image#logo">
+        <Setter Property="Transitions">
+            <Transitions>
+                <ThicknessTransition
+                    Easing="{StaticResource SplitViewPaneAnimationEasing}"
+                    Property="Margin"
+                    Duration="{StaticResource SplitViewPaneAnimationOpenDuration}" />
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <Style Selector="SplitView#homePageSplitView[IsPaneOpen=true]">
+        <Style Selector="^ Border#splitViewBorder">
+            <Setter Property="Padding" Value="12 32 12 16" />
+        </Style>
+        <Style Selector="^ Rectangle#logoSeparator">
+            <Setter Property="Margin" Value="0 24" />
+        </Style>
+        <Style Selector="^ Image#logo">
+            <Setter Property="Margin" Value="24 12" />
+        </Style>
+        <Style Selector="^ ToggleButton#paneOpenButton">
+            <Setter Property="(Canvas.Top)" Value="12" />
+            <Setter Property="(Canvas.Right)" Value="-24" />
+        </Style>
+    </Style>
+
+    <Style Selector="SplitView#homePageSplitView[IsPaneOpen=false]">
+        <Style Selector="^ Border#splitViewBorder">
+            <Setter Property="Padding" Value="16 24 16 16" />
+        </Style>
+        <Style Selector="^ Rectangle#logoSeparator">
+            <Setter Property="Margin" Value="0 24" />
+        </Style>
+        <Style Selector="^ ToggleButton#paneOpenButton">
+            <Setter Property="(Canvas.Top)" Value="12" />
+            <Setter Property="(Canvas.Right)" Value="-28" />
+        </Style>
+    </Style>
+</Styles>

@@ -6,7 +6,6 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using AvaloniaDialogs.Views;
 using Pos.Dialogs;
 using Pos.Models;
 using ReactiveUI;
@@ -52,14 +51,37 @@ public partial class OrderCartPanel : UserControl
         set => SetValue(SummaryButtonCommandProperty, value);
     }
 
+    private OrderCartPanelViewModel viewModel;
+
     public OrderCartPanel()
     {
         InitializeComponent();
     }
 
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+        viewModel = (OrderCartPanelViewModel)DataContext!;
+    }
+
     private async void ApplyDiscountButton_Click(object sender, RoutedEventArgs args)
     {
-        await DisplayDiscountDialog(sender, OrderDiscountType.Order);
+        if (await ShowLockedDialogIfNotModifiable(viewModel)) return;
+        if (viewModel.OrderList.Count == 0 || viewModel?.DiscountOrder?.lineItems != null)
+        {
+            InfoDialog dialog = new()
+            {
+                Title = viewModel.OrderList.Count == 0 ? "Failed to apply discount" : "Discount already applied",
+                Message = viewModel.OrderList.Count == 0 ? "Please select a product first before applying a discount." : "You can't apply order discount if an item discount is already applied.",
+                ButtonText = "OK"
+            };
+            await dialog.ShowAsync();
+            return;
+        }
+        else
+        {
+            await DisplayDiscountDialog(sender, OrderDiscountType.Order);
+        }
     }
 
     private async Task<bool> ShowLockedDialogIfNotModifiable(OrderCartPanelViewModel? vm)
@@ -67,8 +89,9 @@ public partial class OrderCartPanel : UserControl
         if (vm == null || vm.CanModifyItems)
             return false;
 
-        var lockedDialog = new SingleActionDialog
+        var lockedDialog = new InfoDialog
         {
+            Title = "Can't modify order",
             Message = "Items cannot be modified because the order is already completed or partially paid.",
             ButtonText = "OK"
         };
@@ -81,46 +104,40 @@ public partial class OrderCartPanel : UserControl
     {
         if (sender is Button button && button.Tag is LineItem lineItem)
         {
-            var vm = DataContext as OrderCartPanelViewModel;
-            if (await ShowLockedDialogIfNotModifiable(vm)) return;
+            if (await ShowLockedDialogIfNotModifiable(viewModel)) return;
 
-            vm?.ClickPlusCommand?.Execute(lineItem)?.Subscribe();
+            viewModel.ClickPlusCommand.Execute(lineItem).Subscribe();
         }
     }
-    
+
     private async void OnMinusClick(object? sender, RoutedEventArgs e)
     {
         if (sender is Button button && button.Tag is LineItem lineItem)
         {
-            var vm = DataContext as OrderCartPanelViewModel;
-            if (await ShowLockedDialogIfNotModifiable(vm)) return;
+            if (await ShowLockedDialogIfNotModifiable(viewModel)) return;
 
-            vm?.ClickMinusCommand?.Execute(lineItem)?.Subscribe();
+            viewModel.ClickMinusCommand.Execute(lineItem).Subscribe();
         }
     }
 
     private async void OnCustomerNameLostFocus(object? sender, RoutedEventArgs e)
     {
-        var vm = DataContext as OrderCartPanelViewModel;
-        if (await ShowLockedDialogIfNotModifiable(vm)) return;
+        if (await ShowLockedDialogIfNotModifiable(viewModel)) return;
 
-        if (!string.IsNullOrWhiteSpace(vm!.Customer))
-        {
-            vm.UpdateOrderCommand?.Execute().Subscribe();    
-        }
+        viewModel.UpdateOrderCommand.Execute().Subscribe();
     }
 
     private async void OnClearButtonClick(object? sender, RoutedEventArgs e)
     {
         if (sender is not Button) return;
 
-        var vm = DataContext as OrderCartPanelViewModel;
-        if (await ShowLockedDialogIfNotModifiable(vm)) return;
+        if (await ShowLockedDialogIfNotModifiable(viewModel)) return;
 
-        if (!vm!.OrderList.Any())
+        if (!viewModel.OrderList.Any())
         {
-            var emptyDialog = new SingleActionDialog
+            var emptyDialog = new InfoDialog
             {
+                Title = "All clear",
                 Message = "No items to clear.",
                 ButtonText = "OK"
             };
@@ -129,30 +146,30 @@ public partial class OrderCartPanel : UserControl
             return;
         }
 
-        var dialog = new TwofoldDialog
+        var dialog = new ConfirmationDialog
         {
+            Title = "Clear all items?",
             Message = "Are you sure you want to clear all items?",
-            PositiveText = "Yes",
-            NegativeText = "No"
+            PositiveText = "Clear",
+            NegativeText = "Cancel"
         };
+        dialog.FindControl<Button>("PositiveButton")!.Classes.Add("Danger");
 
         if ((await dialog.ShowAsync()).GetValueOrDefault())
-        {
-            vm.ClearLineItemsCommand?.Execute()?.Subscribe();
-        }
+            viewModel.ClearLineItemsCommand.Execute().Subscribe();
     }
 
     private async void OnPayLaterButtonClick(object? sender, RoutedEventArgs e)
     {
         if (sender is not Button) return;
 
-        var vm = DataContext as OrderCartPanelViewModel;
-        if (vm == null) return;
+        if (viewModel == null) return;
 
-        if (!vm.OrderList.Any())
+        if (!viewModel.OrderList.Any())
         {
-            var emptyDialog = new SingleActionDialog
+            var emptyDialog = new InfoDialog
             {
+                Title = "Can't pay order",
                 Message = "Please add at least one item.",
                 ButtonText = "OK"
             };
@@ -161,56 +178,53 @@ public partial class OrderCartPanel : UserControl
             return;
         }
 
-        vm.PayLaterCommand?.Execute().Subscribe();
+        viewModel.PayLaterCommand?.Execute().Subscribe();
     }
 
     private void CartItem_PointerPressed(object sender, PointerPressedEventArgs e)
     {
         if (sender is Border border && border.Tag is LineItem lineItem)
-        {
-            var vm = DataContext as OrderCartPanelViewModel;
-            vm?.NavigateToMenuCommand?.Execute(lineItem)?.Subscribe();
-        }
+            viewModel.NavigateToMenuCommand.Execute(lineItem).Subscribe();
     }
 
     private async void DiscountLineItemButton_Click(object? sender, RoutedEventArgs args)
     {
-        await DisplayDiscountDialog(sender, OrderDiscountType.LineItem);
+        if (await ShowLockedDialogIfNotModifiable(viewModel)) return;
+        if (viewModel?.DiscountOrder?.Discount?.Id != null)
+        {
+            InfoDialog dialog = new()
+            {
+                Title = "Discount already applied",
+                Message = "You can't apply an item discount if order discount is already applied.",
+                ButtonText = "OK"
+            };
+            await dialog.ShowAsync();
+            return;
+        }
+        int lineItemId = Convert.ToInt32(((Button)sender!).Tag);
+        await DisplayDiscountDialog(sender, OrderDiscountType.LineItem, lineItemId);
     }
 
-    private async Task DisplayDiscountDialog(object? sender, OrderDiscountType discountType)
+    private async Task DisplayDiscountDialog(object? sender, OrderDiscountType discountType, long? lineItemId = null)
     {
-        // TODO: handle fetching discounts per line item and order.
-        Discount[] myDiscountList = [
-            new Discount { Name = "₱100 off", Description = "Applies to one product" },
-            new Discount { Name = "%20 off", Description = "Minimum spend of ₱50" },
-
-        ];
-
-        DiscountDialog dialog = new();
-        foreach (var discount in myDiscountList)
-            (dialog.DataContext as DiscountDialogViewModel)!.DiscountList.Add(discount);
+        // fetch order dialog order id 
+        DiscountDialog dialog = new(lineItemId);
         await dialog.ShowAsync();
-
-
-        // TODO: After selecting discount, apply to label
-        Button button = (Button)sender;
-        button.Classes.Add("Success");
-        button.Content = "Applied %";
     }
 
     private async void Border_Holding(object? sender, HoldingRoutedEventArgs args)
     {
         if (args.HoldingState == HoldingState.Completed)
         {
-            TwofoldDialog dialog = new()
+            ConfirmationDialog dialog = new()
             {
+                Title = "Remove item from cart?",
                 Message = "Are you sure you want to remove this item from your cart?",
-                PositiveText = "Yes, Remove",
+                PositiveText = "Remove",
                 NegativeText = "Cancel"
             };
             dialog.FindControl<Button>("PositiveButton")!.Classes.Add("Danger");
-            
+
             var result = await dialog.ShowAsync();
 
             if (result.HasValue && result.Value)
@@ -228,13 +242,13 @@ public partial class OrderCartPanel : UserControl
     {
         if (sender is not Button) return;
 
-        var vm = DataContext as OrderCartPanelViewModel;
-        if (vm == null) return;
+        if (viewModel == null) return;
 
-        if (!vm.OrderList.Any())
+        if (!viewModel.OrderList.Any())
         {
-            var emptyDialog = new SingleActionDialog
+            var emptyDialog = new InfoDialog
             {
+                Title = "Can't pay order",
                 Message = "Please add at least one item.",
                 ButtonText = "OK"
             };
@@ -242,7 +256,6 @@ public partial class OrderCartPanel : UserControl
             await emptyDialog.ShowAsync();
             return;
         }
-        
-        vm.PayOrderCommand?.Execute().Subscribe();
+        viewModel.PayOrderCommand.Execute().Subscribe();
     }
 }

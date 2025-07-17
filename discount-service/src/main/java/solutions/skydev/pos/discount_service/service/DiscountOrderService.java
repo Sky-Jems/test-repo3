@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface DiscountOrderService {
     DiscountOrder create(OrderLevelDiscountOrder discountOrder, Order order);
+    DiscountOrder update(OrderLevelDiscountOrder discountOrder, Order order);
+    List<LineItemLevelDiscountOrder> update(List<LineItemLevelDiscountOrder> discountOrders, Long orderId);
     List<LineItemLevelDiscountOrder> create(List<LineItemLevelDiscountOrder> discountOrders, Long orderId);
     DiscountOrder findByOrderId(Long id);
     List<DiscountOrder> deleteByOrderId(Long id);

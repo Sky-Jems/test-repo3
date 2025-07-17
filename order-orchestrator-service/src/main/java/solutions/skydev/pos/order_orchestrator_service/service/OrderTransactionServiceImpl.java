@@ -12,7 +12,6 @@ import solutions.skydev.pos.order_orchestrator_service.model.entity.OrderTransac
 import solutions.skydev.pos.order_orchestrator_service.model.enums.OrderStatus;
 import solutions.skydev.pos.order_orchestrator_service.repository.OrderTransactionRepository;
 
-import javax.sound.sampled.Line;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
@@ -51,11 +50,11 @@ public class OrderTransactionServiceImpl implements OrderTransactionService {
         }
     }
 
-    private DiscountOrderUpdatedResponseDto applyDiscount(Long orderId, BigDecimal totalAmount, LineItemRequestDto lineItemRequestDto) {
+    private DiscountOrderUpdatedResponseDto updateDiscount(Long orderId, BigDecimal totalAmount, LineItemRequestDto lineItemRequestDto) {
         try {
             DiscountOrderRequestDto discountOrderRequestDto = buildDiscountOrderRequestDto(orderId, totalAmount, lineItemRequestDto);
-            DiscountOrderUpdatedResponseDto response = discountService.applyDiscountOrder(discountOrderRequestDto);
-            System.out.println("Discount applied: " + response.getDiscountAmount());
+            DiscountOrderUpdatedResponseDto response = discountService.updateDiscountOrder(discountOrderRequestDto);
+            System.out.println("Discount updated: " + response.getDiscountAmount());
             return response;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -69,12 +68,18 @@ public class OrderTransactionServiceImpl implements OrderTransactionService {
     ) {
         DiscountOrderLineItemRequestDto discountLineItem =
                 mapToDiscountOrderLineItem(lineItemRequestDto);
-
-        return DiscountOrderRequestDto.builder()
-                .orderId(orderId)
-                .totalAmount(totalAmount)
-                .lineItems(Collections.singletonList(discountLineItem))
-                .build();
+        if (lineItemRequestDto != null) {
+            return DiscountOrderRequestDto.builder()
+                    .orderId(orderId)
+                    .totalAmount(totalAmount)
+                    .lineItems(Collections.singletonList(discountLineItem))
+                    .build();
+        } else {
+            return DiscountOrderRequestDto.builder()
+                    .orderId(orderId)
+                    .totalAmount(totalAmount)
+                    .build();
+        }
     }
 
     private DiscountOrderLineItemRequestDto mapToDiscountOrderLineItem(LineItemRequestDto dto) {
@@ -136,7 +141,7 @@ public class OrderTransactionServiceImpl implements OrderTransactionService {
 
         OrderTransaction orderTransaction = orderTransactionRepository.findByOrderId(orderResponseDto.getId()).get(0);
 
-        DiscountOrderUpdatedResponseDto discountOrderUpdatedResponseDto = applyDiscount(orderResponseDto.getId(), orderResponseDto.getTotal(), requestLineItem);
+        DiscountOrderUpdatedResponseDto discountOrderUpdatedResponseDto = updateDiscount(orderResponseDto.getId(), orderResponseDto.getTotal(), requestLineItem);
         return updateOrderTransactionAmounts(orderTransaction, orderResponseDto, discountOrderUpdatedResponseDto.getDiscountAmount().toString());
     }
 
@@ -150,7 +155,7 @@ public class OrderTransactionServiceImpl implements OrderTransactionService {
 
         OrderTransaction orderTransaction = orderTransactionRepository.findByOrderId(orderResponseDto.getId()).get(0);
 
-        DiscountOrderUpdatedResponseDto discountOrderUpdatedResponseDto = applyDiscount(orderResponseDto.getId(), orderResponseDto.getTotal(), requestLineItem);
+        DiscountOrderUpdatedResponseDto discountOrderUpdatedResponseDto = updateDiscount(orderResponseDto.getId(), orderResponseDto.getTotal(), requestLineItem);
         return updateOrderTransactionAmounts(orderTransaction, orderResponseDto, discountOrderUpdatedResponseDto.getDiscountAmount().toString());
     }
 

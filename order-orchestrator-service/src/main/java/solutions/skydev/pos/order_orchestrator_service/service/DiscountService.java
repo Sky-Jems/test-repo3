@@ -40,6 +40,20 @@ public class DiscountService {
         return response.value();
     }
 
+    public DiscountOrderUpdatedResponseDto updateDiscountOrder(DiscountOrderRequestDto discountOrderRequest) throws InterruptedException, ExecutionException, TimeoutException {
+        if (!this.replyingKafkaTemplateDiscountUpdated.waitForAssignment(Duration.ofSeconds(10))) {
+            throw new IllegalStateException("Reply container did not initialize");
+        }
+        ProducerRecord<String, Object> record = new ProducerRecord<>("update-discount-order-command", discountOrderRequest);
+        RequestReplyFuture<String, Object, DiscountOrderUpdatedResponseDto> future = this.replyingKafkaTemplateDiscountUpdated.sendAndReceive(record);
+        ConsumerRecord<String, DiscountOrderUpdatedResponseDto> response = future.get(10, TimeUnit.SECONDS);
+        if (response == null || response.value() == null) {
+            throw new IllegalStateException("No response received for discount order creation");
+        }
+
+        return response.value();
+    }
+
     public DiscountOrderUpdatedResponseDto clearDiscountOrder(DiscountOrderRequestDto discountOrderRequest) throws InterruptedException, ExecutionException, TimeoutException {
         if (!this.replyingKafkaTemplateDiscountUpdated.waitForAssignment(Duration.ofSeconds(10))) {
             throw new IllegalStateException("Reply container did not initialize");

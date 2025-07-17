@@ -8,6 +8,7 @@ using Avalonia.Threading;
 using Avalonia.VisualTree;
 using pos.Extensions;
 using Pos.Models;
+using Pos.Pages.Home;
 using ReactiveUI;
 
 namespace Pos.Pages.Orders;

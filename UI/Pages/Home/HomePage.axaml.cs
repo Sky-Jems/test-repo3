@@ -7,7 +7,7 @@ using pos.Api;
 using pos.Extensions;
 using ReactiveUI;
 
-namespace Pos.Pages;
+namespace Pos.Pages.Home;
 
 public record SelectedTabIndexMessage(int Index);
 
@@ -35,6 +35,6 @@ public partial class HomePage : ReactiveUserControl<HomePageViewModel>
         {
             Console.WriteLine($"Logout failed: {ex.Message}");
         }
-        
+
     }
 }

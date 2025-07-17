@@ -18,6 +18,7 @@ public partial class CategoryDialog : BaseDialog<string>
         categoryTextBox.Text = name;
     }
 
+    private void CloseDialog(object? sender, RoutedEventArgs e) => Close(string.Empty);
 
     private async void SaveButton_Click(object sender, RoutedEventArgs args)
     {
@@ -31,9 +32,5 @@ public partial class CategoryDialog : BaseDialog<string>
             textBox.CaretIndex = textBox.Text?.Length ?? 0;
         }
 
-    }
-    private void CloseButton_Click(object? sender, RoutedEventArgs e)
-    {
-        Close(string.Empty);
     }
 }

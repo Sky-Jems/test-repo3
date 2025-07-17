@@ -1,8 +1,8 @@
 <UserControl
-    x:Class="Pos.Pages.HomePage"
+    x:Class="Pos.Pages.Home.HomePage"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:app="using:Pos.Pages"
+    xmlns:app="using:Pos.Pages.Home"
     xmlns:categories="using:Pos.Pages.Categories"
     xmlns:converters="using:Pos.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -19,52 +19,16 @@
 
     <SplitView
         Name="homePageSplitView"
-        CompactPaneLength="77"
+        CompactPaneLength="76"
         DisplayMode="CompactInline"
         IsPaneOpen="{Binding #paneOpenButton.IsChecked, Mode=TwoWay}"
         OpenPaneLength="250">
         <SplitView.Styles>
-            <Style Selector="SplitView#homePageSplitView:left:compactinline /template/ Panel#PART_PaneRoot">
-                <Setter Property="ClipToBounds" Value="False" />
-            </Style>
-
-            <Style Selector="SplitView#homePageSplitView[IsPaneOpen=true]">
-                <Style Selector="^ Border#splitViewBorder">
-                    <Setter Property="Padding" Value="12 32 12 16" />
-                </Style>
-                <Style Selector="^ Rectangle#logoSeparator">
-                    <Setter Property="Margin" Value="0 24" />
-                </Style>
-                <Style Selector="^ Image#logo">
-                    <Setter Property="Margin" Value="24 12" />
-                </Style>
-                <Style Selector="^ ToggleButton#paneOpenButton">
-                    <Setter Property="(Canvas.Top)" Value="12" />
-                    <Setter Property="(Canvas.Right)" Value="-24" />
-                </Style>
-            </Style>
-
-            <Style Selector="SplitView#homePageSplitView[IsPaneOpen=false]">
-                <Style Selector="^ Border#splitViewBorder">
-                    <Setter Property="Padding" Value="16 24 16 16" />
-                </Style>
-                <Style Selector="^ Rectangle#logoSeparator">
-                    <Setter Property="Margin" Value="0 24" />
-                </Style>
-                <Style Selector="^ ToggleButton#paneOpenButton">
-                    <Setter Property="(Canvas.Top)" Value="12" />
-                    <Setter Property="(Canvas.Right)" Value="-28" />
-                </Style>
-            </Style>
+            <StyleInclude Source="avares://pos/Pages/Home/Styles/SideNavBar.axaml" />
         </SplitView.Styles>
 
         <SplitView.Pane>
-            <Border
-                Name="splitViewBorder"
-                Background="{StaticResource SemiBackground2Color}"
-                BorderBrush="{StaticResource SemiColorBorder}"
-                BorderThickness="0,0,1,0"
-                ZIndex="999">
+            <Border Name="splitViewBorder" Background="{StaticResource SemiBackground2Color}">
                 <DockPanel>
                     <Image
                         Name="logo"
@@ -105,22 +69,7 @@
                         SelectedIndex="0"
                         Theme="{StaticResource ButtonTabStrip}">
                         <TabStrip.Styles>
-                            <Style Selector="TabStripItem">
-                                <Setter Property="Padding" Value="12" />
-                                <Setter Property="Margin" Value="0" />
-                            </Style>
-                            <Style Selector="TabStripItem &gt; StackPanel.tabContainer">
-                                <Setter Property="Orientation" Value="Horizontal" />
-                                <Setter Property="Spacing" Value="12" />
-                                <Style Selector="^ &gt; PathIcon">
-                                    <Setter Property="Theme" Value="{StaticResource InnerPathIcon}" />
-                                    <Setter Property="Width" Value="20" />
-                                    <Setter Property="Height" Value="20" />
-                                </Style>
-                                <Style Selector="^ &gt; TextBlock">
-                                    <Setter Property="VerticalAlignment" Value="Center" />
-                                </Style>
-                            </Style>
+                            <StyleInclude Source="avares://pos/Pages/Home/Styles/TabItem.axaml" />
                         </TabStrip.Styles>
 
                         <TabStrip.ItemsPanel>
@@ -129,35 +78,35 @@
                             </ItemsPanelTemplate>
                         </TabStrip.ItemsPanel>
 
-                        <TabStripItem>
+                        <TabStripItem Classes="homeTabItem">
                             <StackPanel Classes="tabContainer">
                                 <PathIcon Data="{StaticResource SemiIconHome}" />
                                 <TextBlock Text="Take Order" />
                             </StackPanel>
                         </TabStripItem>
 
-                        <TabStripItem>
+                        <TabStripItem Classes="homeTabItem">
                             <StackPanel Classes="tabContainer">
                                 <PathIcon Data="{StaticResource SemiIconActivity}" />
                                 <TextBlock Text="Pending Orders" />
                             </StackPanel>
                         </TabStripItem>
 
-                        <TabStripItem>
+                        <TabStripItem Classes="homeTabItem">
                             <StackPanel Classes="tabContainer">
                                 <PathIcon Data="{StaticResource SemiIconCheckList}" />
                                 <TextBlock Text="Completed Orders" />
                             </StackPanel>
                         </TabStripItem>
 
-                        <TabStripItem IsVisible="{Binding Role, Converter={StaticResource equalsConverter}, ConverterParameter='Admin'}">
+                        <TabStripItem Classes="homeTabItem" IsVisible="{Binding Role, Converter={StaticResource equalsConverter}, ConverterParameter='Admin'}">
                             <StackPanel Classes="tabContainer">
                                 <PathIcon Data="{StaticResource SemiIconAppCenter}" />
                                 <TextBlock Text="Categories" />
                             </StackPanel>
                         </TabStripItem>
 
-                        <TabStripItem IsVisible="{Binding Role, Converter={StaticResource equalsConverter}, ConverterParameter='Admin'}">
+                        <TabStripItem Classes="homeTabItem" IsVisible="{Binding Role, Converter={StaticResource equalsConverter}, ConverterParameter='Admin'}">
                             <StackPanel Classes="tabContainer">
                                 <PathIcon Data="{StaticResource SemiIconBox}" />
                                 <TextBlock Text="Products" />

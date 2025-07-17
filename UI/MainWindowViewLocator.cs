@@ -1,5 +1,6 @@
 using System;
 using Pos.Pages;
+using Pos.Pages.Home;
 using ReactiveUI;
 
 namespace Pos;

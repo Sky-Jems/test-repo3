@@ -6,6 +6,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
 using AvaloniaDialogs.Views;
+using Pos.Dialogs;
 using Pos.Models;
 using Pos.Pages.Categories.Dialogs;
 
@@ -46,9 +47,10 @@ public partial class CategoriesView : ReactiveUserControl<CategoriesViewModel>
 
     private async void DeleteButton_Click(object sender, RoutedEventArgs args)
     {
-        TwofoldDialog dialog = new()
+        ConfirmationDialog dialog = new()
         {
-            Message = "Deleting this category will also affect the products it contains. Would you like to confirm?",
+            Title = "Delete category?",
+            Message = "Deleting this category will also affect the products it contains.",
             PositiveText = "Delete",
             NegativeText = "Cancel"
         };

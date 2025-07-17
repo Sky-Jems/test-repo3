@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class DiscountOrderServiceImpl implements DiscountOrderService {
@@ -181,6 +182,91 @@ public class DiscountOrderServiceImpl implements DiscountOrderService {
 
         return discountOrderRepository.saveAll(results);
     }
+
+    @Override
+    @Transactional
+    public DiscountOrder update(OrderLevelDiscountOrder discountOrder, Order order) {
+        DiscountOrder existing = discountOrderRepository.findFirstByOrderId(order.getId());
+        OrderLevelDiscountOrder toUpdate;
+
+
+        Discount discount;
+        if (!(existing instanceof OrderLevelDiscountOrder)) {
+            throw new IllegalStateException("No existing ORDER-level discount found for orderId " + order.getId());
+        }
+        toUpdate = (OrderLevelDiscountOrder) existing;
+        discount = toUpdate.getDiscount();
+        if (discount == null) {
+            throw new IllegalStateException("Existing ORDER-level discount has no discount stored.");
+        }
+
+        DiscountScopeStrategy strategy = strategyResolver.resolve(
+                discountOrder.getScope(),
+                discount.getType(),
+                discount.getValue()
+        );
+
+        BigDecimal discountAmount = strategy.applyDiscount(order, discountOrder);
+        toUpdate.setOrderId(order.getId());
+        toUpdate.setDiscountAmount(discountAmount);
+
+        return discountOrderRepository.save(toUpdate);
+    }
+
+    @Override
+    @Transactional
+    public List<LineItemLevelDiscountOrder> update(List<LineItemLevelDiscountOrder> discountOrders, Long orderId) {
+        if (discountOrders == null || discountOrders.isEmpty()) {
+            throw new IllegalArgumentException("No line-item discounts provided.");
+        }
+
+        // Validate no conflict with ORDER-level discounts
+        DiscountOrder existingOrderLevelDiscount = discountOrderRepository.findFirstByOrderId(orderId);
+        if (existingOrderLevelDiscount != null && !(existingOrderLevelDiscount instanceof LineItemLevelDiscountOrder)) {
+            throw new IllegalArgumentException(
+                    "Cannot update LINE_ITEM-level discounts: ORDER-level discount already exists for orderId " + orderId);
+        }
+
+        List<LineItemLevelDiscountOrder> updated = new ArrayList<>();
+
+        for (LineItemLevelDiscountOrder incoming : discountOrders) {
+            Optional<LineItemLevelDiscountOrder> existingOpt =
+                    lineItemLevelDiscountOrderRepository.findByOrderIdAndLineItemId(orderId, incoming.getLineItemId());
+
+            if (existingOpt.isEmpty()) {
+                // No record exists for this line item. Skip it.
+                continue;
+            }
+
+            LineItemLevelDiscountOrder toUpdate = existingOpt.get();
+
+            Discount discount;
+            discount = toUpdate.getDiscount();
+            if (discount == null) {
+                throw new IllegalStateException("Existing line-item found but has no discount stored.");
+            }
+
+            toUpdate.setDiscount(discount);
+            toUpdate.setPrice(incoming.getPrice());
+            toUpdate.setQuantity(incoming.getQuantity());
+            toUpdate.setSubTotal(incoming.getSubTotal());
+
+            // Recalculate discount amount
+            DiscountScopeStrategy strategy = strategyResolver.resolve(
+                    incoming.getScope(),
+                    discount.getType(),
+                    discount.getValue()
+            );
+
+            BigDecimal discountAmount = strategy.applyDiscount(null, toUpdate);
+            toUpdate.setDiscountAmount(discountAmount);
+
+            updated.add(toUpdate);
+        }
+
+        return discountOrderRepository.saveAll(updated);
+    }
+
 
     @Override
     public DiscountOrder findByOrderId(Long id) {

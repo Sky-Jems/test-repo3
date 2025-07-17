@@ -18,7 +18,7 @@ public partial class PaymentMethodDialog : BaseDialog<string>
         PriceTextBox.AddHandler(TextInputEvent, PriceTextBox_TextInput, RoutingStrategies.Tunnel);
     }
 
-    private void CloseDialogText_PointerPressed(object sender, PointerPressedEventArgs e) => Close();
+    private void CloseDialog(object sender, RoutedEventArgs args) => Close();
 
     private void ConfirmButton_Click(object? sender, RoutedEventArgs e)
     {

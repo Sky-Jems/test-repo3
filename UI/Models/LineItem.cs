@@ -39,20 +39,22 @@ public class LineItem : ReactiveObject
         get => _isSelected;
         set => this.RaiseAndSetIfChanged(ref _isSelected, value);
     }
-    
+
     private decimal _itemTotal;
     public decimal ItemTotal
     {
         get => _itemTotal;
         set => this.RaiseAndSetIfChanged(ref _itemTotal, value);
     }
-    
+
     private void UpdateItemTotal()
     {
         ItemTotal = Quantity * Price;
     }
-    
+
     public bool IsQuantityVisible => Quantity > 1;
+    public DiscountOrderLineitem? Discount { get; set; }
+    public decimal? DiscountedAmount => ItemTotal - Discount?.DiscountAmount;
 }
 
 public class LineItemDto
@@ -84,7 +86,7 @@ public static class LineItemMapper
             Price = lineItem.Price
         };
     }
-    
+
     public static LineItem FromDto(GetLineItemDto dto)
     {
         var firstCategory = dto.Product.Categories.FirstOrDefault();

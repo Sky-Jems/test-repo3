@@ -33,6 +33,7 @@
                 <ResourceInclude Source="avares://pos/ThemeOverrides/Resources/ListBox.axaml" />
                 <ResourceInclude Source="avares://pos/ThemeOverrides/Resources/DataGrid.axaml" />
                 <ResourceInclude Source="avares://pos/ThemeOverrides/Resources/RadioButton.axaml" />
+                <ResourceInclude Source="avares://pos/ThemeOverrides/Resources/SplitView.axaml" />
                 <ResourceInclude Source="avares://pos/ThemeOverrides/Resources/TextBox.axaml" />
             </ResourceDictionary.MergedDictionaries>
 

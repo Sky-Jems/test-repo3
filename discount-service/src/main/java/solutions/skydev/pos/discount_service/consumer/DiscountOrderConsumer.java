@@ -59,6 +59,30 @@ public class DiscountOrderConsumer {
         return discountOrderMapper.toDto(summary);
     }
 
+    @KafkaListener(topics = "update-discount-order-command",
+            properties = "spring.json.value.default.type=solutions.skydev.pos.common.discount_service.dto.request.DiscountOrderRequestDto")
+    @AsyncListener(operation = @AsyncOperation(
+            channelName = "update-discount-order-command",
+            description = "update discount order command"
+    ))
+    @KafkaAsyncOperationBinding
+    @SendTo("discount-order.updated")
+    public DiscountOrderUpdatedResponseDto updateDiscountOrderCommand(DiscountOrderRequestDto discountOrderRequestDto) {
+        DiscountOrderSummary discountRecord = discountOrderService.getDiscountOrderSummary(discountOrderRequestDto.getOrderId());
+        if (discountRecord.getDiscountId() != null && discountOrderRequestDto.getTotalAmount() != null) {
+            OrderLevelDiscountOrder entity = discountOrderMapper.toOrderLevelEntity(discountOrderRequestDto);
+            Order order = discountOrderMapper.toOrderEntity(discountOrderRequestDto);
+            discountOrderService.update(entity, order);
+        } else if (discountOrderRequestDto.getLineItems() != null && !discountOrderRequestDto.getLineItems().isEmpty()) {
+            List<LineItemLevelDiscountOrder> entities =
+                    discountOrderMapper.toLineItemLevelEntities(discountOrderRequestDto.getLineItems(), discountOrderRequestDto.getOrderId());
+            discountOrderService.update(entities, discountOrderRequestDto.getOrderId());
+        }
+
+        DiscountOrderSummary updatedSummary = discountOrderService.getDiscountOrderSummary(discountOrderRequestDto.getOrderId());
+        return discountOrderMapper.toDto(updatedSummary);
+    }
+
     @KafkaListener(topics = "delete-discount-order-command",
     properties = "spring.json.value.default.type=solutions.skydev.pos.common.discount_service.dto.request.DiscountOrderRequestDto")
     @AsyncListener(operation = @AsyncOperation(
@@ -90,12 +114,17 @@ public class DiscountOrderConsumer {
             log.error("Line items cannot be null or empty in delete discount order line item command");
             throw new IllegalArgumentException("Line items cannot be null or empty");
         }
-
-        discountOrderService.deleteByLineItems(
-                discountOrderRequestDto.getOrderId(),
-                discountOrderMapper.toLineItemLevelEntities(discountOrderRequestDto.getLineItems(), discountOrderRequestDto.getOrderId())
-        );
-
+        DiscountOrderSummary discountRecord = discountOrderService.getDiscountOrderSummary(discountOrderRequestDto.getOrderId());
+        if (discountRecord.getDiscountId() != null) {
+            OrderLevelDiscountOrder entity = discountOrderMapper.toOrderLevelEntity(discountOrderRequestDto);
+            Order order = discountOrderMapper.toOrderEntity(discountOrderRequestDto);
+            discountOrderService.update(entity, order);
+        } else {
+            discountOrderService.deleteByLineItems(
+                    discountOrderRequestDto.getOrderId(),
+                    discountOrderMapper.toLineItemLevelEntities(discountOrderRequestDto.getLineItems(), discountOrderRequestDto.getOrderId())
+            );
+        }
         DiscountOrderSummary summary = discountOrderService.getDiscountOrderSummary(discountOrderRequestDto.getOrderId());
         return discountOrderMapper.toDto(summary);
     }

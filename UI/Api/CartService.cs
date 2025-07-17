@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Pos.Models;
@@ -21,7 +22,9 @@ public class CartService : ReactiveObject, ICartService
      [Reactive] public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.PENDING;
      [Reactive] public string Customer { get; set; } = string.Empty;
      public ObservableCollection<LineItem> Items { get; set; } = new();
-     public decimal Total => Items.Sum(lineItem => lineItem.Quantity * lineItem.Price);
+     public decimal SubTotal => Items.Sum(lineItem => lineItem.Quantity * lineItem.Price);
+     public decimal DiscountAmount { get; set; } = 0;
+     public decimal Total => SubTotal - DiscountAmount;
      [Reactive] public LineItem? SelectedItem { get; set; }
      public bool CanModifyItems => PaymentStatus == PaymentStatus.PENDING && Payments.Count == 0;
      [Reactive] public decimal AmountPaid { get; set; }
@@ -33,11 +36,16 @@ public class CartService : ReactiveObject, ICartService
      [Reactive] public string PaymentMethod { get; set; } = "cash";
      [Reactive] public string Notes { get; set; } = string.Empty;
      public ObservableCollection<Payment> Payments { get; set; } = new();
+     [Reactive]
+     public DiscountOrder? DiscountOrder { get; set; }
+
+     public List<Discount> Discounts { get; set; } = new();
 
      public CartService()
      {
           Items.CollectionChanged += (_, _) =>
           {
+               this.RaisePropertyChanged(nameof(SubTotal));
                this.RaisePropertyChanged(nameof(Total));
                SubscribeToLineItemChanges();
           };
@@ -49,6 +57,7 @@ public class CartService : ReactiveObject, ICartService
           {
                item.Changed.Subscribe(_ =>
                {
+                    this.RaisePropertyChanged(nameof(SubTotal));
                     this.RaisePropertyChanged(nameof(Total));
                });
           }
@@ -60,10 +69,15 @@ public class CartService : ReactiveObject, ICartService
           Customer = string.Empty;
           PaymentStatus = PaymentStatus.PENDING;
           Payments.Clear();
+          Discounts.Clear();
+          DiscountAmount = 0;
+          DiscountOrder = null;
           this.RaisePropertyChanged(nameof(Items));
+          this.RaisePropertyChanged(nameof(SubTotal));
           this.RaisePropertyChanged(nameof(Total));
           this.RaisePropertyChanged(nameof(PaymentStatus));
-          
+          this.RaisePropertyChanged(nameof(DiscountAmount));
+
           ClearRemainingBalanceOverride();
      }
 
@@ -71,6 +85,13 @@ public class CartService : ReactiveObject, ICartService
      {
           OrderId = orderResponse.OrderId;
           Customer = orderResponse.Order.Customer;
+          DiscountAmount = orderResponse.DiscountAmount;
+          DiscountOrder = orderResponse.DiscountOrder;
+
+          if (Enum.TryParse<PaymentStatus>(orderResponse.PaymentStatus, true, out var parsedStatus))
+          {
+               PaymentStatus = parsedStatus;
+          }
 
           Items.Clear();
 
@@ -79,6 +100,7 @@ public class CartService : ReactiveObject, ICartService
                var lineItem = LineItemMapper.FromDto(lineItemDto);
                Items.Add(lineItem);
           }
+
 
           Payments.Clear();
           foreach (var paymentDto in orderResponse.Payments ?? Enumerable.Empty<PaymentListResponseDto>())
@@ -104,9 +126,20 @@ public class CartService : ReactiveObject, ICartService
                _overrideRemainingBalance = null;
           }
 
+          if (DiscountOrder?.lineItems != null)
+          {
+               foreach (var lineItem in Items)
+               {
+                    lineItem.Discount = DiscountOrder.lineItems.FirstOrDefault(item => item.LineItemId == lineItem.Id);
+               }
+          }
+
           this.RaisePropertyChanged(nameof(Items));
+          this.RaisePropertyChanged(nameof(SubTotal));
+          this.RaisePropertyChanged(nameof(DiscountAmount));
           this.RaisePropertyChanged(nameof(Total));
           this.RaisePropertyChanged(nameof(RemainingBalance));
+          this.RaisePropertyChanged(nameof(DiscountOrder));
      }
 
      public void ResetOrder()
@@ -134,6 +167,7 @@ public class CartService : ReactiveObject, ICartService
           };
      }
 
+
      public void AddPayment(Payment payment)
      {
           if (payment.Amount < 0 || payment.OrderId != OrderId) return;
@@ -154,5 +188,11 @@ public class CartService : ReactiveObject, ICartService
      {
           _overrideRemainingBalance = null;
           this.RaisePropertyChanged(nameof(RemainingBalance));
+     }
+
+     public void LoadDiscounts(List<Discount> discounts)
+     {
+          Discounts = discounts;
+          this.RaisePropertyChanged(nameof(Discounts));
      }
 }

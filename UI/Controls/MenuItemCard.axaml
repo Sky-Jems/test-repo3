@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     x:CompileBindings="False"
+    ClipToBounds="False"
     mc:Ignorable="d">
 
     <UserControl.Resources>
@@ -14,6 +15,7 @@
 
     <Border
         x:Name="CardBorder"
+        Margin="-4"
         Padding="2"
         BorderBrush="{Binding IsSelected, Converter={StaticResource boolToBrushConverter}}"
         BorderThickness="2"
@@ -28,24 +30,25 @@
             VerticalAlignment="Stretch"
             Theme="{StaticResource SolidButton}">
             <Viewbox HorizontalAlignment="Center">
-                <StackPanel Margin="16" HorizontalAlignment="Center">
+                <StackPanel
+                    Width="180"
+                    Margin="12"
+                    HorizontalAlignment="Center">
                     <AccessText
                         HorizontalAlignment="Center"
-                        FontSize="{StaticResource SemiFontSizeHeader4}"
-                        FontWeight="Bold"
+                        FontSize="{StaticResource SemiFontSizeHeader5}"
                         Text="{Binding TrimmedProductName}" />
                     <AccessText
+                        Margin="0,0,0,8"
                         HorizontalAlignment="Center"
-                        FontSize="{StaticResource SemiFontSizeHeader6}"
+                        FontWeight="{StaticResource SemiFontWeightRegular}"
                         Text="{Binding TrimmedDescription}" />
                     <Label
-                        Margin="0,8,0,0"
-                        Padding="12,4"
                         HorizontalAlignment="Center"
-                        Classes="Circle White Ghost"
+                        Background="{StaticResource SemiColorPrimaryLight}"
+                        Classes="Circle Indigo"
                         Content="{Binding Price, StringFormat=₱{0:F2}}"
-                        FontSize="{StaticResource SemiFontSizeHeader4}"
-                        FontWeight="Bold"
+                        FontSize="{StaticResource SemiFontSizeHeader6}"
                         Theme="{StaticResource TagLabel}" />
                 </StackPanel>
             </Viewbox>

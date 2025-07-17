@@ -9,6 +9,7 @@ using ReactiveUI;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using AvaloniaDialogs.Views;
+using Pos.Dialogs;
 
 namespace Pos.Pages.Products;
 
@@ -31,9 +32,10 @@ public partial class MainView : ReactiveUserControl<MainViewModel>
 
     private async void DeleteButton_Click(object sender, RoutedEventArgs e)
     {
-        TwofoldDialog dialog = new()
+        ConfirmationDialog dialog = new()
         {
-            Message = "Delete this Product?",
+            Title = "Delete this product?",
+            Message = "Are you sure you want to delete this product?",
             PositiveText = "Delete",
             NegativeText = "Cancel"
         };

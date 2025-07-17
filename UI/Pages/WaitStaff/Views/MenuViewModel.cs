@@ -5,12 +5,14 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using System.Windows.Input;
-using AvaloniaDialogs.Views;
 using Microsoft.Extensions.DependencyInjection;
 using pos.Api;
 using pos.Extensions;
+using Pos.Dialogs;
 using Pos.Models;
+using Pos.Util;
 using ReactiveUI;
 
 namespace Pos.Pages.WaitStaff;
@@ -22,10 +24,11 @@ public class MenuViewModel : ReactiveObject, IRoutableViewModel
     private readonly IProductService _productService;
     private readonly ICartService _cartService;
     private readonly IOrderService _orderService;
+    private readonly IOrderTransactionService _orderTransactionService;
     private Category Category { get; set; }
     public ObservableCollection<Product> Products { get; set; } = new();
     private ReactiveCommand<Unit, Unit> LoadProductsCommand { get; }
-    public ICommand ProductCardClickedCommand { get; }
+    public ReactiveCommand<Product, Unit> ProductCardClickedCommand { get; }
     private int _selectedItemQuantity;
     private int SelectedItemQuantity
     {
@@ -38,7 +41,7 @@ public class MenuViewModel : ReactiveObject, IRoutableViewModel
     }
     public string SelectedItemQuantityDisplay => $"( {SelectedItemQuantity} )";
     private bool _isProcessingProduct;
-    
+
     private List<Product> _products = new();
 
 
@@ -61,6 +64,7 @@ public class MenuViewModel : ReactiveObject, IRoutableViewModel
         _productService = ServiceLocator.Services.GetRequiredService<IProductService>();
         _cartService = ServiceLocator.Services.GetRequiredService<ICartService>();
         _orderService = ServiceLocator.Services.GetRequiredService<IOrderService>();
+        _orderTransactionService = ServiceLocator.Services.GetRequiredService<IOrderTransactionService>();
 
         LoadProductsCommand = ReactiveCommand.CreateFromTask(LoadProductsAsync);
         ProductCardClickedCommand = ReactiveCommand.CreateFromTask<Product>(HandleClickProduct);
@@ -68,6 +72,11 @@ public class MenuViewModel : ReactiveObject, IRoutableViewModel
         LoadProductsCommand.Execute().Subscribe();
 
         SubscribeToCartUpdates();
+        
+        LoadProductsCommand.ThrownExceptions
+            .Subscribe(_ => HandleCommandError("Error.", "Failed to load products."));
+        ProductCardClickedCommand.ThrownExceptions
+            .Subscribe(_ => HandleCommandError("Error.", "Failed to add item."));
     }
 
     private void SubscribeToCartUpdates()
@@ -127,31 +136,54 @@ public class MenuViewModel : ReactiveObject, IRoutableViewModel
             throw;
         }
     }
+    
+    private async Task<bool> ValidateCustomerNameAsync()
+    {
+        var startDate = new DateTimeOffset(DateTime.UtcNow).DayStart();
+        var endDate = new DateTimeOffset(DateTime.UtcNow).DayEnd();
+        string start = HttpUtility.UrlEncode(startDate.ToISO8601());
+        string end = HttpUtility.UrlEncode(endDate.ToISO8601());
+        var pendingOrders = await _orderTransactionService
+            .GetFilteredOrderTransactionsByStatus(Constants.OrderStatusType.PENDING.ToString(), start, end);
+        if (string.IsNullOrWhiteSpace(_cartService.Customer))
+            return false;
+
+        // Check if any order has the same customer name (case-insensitive)
+        var existingCustomer = pendingOrders
+            .Any(order =>
+                order.OrderId != _cartService.OrderId && // Exclude current order
+                string.Equals(order.Order.Customer?.Trim(), _cartService.Customer.Trim(), StringComparison.OrdinalIgnoreCase)
+            );
+
+        return existingCustomer;
+    }
 
     private async Task HandleClickProduct(Product product)
     {
         if (!_cartService.CanModifyItems)
         {
-            await new SingleActionDialog
+            await new InfoDialog
             {
+                Title = "Can't modify item",
                 Message = "Items cannot be modified because the order is already completed or partially paid.",
                 ButtonText = "OK"
             }.ShowAsync();
-            
+
             return;
         }
-        
+
         if (string.IsNullOrWhiteSpace(_cartService.Customer))
         {
-            await new SingleActionDialog
+            await new InfoDialog
             {
+                Title = "Can't add item",
                 Message = "Please enter a customer name before adding items.",
                 ButtonText = "OK"
             }.ShowAsync();
-            
+
             var uiInteractionService = ServiceLocator.Services.GetRequiredService<IUIInteractionService>();
             uiInteractionService.FocusCustomerField();
-            
+
             return;
         }
 
@@ -184,6 +216,19 @@ public class MenuViewModel : ReactiveObject, IRoutableViewModel
 
             if (_cartService.OrderId is null)
             {
+                var isExistingCustomer = await ValidateCustomerNameAsync();
+                if (isExistingCustomer)
+                {
+                    await new InfoDialog
+                    {
+                        Title = "Can't add item",
+                        Message = $"A pending order already exists for '{_cartService.Customer}'. Please enter a different name.",
+                        ButtonText = "OK"
+                    }.ShowAsync();
+
+                    return;
+                }
+
                 var newOrder = new Order
                 {
                     Customer = _cartService.Customer,
@@ -204,7 +249,6 @@ public class MenuViewModel : ReactiveObject, IRoutableViewModel
             var updatedOrder = await _orderService.AddLineItem(lineItemDto);
 
             _cartService.LoadOrder(updatedOrder);
-
             _cartService.SelectedItem = _cartService.Items
                 .FirstOrDefault(x => x.ProductId == item.ProductId);
         }
@@ -233,4 +277,14 @@ public class MenuViewModel : ReactiveObject, IRoutableViewModel
     }
 
     public ReactiveCommand<Unit, IRoutableViewModel> GoBack => HostScreen.Router.NavigateBack;
+    
+    private async void HandleCommandError(string title, string message)
+    {
+        await new InfoDialog
+        {
+            Title = title,
+            Message = message,
+            ButtonText = "OK"
+        }.ShowAsync();
+    }
 }

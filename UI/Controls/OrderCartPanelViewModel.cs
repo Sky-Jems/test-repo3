@@ -5,7 +5,6 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using AvaloniaDialogs.Views;
 using DynamicData.Binding;
 using Microsoft.Extensions.DependencyInjection;
 using pos.Api;
@@ -15,6 +14,7 @@ using Pos.Models;
 using pos.Models.EventArgs;
 using Pos.Util;
 using ReactiveUI;
+using System.Collections.Generic;
 using ReactiveUI.Fody.Helpers;
 
 namespace Pos.Controls;
@@ -25,10 +25,15 @@ public class OrderCartPanelViewModel : ReactiveObject
     private readonly IOrderService _orderService;
     private readonly IOrderTransactionService _orderTransactionService;
     private readonly IUIInteractionService _uiInteractionService;
+    private readonly IDiscountService _discountService;
     private long OrderTransactionId { get; set; }
     public ObservableCollection<LineItem> OrderList => _cartService.Items;
+    private readonly ObservableAsPropertyHelper<decimal> _cartSubTotal;
+    public decimal CartSubTotal => _cartSubTotal.Value;
     private readonly ObservableAsPropertyHelper<decimal> _cartTotal;
     public decimal CartTotal => _cartTotal.Value;
+    private readonly ObservableAsPropertyHelper<decimal> _DiscountTotal;
+    public decimal DiscountTotal => _DiscountTotal.Value;
     private LineItem _selectedItem;
     public LineItem SelectedItem
     {
@@ -46,6 +51,8 @@ public class OrderCartPanelViewModel : ReactiveObject
     public bool CanShowItems => _showItems.Value;
     public bool CanModifyItems => _cartService.CanModifyItems;
     public bool IsCompleted => _cartService.PaymentStatus != PaymentStatus.PENDING;
+    private readonly ObservableAsPropertyHelper<DiscountOrder> _DiscountOrder;
+    public DiscountOrder DiscountOrder => _DiscountOrder.Value;
     public event Action<LineItem>? CartItemClicked;
     public event Action NavigateToCategory;
     public ReactiveCommand<LineItem, Unit> NavigateToMenuCommand { get; }
@@ -70,11 +77,27 @@ public class OrderCartPanelViewModel : ReactiveObject
         _orderService = ServiceLocator.Services.GetRequiredService<IOrderService>();
         _orderTransactionService = ServiceLocator.Services.GetRequiredService<IOrderTransactionService>();
         _uiInteractionService = ServiceLocator.Services.GetRequiredService<IUIInteractionService>();
+        _discountService = ServiceLocator.Services.GetRequiredService<IDiscountService>();
+
+        _cartService
+           .WhenAnyValue(x => x.SubTotal)
+           .ObserveOn(RxApp.MainThreadScheduler)
+           .ToProperty(this, x => x.CartSubTotal, out _cartSubTotal);
+
+        _cartService
+            .WhenAnyValue(x => x.DiscountAmount)
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .ToProperty(this, x => x.DiscountTotal, out _DiscountTotal);
 
         _cartService
             .WhenAnyValue(x => x.Total)
             .ObserveOn(RxApp.MainThreadScheduler)
             .ToProperty(this, x => x.CartTotal, out _cartTotal);
+
+        _cartService
+            .WhenAnyValue(x => x.DiscountOrder)
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .ToProperty(this, x => x.DiscountOrder, out _DiscountOrder);
 
         // Sync from service to viewmodel
         _cartService.WhenAnyValue(x => x.SelectedItem)
@@ -98,14 +121,19 @@ public class OrderCartPanelViewModel : ReactiveObject
                 .Select(status => status == PaymentStatus.PENDING)
                 .Do(_ => this.RaisePropertyChanged(nameof(IsCompleted)))
                 .ToProperty(this, x => x.CanShowItems, out _showItems);
-        
+
         _cartService.WhenAnyValue(x => x.Customer)
             .Subscribe(customer =>
             {
-                _originalCustomer = customer;
                 Customer = customer;
             });
         
+        this.WhenAnyValue(vm => vm.Customer)
+            .Subscribe(customer =>
+            {
+                _cartService.Customer = customer;
+            });
+
         _uiInteractionService.RequestFocus += field =>
         {
             if (field == "Customer")
@@ -145,7 +173,9 @@ public class OrderCartPanelViewModel : ReactiveObject
     private async Task LoadOrderToCartAsync()
     {
         var order = await _orderService.GetOrderTransaction(OrderTransactionId);
+        List<Discount> discounts = await _discountService.GetDiscounts();
         _cartService.LoadOrder(order);
+        _cartService.LoadDiscounts(discounts);
     }
 
     public void LoadOrderToCart(long orderTransactionId)
@@ -211,7 +241,6 @@ public class OrderCartPanelViewModel : ReactiveObject
             var updatedOrder = previousQuantity == 1
                 ? await _orderService.RemoveLineItem(item.Id)
                 : await _orderService.UpdateLineItem(lineItemDto);
-
             _cartService.LoadOrder(updatedOrder);
 
             if (previousQuantity > 1)
@@ -253,24 +282,34 @@ public class OrderCartPanelViewModel : ReactiveObject
         string end = HttpUtility.UrlEncode(endDate.ToISO8601());
         var pendingOrders = await _orderTransactionService
             .GetFilteredOrderTransactionsByStatus(Constants.OrderStatusType.PENDING.ToString(), start, end);
-        if (string.IsNullOrWhiteSpace(Customer)) 
+        if (string.IsNullOrWhiteSpace(Customer))
             return false;
 
         // Check if any order has the same customer name (case-insensitive)
         var existingCustomer = pendingOrders
-            .Any(order => string.Equals(order.Order.Customer?.Trim(), Customer.Trim(), StringComparison.OrdinalIgnoreCase));
+            .Any(order =>
+                order.OrderId != _cartService.OrderId && // Exclude current order
+                string.Equals(order.Order.Customer?.Trim(), Customer.Trim(), StringComparison.OrdinalIgnoreCase)
+            );
 
         return existingCustomer;
-    }
-    
-    private bool HasCustomerNameChanged()
-    {
-        return !string.Equals(_originalCustomer?.Trim(), Customer?.Trim(), StringComparison.Ordinal);
     }
 
     private async Task SaveCustomerAsync()
     {
-        if (!HasCustomerNameChanged()) return;
+        if (_cartService.OrderId is null) return;
+        
+        if (string.IsNullOrWhiteSpace(Customer))
+        {
+            TriggerNotif?.Invoke(this, new NotificationEventArgs
+            {
+                Message = "Customer name cannot be empty.",
+                NotifType = Constants.NotifType.Error
+            });
+            
+            ShouldFocusCustomer = true;
+            return;
+        }
 
         var isExistingCustomer = await ValidateCustomerNameAsync();
         if (isExistingCustomer)
@@ -280,23 +319,8 @@ public class OrderCartPanelViewModel : ReactiveObject
                 Message = $"A pending order already exists for '{Customer}'. Please enter a different name.",
                 NotifType = Constants.NotifType.Error
             });
-            
-            Customer = _originalCustomer;
+
             ShouldFocusCustomer = true;
-            return;
-        }
-
-        if (_cartService.OrderId is null)
-        {
-            var newOrder = new Order
-            {
-                Customer = Customer,
-                LineItems = []
-            };
-
-            var createdOrder = await _orderService.AddOrder(newOrder);
-            _cartService.OrderId = createdOrder.OrderId;
-            _cartService.Customer = createdOrder.Order.Customer;
             return;
         }
 
@@ -351,8 +375,9 @@ public class OrderCartPanelViewModel : ReactiveObject
 
     private static async void ShowLockedDialog()
     {
-        var lockedDialog = new SingleActionDialog
+        var lockedDialog = new InfoDialog
         {
+            Title = "Can't modify item",
             Message = "Items cannot be modified because the order is already completed or partially paid.",
             ButtonText = "OK"
         };

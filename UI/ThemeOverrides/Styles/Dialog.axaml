@@ -6,37 +6,4 @@
         <Setter Property="CornerRadius" Value="{StaticResource SemiBorderRadiusSmall}" />
         <Setter Property="Background" Value="{StaticResource SemiBackground4Color}" />
     </Style>
-
-    <Style Selector="dialogs|TwofoldDialog">
-        <Setter Property="Padding" Value="24 16 24 24" />
-        <Setter Property="CornerRadius" Value="{StaticResource SemiBorderRadiusMedium}" />
-        <Setter Property="HorizontalButtonAlignment" Value="Stretch" />
-        <Setter Property="ButtonMargin" Value="0" />
-
-        <Style Selector="^ DockPanel">
-            <Setter Property="VerticalSpacing" Value="8" />
-        </Style>
-
-        <Style Selector="^ TextBlock#DialogMessage">
-            <Setter Property="FontSize" Value="{StaticResource SemiFontSizeHeader5}" />
-            <Setter Property="FontWeight" Value="DemiBold" />
-            <Setter Property="HorizontalAlignment" Value="Center" />
-        </Style>
-
-        <Style Selector="^ Grid#PART_GridButtons">
-            <Setter Property="ColumnSpacing" Value="8" />
-
-            <Style Selector="^ &gt; Button">
-                <Setter Property="Height" Value="40" />
-            </Style>
-
-            <Style Selector="^ &gt; Button#NegativeButton">
-                <Setter Property="Theme" Value="{StaticResource OutlineButton}" />
-            </Style>
-
-            <Style Selector="^ &gt; Button#PositiveButton">
-                <Setter Property="Theme" Value="{StaticResource SolidButton}" />
-            </Style>
-        </Style>
-    </Style>
 </Styles>

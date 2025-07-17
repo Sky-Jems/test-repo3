@@ -8,43 +8,66 @@
     Background="{StaticResource SemiColorBackground4}"
     CornerRadius="{StaticResource SemiBorderRadiusMedium}"
     mc:Ignorable="d">
+    <Grid RowDefinitions="auto * auto">
+        <Border
+            Grid.Row="0"
+            Padding="{StaticResource SemiThicknessBaseLoose}"
+            BorderBrush="{StaticResource SemiColorBorder}"
+            BorderThickness="0,0,0,1">
+            <Grid VerticalAlignment="Center" ColumnDefinitions="*, Auto">
+                <StackPanel Grid.Column="0">
+                    <Label
+                        Name="DialogTitle"
+                        Classes="H4"
+                        Content="Payment"
+                        Theme="{StaticResource TitleLabel}" />
+                </StackPanel>
 
-    <Grid>
-        <Button
-            Width="24"
-            Height="20"
-            Margin="4"
-            Padding="0"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Top"
-            Background="Transparent"
-            BorderBrush="Transparent"
-            Click="CloseButton_Click"
-            Content="✕"
-            FontSize="14"
-            Foreground="Red"
-            ToolTip.Tip="Close" />
+                <Canvas Margin="0,-12,-12,0" DockPanel.Dock="Top">
+                    <Button
+                        Canvas.Top="0"
+                        Canvas.Right="0"
+                        Width="24"
+                        MinHeight="24"
+                        Padding="0"
+                        Classes="Danger"
+                        Click="CloseDialog"
+                        CornerRadius="{StaticResource SemiBorderRadiusFull}">
+                        <PathIcon Height="12" Data="{DynamicResource SemiIconClose}" />
+                    </Button>
+                </Canvas>
+            </Grid>
+        </Border>
 
-        <Border Padding="{StaticResource SemiThicknessLoose}">
-            <StackPanel Spacing="12">
-                <Label
-                    x:Name="DialogTitle"
-                    Margin="0,0,0,4"
-                    HorizontalAlignment="Center"
-                    Classes="H5"
-                    Theme="{StaticResource TitleLabel}" />
-                <TextBox
-                    Name="categoryTextBox"
-                    Classes="Large"
-                    Watermark="Enter category name" />
+        <Border Grid.Row="1" Padding="{StaticResource SemiThicknessBase}">
+            <TextBox
+                Name="categoryTextBox"
+                Classes="Large"
+                DockPanel.Dock="Top"
+                Watermark="Enter category name" />
+        </Border>
+
+        <Border
+            Grid.Row="2"
+            Padding="{StaticResource SemiThicknessBase}"
+            BorderBrush="{StaticResource SemiColorBorder}"
+            BorderThickness="0,1,0,0">
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
                 <Button
+                    Grid.Column="0"
+                    HorizontalAlignment="Stretch"
+                    Classes="Large"
+                    Click="CloseDialog"
+                    Content="Cancel"
+                    Theme="{StaticResource OutlineButton}" />
+                <Button
+                    Grid.Column="1"
                     HorizontalAlignment="Stretch"
                     Classes="Large"
                     Click="SaveButton_Click"
-                    Theme="{StaticResource SolidButton}">
-                    Save
-                </Button>
-            </StackPanel>
+                    Content="Save"
+                    Theme="{StaticResource SolidButton}" />
+            </Grid>
         </Border>
     </Grid>
 </UserControl>

@@ -20,5 +20,6 @@ public static class ServiceCollectionExtensions
         collection.AddSingleton<OrderCartPanelViewModel>();
         collection.AddSingleton<IOrderTransactionService, OrderTransactionService>();
         collection.AddSingleton<IUIInteractionService, UIInteractionService>();
+        collection.AddSingleton<IDiscountService, DiscountService>();
     }
 }

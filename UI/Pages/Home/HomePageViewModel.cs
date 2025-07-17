@@ -7,7 +7,7 @@ using pos.Extensions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
-namespace Pos.Pages;
+namespace Pos.Pages.Home;
 
 public class HomePageViewModel : ReactiveObject, IRoutableViewModel
 {
@@ -17,7 +17,7 @@ public class HomePageViewModel : ReactiveObject, IRoutableViewModel
 
     [Reactive]
     public string Name { get; set; }
-     [Reactive]
+    [Reactive]
     public string Role { get; set; }
 
     public ReactiveCommand<Unit, Unit> LogoutCommand { get; }

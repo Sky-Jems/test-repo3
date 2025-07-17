@@ -7,6 +7,7 @@ using pos.Handlers.Interfaces;
 using pos.Api;
 using Microsoft.Extensions.DependencyInjection;
 using Pos;
+using System.Text;
 
 namespace pos.Handlers
 {
@@ -68,10 +69,19 @@ namespace pos.Handlers
             return await _client.PutAsJsonAsync(endpoint, putData);
         }
 
-        public async Task<HttpResponseMessage> DeleteAsync(string endpoint, object? caller = null)
+        public async Task<HttpResponseMessage> DeleteAsync(string endpoint, object? deleteData = null, object? caller = null)
         {
             await AddAuthHeaderAsync(caller);
-            return await _client.DeleteAsync(endpoint);
+            if (deleteData != null)
+            {
+                using var request = new HttpRequestMessage(HttpMethod.Delete, endpoint)
+                {
+                    Content = new StringContent(JsonSerializer.Serialize(deleteData), Encoding.UTF8, "application/json")
+                };
+                return await _client.SendAsync(request);
+            }
+            else
+                return await _client.DeleteAsync(endpoint);
         }
 
         public async Task<T> ReadJsonResponseAsync<T>(HttpResponseMessage response)

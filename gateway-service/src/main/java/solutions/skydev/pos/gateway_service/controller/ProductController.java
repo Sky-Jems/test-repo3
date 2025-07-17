@@ -25,32 +25,20 @@ public class ProductController {
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProductResponseDto> createProduct(@RequestBody ProductRequestDto product) {
-        try {
-            ProductResponseDto response = productProducer.sendProductCreateCommand(product);
-            return ResponseEntity.ok(response);
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    public ResponseEntity<ProductResponseDto> createProduct(@RequestBody ProductRequestDto product) throws ExecutionException, InterruptedException, TimeoutException {
+        ProductResponseDto response = productProducer.sendProductCreateCommand(product);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProductResponseDto> updateProduct(@RequestBody ProductRequestDto product) {
-        try {
-            ProductResponseDto response = productProducer.sendProductUpdateCommand(product);
-            return ResponseEntity.ok(response);
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    public ResponseEntity<ProductResponseDto> updateProduct(@RequestBody ProductRequestDto product) throws ExecutionException, InterruptedException, TimeoutException {
+        ProductResponseDto response = productProducer.sendProductUpdateCommand(product);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ProductResponseDto> deleteProduct(@PathVariable String id) {
-        try {
-            ProductResponseDto response = productProducer.sendProductDeleteCommand(id);
-            return ResponseEntity.ok(response);
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    public ResponseEntity<ProductResponseDto> deleteProduct(@PathVariable String id) throws ExecutionException, InterruptedException, TimeoutException {
+        ProductResponseDto response = productProducer.sendProductDeleteCommand(id);
+        return ResponseEntity.ok(response);
     }
 }

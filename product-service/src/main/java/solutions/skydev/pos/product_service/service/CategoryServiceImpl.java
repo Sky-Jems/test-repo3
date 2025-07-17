@@ -32,7 +32,7 @@ public class CategoryServiceImpl implements CategoryService {
         if (category.getName() == null || category.getName().isEmpty()) {
             throw new ValidationException("Category name cannot be empty");
         }
-        
+
         // Capitalize the first letter of the category name
         String capitalizedCategoryName = category.getName().substring(0, 1).toUpperCase() + category.getName().substring(1);
         category.setName(capitalizedCategoryName);
@@ -68,7 +68,7 @@ public class CategoryServiceImpl implements CategoryService {
         if (updatedCategory.getName() == null || updatedCategory.getName().isEmpty()) {
             throw new ValidationException("Category name cannot be empty");
         }
-        
+
         String capitalizedCategoryName = updatedCategory.getName().substring(0, 1).toUpperCase() + updatedCategory.getName().substring(1);
         updatedCategory.setName(capitalizedCategoryName);
 
@@ -90,7 +90,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public void deleteCategory(Long id) {
+    public Category deleteCategory(Long id) {
         Category existingCategory = categoryRepository.findById(id).orElse(null);
         if (existingCategory == null) {
             throw new ResourceNotFoundException("Category with id " + id + " not found");
@@ -102,6 +102,7 @@ public class CategoryServiceImpl implements CategoryService {
         }
 
         categoryRepository.deleteById(id);
+        return existingCategory;
     }
 
     public List<Category> findAll() {

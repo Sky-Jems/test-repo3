@@ -38,13 +38,9 @@ public class CategoryController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<CategoryResponseDto> deleteCategory(@PathVariable String id) {
-        try {
-            CategoryResponseDto response = this.categoryProducer.sendCategoryDeleteCommand(id);
-            return ResponseEntity.ok(response);
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    public ResponseEntity<CategoryResponseDto> deleteCategory(@PathVariable String id) throws ExecutionException, InterruptedException, TimeoutException {
+        CategoryResponseDto response = this.categoryProducer.sendCategoryDeleteCommand(id);
+        return ResponseEntity.ok(response);
     }
 
     // For deletion: check if used

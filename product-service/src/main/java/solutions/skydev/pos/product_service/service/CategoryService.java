@@ -10,7 +10,7 @@ public interface CategoryService {
     Category getCategoryById(Long id);
     Category updateCategory(Long id, Category category);
     Product addProduct(Category category, Product product);
-    void deleteCategory(Long id);
+    Category deleteCategory(Long id);
     List<Category> findAll();
     List<Product> getProductsByCategoryId(Long categoryId);
 }

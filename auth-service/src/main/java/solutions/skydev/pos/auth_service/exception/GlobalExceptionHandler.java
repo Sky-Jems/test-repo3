@@ -2,101 +2,92 @@ package solutions.skydev.pos.auth_service.exception;
 
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import solutions.skydev.pos.common.config.BaseGlobalExceptionHandler;
+import solutions.skydev.pos.common.error.model.ErrorCode;
+import solutions.skydev.pos.common.error.model.ErrorResponse;
 
 import java.util.stream.Collectors;
 
 @ControllerAdvice
-public class GlobalExceptionHandler {
+public class GlobalExceptionHandler extends BaseGlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ProblemDetail handleValidationException(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex) {
         String errorMessage = ex.getBindingResult()
                 .getAllErrors()
                 .stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .collect(Collectors.joining(", "));
 
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-        problemDetail.setTitle("Validation Failed");
-        problemDetail.setDetail(errorMessage);
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .errorCode(ErrorCode.VALIDATION_ERROR.getCode())
+                .message(errorMessage)
+                .build();
 
-        return problemDetail;
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ProblemDetail handleGenericException(Exception ex) {
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-        problemDetail.setTitle("Internal Server Error");
-        problemDetail.setDetail(ex.getMessage() != null ? ex.getMessage() : "An unexpected error occurred");
-
-        return problemDetail;
-    }
-
-    @ExceptionHandler(RuntimeException.class)
-    public ProblemDetail handleRuntimeException(RuntimeException ex) {
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-        problemDetail.setTitle("Runtime Exception");
-        problemDetail.setDetail(ex.getMessage() != null ? ex.getMessage() : "A runtime error occurred");
-
-        return problemDetail;
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     @ExceptionHandler(AuthExceptions.UserNotFoundException.class)
-    public ProblemDetail handleUserNotFoundException(AuthExceptions.UserNotFoundException ex) {
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
-        problemDetail.setTitle("Account Not Found");
-        problemDetail.setDetail(ex.getMessage() != null ? ex.getMessage() : "The requested user was not found");
+    public ResponseEntity<ErrorResponse> handleUserNotFoundException(AuthExceptions.UserNotFoundException ex) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .errorCode(ErrorCode.NOT_FOUND.getCode())
+                .message(ex.getMessage() != null ? ex.getMessage() : "The requested user was not found")
+                .build();
 
-        return problemDetail;
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
     @ExceptionHandler(AuthExceptions.InvalidCredentialsException.class)
-    public ProblemDetail handleInvalidCredentialsException(AuthExceptions.InvalidCredentialsException ex) {
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
-        problemDetail.setTitle("Invalid Credentials");
-        problemDetail.setDetail(ex.getMessage() != null ? ex.getMessage() : "The provided credentials are invalid");
+    public ResponseEntity<ErrorResponse> handleInvalidCredentialsException(AuthExceptions.InvalidCredentialsException ex) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .errorCode(ErrorCode.UNAUTHORIZED.getCode())
+                .message(ex.getMessage() != null ? ex.getMessage() : "The provided credentials are invalid")
+                .build();
 
-        return problemDetail;
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 
     @ExceptionHandler(AuthExceptions.UserAlreadyExistsException.class)
-    public ProblemDetail handleUserAlreadyExistsException(AuthExceptions.UserAlreadyExistsException ex) {
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
-        problemDetail.setTitle("Account Already Exists");
-        problemDetail.setDetail(ex.getMessage() != null ? ex.getMessage() : "A user with this username already exists");
+    public ResponseEntity<ErrorResponse> handleUserAlreadyExistsException(AuthExceptions.UserAlreadyExistsException ex) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .errorCode(ErrorCode.CONFLICT.getCode())
+                .message(ex.getMessage() != null ? ex.getMessage() : "A user with this username already exists")
+                .build();
 
-        return problemDetail;
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
 
     @ExceptionHandler(AuthExceptions.InvalidRefreshTokenException.class)
-    public ProblemDetail handleInvalidRefreshTokenException(AuthExceptions.InvalidRefreshTokenException ex) {
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
-        problemDetail.setTitle("Invalid Refresh Token");
-        problemDetail.setDetail(ex.getMessage() != null ? ex.getMessage() : "The provided refresh token is invalid");
+    public ResponseEntity<ErrorResponse> handleInvalidRefreshTokenException(AuthExceptions.InvalidRefreshTokenException ex) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .errorCode(ErrorCode.UNAUTHORIZED.getCode())
+                .message(ex.getMessage() != null ? ex.getMessage() : "The provided refresh token is invalid")
+                .build();
 
-        return problemDetail;
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 
     @ExceptionHandler(AuthExceptions.RefreshTokenNotFoundException.class)
-    public ProblemDetail handleRefreshTokenNotFoundException(AuthExceptions.RefreshTokenNotFoundException ex) {
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
-        problemDetail.setTitle("Refresh Token Not Found");
-        problemDetail.setDetail(ex.getMessage() != null ? ex.getMessage() : "The requested refresh token was not found");
+    public ResponseEntity<ErrorResponse> handleRefreshTokenNotFoundException(AuthExceptions.RefreshTokenNotFoundException ex) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .errorCode(ErrorCode.NOT_FOUND.getCode())
+                .message(ex.getMessage() != null ? ex.getMessage() : "The requested refresh token was not found")
+                .build();
 
-        return problemDetail;
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
     @ExceptionHandler(AuthExceptions.RefreshTokenExpiredException.class)
-    public ProblemDetail handleRefreshTokenExpiredException(AuthExceptions.RefreshTokenExpiredException ex) {
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
-        problemDetail.setTitle("Refresh Token Expired");
-        problemDetail.setDetail(ex.getMessage() != null ? ex.getMessage() : "The provided refresh token has expired");
+    public ResponseEntity<ErrorResponse> handleRefreshTokenExpiredException(AuthExceptions.RefreshTokenExpiredException ex) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .errorCode(ErrorCode.UNAUTHORIZED.getCode())
+                .message(ex.getMessage() != null ? ex.getMessage() : "The provided refresh token has expired")
+                .build();
 
-        return problemDetail;
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
-
 }

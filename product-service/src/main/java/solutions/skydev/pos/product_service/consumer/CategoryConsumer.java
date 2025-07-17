@@ -63,10 +63,10 @@ public class CategoryConsumer {
     ))
     @KafkaAsyncOperationBinding
     @SendTo("category.deleted")
-    public String deleteCategoryCommand(ConsumerRecord<String, String> record) {
+    public CategoryResponseDto deleteCategoryCommand(ConsumerRecord<String, String> record) {
         Long categoryId = Long.valueOf(record.key());
-        categoryService.deleteCategory(categoryId);
-        return "Category with ID " + categoryId + " deleted successfully";
+        Category category = categoryService.deleteCategory(categoryId);
+        return this.categoryMapper.toResponseDto(category);
     }
 
 //    @KafkaListener(topics = "create-category-product-command")

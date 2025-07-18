@@ -27,6 +27,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_3F6D3FF603BB4013A76A8217C240C36B"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_44BC5808BA3949A284DF84A435EF39D2"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -290,6 +296,26 @@
             "TargetName" = "8:auth-service-0.0.1-SNAPSHOT.jar"
             "Tag" = "8:"
             "Folder" = "8:_F794237B2EBC482198FCCC3DA119140A"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3F6D3FF603BB4013A76A8217C240C36B"
+            {
+            "SourcePath" = "8:..\\update-db-password.bat"
+            "TargetName" = "8:update-db-password.bat"
+            "Tag" = "8:"
+            "Folder" = "8:_86EDB97C195B433CB3CE45BD94F2346A"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -809,7 +835,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:ServerPOS"
         "ProductCode" = "8:{72224919-F00C-4E0D-BEC0-8D5136DC6485}"
-        "PackageCode" = "8:{F1D75CEE-B308-4CEF-98AA-7FBF3F00F496}"
+        "PackageCode" = "8:{50086769-C6FB-4C3C-BF9E-4D4F8B84EF4A}"
         "UpgradeCode" = "8:{88DF82C2-9A8F-4D40-A0DB-086A15DF586D}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"

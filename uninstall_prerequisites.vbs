@@ -45,7 +45,7 @@ DeleteDirectory javaDir
 ' === Start Uninstall PostgreSQL ===
 
 ' Stop any postgres instance
-command = "cmd.exe /c taskkill /F /IM postgres.exe"
+command = "cmd.exe /c for /f " & Chr(34) & "tokens=5" & Chr(34) & " %a in ('netstat -aon "& Chr(94) &"| findstr :5432') do taskkill /F /PID %a"
 shell.Run command, 0, True
 
 DeleteDirectory postgreSQLDir 

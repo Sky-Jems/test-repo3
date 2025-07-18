@@ -1,6 +1,6 @@
 Option Explicit
 
-Dim kafkaUrl, javaUrl, net8Url, dbUrl, kafkaDir, net8Dir, javaDir, postgresBinDir, postgresDir, postgresDataDir, modifiedKafkaFile, tempDownloadKafkaPath, tempDownloadJavaPath, tempDownloadNet8Path, tempDownloadDbPath, kafkaBinPath, javaBinPath
+Dim kafkaUrl, javaUrl, dbUrl, kafkaDir, javaDir, postgresBinDir, postgresDir, postgresDataDir, modifiedKafkaFile, tempDownloadKafkaPath, tempDownloadJavaPath, tempDownloadDbPath, kafkaBinPath, javaBinPath
 Dim xmlHttp, adoStream, fso, shell, command, fullCommand, mainDrive
 
 ' === FUNCTIONS ===
@@ -48,10 +48,8 @@ mainDrive = fso.GetDriveName(shell.ExpandEnvironmentStrings("%SystemRoot%"))
 kafkaUrl = "https://dlcdn.apache.org/kafka/3.9.1/kafka_2.12-3.9.1.tgz"
 javaUrl = "https://download.java.net/java/GA/jdk24.0.1/24a58e0e276943138bf3e963e6291ac2/9/GPL/openjdk-24.0.1_windows-x64_bin.zip"
 dbUrl = "https://get.enterprisedb.com/postgresql/postgresql-17.5-3-windows-x64-binaries.zip"
-net8Url = "https://builds.dotnet.microsoft.com/dotnet/Sdk/8.0.412/dotnet-sdk-8.0.412-win-x64.exe"
 kafkaDir = mainDrive & "\Kafka"
 javaDir = mainDrive & "\Java"
-net8Dir = mainDrive & "\Program Files\dotnet\sdk\8.0.412"
 postgresDir = mainDrive & "\PostgreSQLBinary"
 postgresBinDir = postgresDir & "\pgsql\bin"
 postgresDataDir = postgresDir & "\data"
@@ -61,7 +59,6 @@ modifiedKafkaFile = mainDrive & "\Program Files\Skydev Solutions Inc\ServerPOS\k
 tempDownloadJavaPath = CreateObject("Scripting.FileSystemObject").GetSpecialFolder(2) & "\java.zip"
 tempDownloadDbPath = CreateObject("Scripting.FileSystemObject").GetSpecialFolder(2) & "\postgres.zip"
 tempDownloadKafkaPath = CreateObject("Scripting.FileSystemObject").GetSpecialFolder(2) & "\kafka.tgz"
-tempDownloadNet8Path = CreateObject("Scripting.FileSystemObject").GetSpecialFolder(2) & "\net8.exe"
 '=== END ===
 
 
@@ -101,20 +98,6 @@ End If
 '=== END ===
 
 
-'=== Net8 ===
-If Not fso.FolderExists(net8Dir) Then
-   If DownloadFile(net8Url, tempDownloadNet8Path) Then
-        command = "Start-Process -FilePath '" & tempDownloadNet8Path & "' " & _
-            "-ArgumentList '/install', '/quiet', '/norestart' " & _
-            "-NoNewWindow -Wait"
-        fullCommand = "powershell.exe -WindowStyle Hidden -nologo -noprofile -ExecutionPolicy Bypass -Command """ & command & """"
-        shell.Run fullCommand, 0, True
-   Else
-       WScript.Quit
-   End If
-End If
-'=== END ===
-
 '=== PostgreSQL ===
 If Not fso.FolderExists(postgresBinDir) Then
     If Not fso.FolderExists(postgresDir) Then fso.CreateFolder postgresDir
@@ -137,7 +120,7 @@ End If
 
 
 ' === Optional: Clean up installer ===
-CleanUpTemporaryFiles(Array(tempDownloadJavaPath, tempDownloadKafkaPath, tempDownloadDbPath, tempDownloadNet8Path))
+CleanUpTemporaryFiles(Array(tempDownloadJavaPath, tempDownloadKafkaPath, tempDownloadDbPath))
 '=== END ===
 
 

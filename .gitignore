@@ -494,3 +494,5 @@ UI/appsettings.json
 
 #BUILD jars location
 jar-releases/
+
+application.properties

@@ -1,6 +1,6 @@
 # Database Connection
 #spring.datasource.url=jdbc:postgresql://<address>:<port>/<database_name>
-#spring.datasource.username=<database account username>
+#spring.datasource.username=<database account name>
 #spring.datasource.password=<database password>
 
 # Uncomment the line below if you want to expose this service over the network

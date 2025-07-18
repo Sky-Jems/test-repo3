@@ -3,6 +3,7 @@
     "KafkaPort": 9092,
     "ZookeeperPort": 2181,
     "MainDrive": "C:",
+    "PostgreSQLPassword": "<password>",
     "PostgreSQLInstallationDirectory": "\\PostgreSQLBinary",
     "PostgreSQLPath": "\\PostgreSQLBinary\\pgsql\\bin\\pg_ctl.exe",
     "PostgreSQLData": "\\PostgreSQLBinary\\pgsql\\data",

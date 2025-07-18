@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using services_app_pos.Services.Interfaces;
 using System.ComponentModel;
+using System.Text.Json;
 
 namespace services_app_pos.Services
 {
@@ -41,6 +42,7 @@ namespace services_app_pos.Services
             if (PrerequisitesStatus.Zookeeper && PrerequisitesStatus.Kafka && PrerequisitesStatus.Postgres)
             {
                 CreateDatabase();
+                UpdateDbPassword();
                 StartMicroServices();
             }
         }
@@ -55,6 +57,7 @@ namespace services_app_pos.Services
             ProcessStartInfo startInfo = new ProcessStartInfo()
             {
                 FileName = $@"{InstalledDirectory}\create-database.bat",
+                Arguments = $"{Program.customSettings.PostgreSQLPassword}",
                 UseShellExecute = false,
                 CreateNoWindow = true
             };
@@ -65,13 +68,30 @@ namespace services_app_pos.Services
             cmd.WaitForExit();
             cmd.Kill();
         }
+
+        private void UpdateDbPassword()
+        {
+            ProcessStartInfo startInfo = new ProcessStartInfo()
+            {
+                FileName = $@"{InstalledDirectory}\update-db-password.bat",
+                Arguments = $"{Program.customSettings.PostgreSQLPassword}",
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            Process cmd = new Process();
+            cmd.StartInfo = startInfo;
+            cmd.Start();
+            cmd.WaitForExit();
+            cmd.Kill();
+        }
+
         public void StartPostgreSQL()
         {
             string PostgresPath = Program.customSettings.MainDrive + Program.customSettings.PostgreSQLPath;
             string PostgresData = Program.customSettings.MainDrive + Program.customSettings.PostgreSQLData;
 
-            bool isRunning = Process.GetProcessesByName("postgres").Any();
-            if (isRunning) 
+            if (IsRunning(5432)) 
             {
                 PrerequisitesStatus.Postgres = true;
                 MainServiceEvent?.Invoke(this, (int)Utils.Constants.MainService.PostgreSQL);

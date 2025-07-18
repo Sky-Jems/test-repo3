@@ -58,7 +58,7 @@
     <Exec Command="dotnet clean $(ProjectDir)pos.csproj" />
   </Target>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(IsPublishing)' != 'true'">
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(IsPublishing)' != 'true' and '$(Configuration)' == 'Release'">
     <Exec Command="dotnet publish $(ProjectDir)pos.csproj --runtime win-x64 -p:IsPublishing=true" />
   </Target>
 </Project>

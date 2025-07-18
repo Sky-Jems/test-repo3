@@ -85,7 +85,7 @@ public class ProductServiceImpl implements ProductService {
             throw new ValidationException("Product name must be between 3 and 250 characters long");
         }
 
-        if (productRepository.existsByName(productToUpdate.getName())) {
+        if (productRepository.existsByName(productToUpdate.getName()) && !productToUpdate.getName().equals(existingProduct.getName())) {
             throw new ValidationException("Product with name '" + productToUpdate.getName() + "' already exists");
         }
 

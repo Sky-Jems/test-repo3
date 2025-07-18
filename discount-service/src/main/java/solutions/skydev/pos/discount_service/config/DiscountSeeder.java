@@ -32,6 +32,20 @@ public class DiscountSeeder {
                     LocalDateTime.parse("2025-12-31T23:59:59"),
                     LocalDateTime.parse("2030-12-31T23:59:59")
             );
+            createDiscountIfNotExists(
+                    discountService,
+                    "10% Percent Discount",
+                    BigDecimal.valueOf(10),
+                    LocalDateTime.parse("2025-12-31T23:59:59"),
+                    LocalDateTime.parse("2030-12-31T23:59:59")
+            );
+            createDiscountIfNotExists(
+                    discountService,
+                    "20% Percent Discount",
+                    BigDecimal.valueOf(20),
+                    LocalDateTime.parse("2025-12-31T23:59:59"),
+                    LocalDateTime.parse("2030-12-31T23:59:59")
+            );
         };
     }
 

@@ -1,6 +1,6 @@
 Option Explicit
 
-Dim kafkaUrl, javaUrl, dbUrl, kafkaDir, javaDir, postgresBinDir, postgresDir, postgresDataDir, modifiedKafkaFile, tempDownloadKafkaPath, tempDownloadJavaPath, tempDownloadDbPath, kafkaBinPath, javaBinPath
+Dim kafkaUrl, javaUrl, dbUrl, kafkaDir, javaDir, postgresBinDir, postgresDir, postgresDataDir, modifiedKafkaFile, modifiedPostgreSQLDataFile, tempDownloadKafkaPath, tempDownloadJavaPath, tempDownloadDbPath, kafkaBinPath, javaBinPath
 Dim xmlHttp, adoStream, fso, shell, command, fullCommand, mainDrive
 
 ' === FUNCTIONS ===
@@ -56,6 +56,7 @@ postgresDataDir = postgresDir & "\data"
 kafkaBinPath = mainDrive & "\Kafka\kafka_2.12-3.9.1\bin"
 javaBinPath = mainDrive & "\Java\jdk-24.0.1\bin"
 modifiedKafkaFile = mainDrive & "\Program Files\Skydev Solutions Inc\ServerPOS\kafka-server-start.bat"
+modifiedPostgreSQLDataFile = mainDrive & "\Program Files\Skydev Solutions Inc\ServerPOS\pg_hba.conf"
 tempDownloadJavaPath = CreateObject("Scripting.FileSystemObject").GetSpecialFolder(2) & "\java.zip"
 tempDownloadDbPath = CreateObject("Scripting.FileSystemObject").GetSpecialFolder(2) & "\postgres.zip"
 tempDownloadKafkaPath = CreateObject("Scripting.FileSystemObject").GetSpecialFolder(2) & "\kafka.tgz"
@@ -116,6 +117,12 @@ If Not fso.FolderExists(postgresDataDir) Then
     fullCommand = "powershell.exe -WindowStyle Hidden -nologo -noprofile -ExecutionPolicy Bypass -Command """ & command & """"
     shell.Run fullCommand, 1, True
 End If
+
+' === Copy Modified PostgreSQL Data Authentication Setup File ===
+command = "powershell -ExecutionPolicy Bypass -Command ""Copy-Item -Path '" & modifiedPostgreSQLDataFile & "' -Destination '" & postgresDataDir & "' -Force"""
+shell.Run command, 0, True
+'=== END ===
+
 '=== END ===
 
 

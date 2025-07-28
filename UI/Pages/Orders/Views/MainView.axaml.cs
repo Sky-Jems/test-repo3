@@ -24,7 +24,8 @@ public partial class MainView : ReactiveUserControl<MainViewModel>
             ViewModel.EndDate = new DateTimeOffset(DateTime.UtcNow).DayEnd();
             UpdateDateTimeButtonLabel();
             ViewModel.FilteredOrderTransactionsCommand.Execute();
-            ViewModel.TriggerNotif += MainWindow.NotificationMessage;      
+            ViewModel.TriggerNotif -= MainWindow.NotificationMessage;
+            ViewModel.TriggerNotif += MainWindow.NotificationMessage;
         });
     }
 
@@ -78,14 +79,14 @@ public partial class MainView : ReactiveUserControl<MainViewModel>
         {
             var row = visual.FindAncestorOfType<DataGridRow>();
             if (row?.DataContext is OrderTransaction currentRowData)
+            {
+                Dispatcher.UIThread.Post(() =>
                 {
-                    Dispatcher.UIThread.Post(() =>
-                    {
-                        ViewModel!.OrderDisplayPanelViewModel.SetOrder(currentRowData);
-                        orderDetailsPane.IsPaneOpen = true;
-                    });
-                }
+                    ViewModel!.OrderDisplayPanelViewModel.SetOrder(currentRowData);
+                    orderDetailsPane.IsPaneOpen = true;
+                });
             }
+        }
     }
 
     private void AddOrdersButton_Click(object sender, RoutedEventArgs args)

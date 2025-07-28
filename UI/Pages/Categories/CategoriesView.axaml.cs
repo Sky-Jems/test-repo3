@@ -20,6 +20,7 @@ public partial class CategoriesView : ReactiveUserControl<CategoriesViewModel>
     {
         viewModel = new CategoriesViewModel();
         DataContext = viewModel;
+        ViewModel!.TriggerNotif += MainWindow.NotificationMessage;
         InitializeComponent();
     }
 

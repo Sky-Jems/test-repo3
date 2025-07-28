@@ -2,11 +2,11 @@
     x:Class="Pos.Controls.OrderCartPanel"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:behaviors="clr-namespace:Pos.Behaviors"
     xmlns:converters="using:Pos.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:Pos.Controls"
-    xmlns:behaviors="clr-namespace:Pos.Behaviors"
     x:Name="root"
     x:DataType="vm:OrderCartPanelViewModel"
     mc:Ignorable="d">
@@ -16,6 +16,7 @@
         <converters:IsZeroConverter x:Key="isZeroConverter" />
         <converters:IsGreaterThanZeroConverter x:Key="isGreaterThanZeroConverter" />
         <converters:QuantityDisplayConverter x:Key="QuantityDisplayConverter" />
+        <converters:StringNotEmptyConverter x:Key="stringNotEmptyConverter" />
     </UserControl.Resources>
 
     <DockPanel>
@@ -26,12 +27,19 @@
             ColumnSpacing="12"
             DockPanel.Dock="Top">
             <TextBox
+                behaviors:FocusBehavior.IsFocused="{Binding ShouldFocusCustomer}"
                 Classes="Large Bordered"
                 IsEnabled="{Binding CanShowItems}"
                 LostFocus="OnCustomerNameLostFocus"
                 Text="{Binding Customer, Mode=TwoWay}"
-                Watermark="Please enter customer name before taking an order"
-                behaviors:FocusBehavior.IsFocused="{Binding ShouldFocusCustomer}" />
+                Watermark="Please enter customer name before taking an order">
+                <TextBox.InnerRightContent>
+                    <PathIcon
+                        Height="16"
+                        Data="{StaticResource SemiIconUser}"
+                        Theme="{StaticResource InnerPathIcon}" />
+                </TextBox.InnerRightContent>
+            </TextBox>
         </Grid>
 
         <Grid Grid.Column="0" RowDefinitions="auto * auto">
@@ -54,210 +62,218 @@
             </Border>
 
             <!--  order list  -->
-            <Border
-                Grid.Row="1"
-                Margin="24,16"
-                ClipToBounds="True"
-                CornerRadius="4">
-                <Grid>
-                    <ScrollViewer IsVisible="{Binding OrderList.Count, Converter={StaticResource isGreaterThanZeroConverter}}">
-                        <ListBox
-                            Name="LineItemListBox"
-                            IsHitTestVisible="{Binding IsEditable, ElementName=root}"
-                            ItemsSource="{Binding OrderList}"
-                            SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
-                            Theme="{StaticResource PureCardRadioGroupListBox}">
-                            <ListBox.Styles>
-                                <Style Selector="ListBoxItem">
-                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                                    <Setter Property="Padding" Value="16 12 16 12" />
-                                </Style>
-                            </ListBox.Styles>
+            <Grid Grid.Row="1">
+                <Border
+                    Margin="24,16"
+                    ClipToBounds="True"
+                    CornerRadius="4">
+                    <Grid>
+                        <ScrollViewer IsVisible="{Binding OrderList.Count, Converter={StaticResource isGreaterThanZeroConverter}}">
+                            <ListBox
+                                Name="LineItemListBox"
+                                IsHitTestVisible="{Binding IsEditable, ElementName=root}"
+                                ItemsSource="{Binding OrderList}"
+                                SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                                Theme="{StaticResource PureCardRadioGroupListBox}">
+                                <ListBox.Styles>
+                                    <Style Selector="ListBoxItem">
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                        <Setter Property="Padding" Value="16 12 16 12" />
+                                    </Style>
+                                </ListBox.Styles>
 
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <Border
-                                        Background="Transparent"
-                                        Holding="Border_Holding"
-                                        PointerPressed="CartItem_PointerPressed"
-                                        Tag="{Binding}">
-                                        <Border.Styles>
-                                            <Style Selector="Border">
-                                                <Setter Property="(Gestures.IsHoldWithMouseEnabled)" Value="True" />
-                                            </Style>
-                                        </Border.Styles>
-                                        <StackPanel HorizontalAlignment="Stretch" Spacing="8">
-                                            <Grid
-                                                HorizontalAlignment="Stretch"
-                                                ColumnDefinitions="* auto"
-                                                ColumnSpacing="16"
-                                                RowDefinitions="auto auto">
-                                                <TextBlock
-                                                    Grid.Row="0"
-                                                    Grid.Column="0"
-                                                    VerticalAlignment="Center"
-                                                    FontSize="{StaticResource SemiFontSizeRegular}"
-                                                    LineHeight="{StaticResource SemiFontSizeHeader5}">
-                                                    <TextBlock.Text>
-                                                        <MultiBinding StringFormat="{}{0} - {1}">
-                                                            <Binding Path="ProductName" />
-                                                            <Binding Path="ProductDescription" />
-                                                        </MultiBinding>
-                                                    </TextBlock.Text>
-                                                </TextBlock>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border
+                                            Background="Transparent"
+                                            Holding="Border_Holding"
+                                            PointerPressed="CartItem_PointerPressed"
+                                            Tag="{Binding}">
+                                            <Border.Styles>
+                                                <Style Selector="Border">
+                                                    <Setter Property="(Gestures.IsHoldWithMouseEnabled)" Value="True" />
+                                                </Style>
+                                            </Border.Styles>
+                                            <StackPanel HorizontalAlignment="Stretch" Spacing="8">
+                                                <Grid
+                                                    HorizontalAlignment="Stretch"
+                                                    ColumnDefinitions="* auto"
+                                                    ColumnSpacing="16"
+                                                    RowDefinitions="auto auto">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="{Binding ProductName}" FontWeight="{StaticResource SemiFontWeightBold}" />
+                                                        <TextBlock Text=" - " IsVisible="{Binding ProductDescription, Converter={StaticResource stringNotEmptyConverter}}" />
+                                                        <TextBlock Text="{Binding ProductDescription}" />
+                                                    </StackPanel>
 
-                                                <Label
-                                                    Grid.Row="1"
-                                                    Grid.Column="0"
-                                                    VerticalContentAlignment="Center"
-                                                    Content="{Binding Price, StringFormat='₱{0:N2}'}"
-                                                    FontSize="{StaticResource SemiFontSizeSmall}"
-                                                    Foreground="{StaticResource SemiColorText2}" />
+                                                    <Label
+                                                        Grid.Row="1"
+                                                        Grid.Column="0"
+                                                        VerticalContentAlignment="Center"
+                                                        Content="{Binding Price, StringFormat='₱{0:N2}'}"
+                                                        FontSize="{StaticResource SemiFontSizeSmall}"
+                                                        Foreground="{StaticResource SemiColorText2}" />
 
-                                                <StackPanel
-                                                    Name="quantityButtonsContainer"
-                                                    Grid.Column="1"
-                                                    VerticalAlignment="Top"
-                                                    Orientation="Horizontal"
-                                                    Spacing="16">
+                                                    <StackPanel
+                                                        Name="quantityButtonsContainer"
+                                                        Grid.Column="1"
+                                                        VerticalAlignment="Top"
+                                                        Orientation="Horizontal"
+                                                        Spacing="16">
+                                                        <Button
+                                                            Name="minusButton"
+                                                            Width="24"
+                                                            MinHeight="24"
+                                                            Padding="0"
+                                                            Classes.Danger="{Binding Quantity, Converter={StaticResource equalsConverter}, ConverterParameter=1}"
+                                                            Click="OnMinusClick"
+                                                            CommandParameter="{Binding}"
+                                                            IsVisible="{Binding DataContext.CanShowItems, ElementName=root}"
+                                                            Tag="{Binding}"
+                                                            Theme="{StaticResource SolidButton}">
+                                                            <Button.Styles>
+                                                                <Style Selector="Button#minusButton &gt; PathIcon">
+                                                                    <Setter Property="Data" Value="{StaticResource SemiIconMinus}" />
+                                                                </Style>
+                                                                <Style Selector="Button#minusButton.Danger &gt; PathIcon">
+                                                                    <Setter Property="Data" Value="{StaticResource SemiIconDelete}" />
+                                                                </Style>
+                                                            </Button.Styles>
+                                                            <PathIcon Width="12" Theme="{DynamicResource InnerPathIcon}" />
+                                                        </Button>
+                                                        <Label Name="quantityLabel" VerticalContentAlignment="Center">
+                                                            <Label.Content>
+                                                                <MultiBinding Converter="{StaticResource QuantityDisplayConverter}">
+                                                                    <Binding Path="Quantity" />
+                                                                    <Binding ElementName="root" Path="DataContext.CanShowItems" />
+                                                                </MultiBinding>
+                                                            </Label.Content>
+                                                        </Label>
+                                                        <Button
+                                                            Width="24"
+                                                            MinHeight="24"
+                                                            Padding="0"
+                                                            Click="OnPlusClick"
+                                                            CommandParameter="{Binding}"
+                                                            IsVisible="{Binding DataContext.CanShowItems, ElementName=root}"
+                                                            Tag="{Binding}"
+                                                            Theme="{StaticResource SolidButton}">
+                                                            <PathIcon
+                                                                Width="12"
+                                                                Data="{StaticResource SemiIconPlus}"
+                                                                Theme="{DynamicResource InnerPathIcon}" />
+                                                        </Button>
+                                                    </StackPanel>
+                                                </Grid>
+
+                                                <Rectangle
+                                                    Stroke="{StaticResource SemiColorFill2}"
+                                                    StrokeDashArray="2,6"
+                                                    StrokeThickness="1" />
+
+                                                <Grid ColumnDefinitions="* auto">
                                                     <Button
-                                                        Name="minusButton"
-                                                        Width="24"
-                                                        MinHeight="24"
-                                                        Padding="0"
-                                                        Classes.Danger="{Binding Quantity, Converter={StaticResource equalsConverter}, ConverterParameter=1}"
-                                                        Click="OnMinusClick"
-                                                        CommandParameter="{Binding}"
+                                                        Name="ApplyLineItemDiscountButton"
+                                                        HorizontalAlignment="Left"
+                                                        VerticalAlignment="Center"
+                                                        Classes.Success="{Binding Discount, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                                        Click="DiscountLineItemButton_Click"
                                                         IsVisible="{Binding DataContext.CanShowItems, ElementName=root}"
-                                                        Tag="{Binding}"
+                                                        Tag="{Binding Id}"
                                                         Theme="{StaticResource SolidButton}">
                                                         <Button.Styles>
-                                                            <Style Selector="Button#minusButton &gt; PathIcon">
-                                                                <Setter Property="Data" Value="{StaticResource SemiIconMinus}" />
-                                                            </Style>
-                                                            <Style Selector="Button#minusButton.Danger &gt; PathIcon">
-                                                                <Setter Property="Data" Value="{StaticResource SemiIconDelete}" />
+                                                            <Style Selector="Button#ApplyLineItemDiscountButton">
+                                                                <Style Selector="^:not(.Success)">
+                                                                    <Setter Property="Content">
+                                                                        <Template>
+                                                                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource SemiSpacingTight}">
+                                                                                <PathIcon Data="{StaticResource SemiIconPercentage}" Theme="{StaticResource InnerPathIcon}" />
+                                                                                <AccessText Text="Apply Discount" />
+                                                                            </StackPanel>
+                                                                        </Template>
+                                                                    </Setter>
+                                                                </Style>
+
+                                                                <Style Selector="^.Success">
+                                                                    <Setter Property="Content" Value="{Binding Discount.Discount.Name, StringFormat='Applied - {0}'}}" />
+                                                                </Style>
                                                             </Style>
                                                         </Button.Styles>
-                                                        <PathIcon Width="12" Theme="{DynamicResource InnerPathIcon}" />
                                                     </Button>
-                                                    <Label Name="quantityLabel" VerticalContentAlignment="Center">
-                                                        <Label.Content>
-                                                            <MultiBinding Converter="{StaticResource QuantityDisplayConverter}">
-                                                                <Binding Path="Quantity" />
-                                                                <Binding ElementName="root" Path="DataContext.CanShowItems" />
-                                                            </MultiBinding>
-                                                        </Label.Content>
-                                                    </Label>
-                                                    <Button
-                                                        Width="24"
-                                                        MinHeight="24"
-                                                        Padding="0"
-                                                        Click="OnPlusClick"
-                                                        CommandParameter="{Binding}"
-                                                        IsVisible="{Binding DataContext.CanShowItems, ElementName=root}"
-                                                        Tag="{Binding}"
-                                                        Theme="{StaticResource SolidButton}">
-                                                        <PathIcon
-                                                            Width="12"
-                                                            Data="{StaticResource SemiIconPlus}"
-                                                            Theme="{DynamicResource InnerPathIcon}" />
-                                                    </Button>
-                                                </StackPanel>
-                                            </Grid>
 
-                                            <Rectangle
-                                                Stroke="{StaticResource SemiColorFill2}"
-                                                StrokeDashArray="2,6"
-                                                StrokeThickness="1" />
-
-                                            <Grid ColumnDefinitions="* auto">
-                                                <Button
-                                                    Name="ApplyLineItemDiscountButton"
-                                                    HorizontalAlignment="Left"
-                                                    VerticalAlignment="Center"
-                                                    Classes.Success="{Binding Discount, Converter={x:Static ObjectConverters.IsNotNull}}"
-                                                    Click="DiscountLineItemButton_Click"
-                                                    IsVisible="{Binding DataContext.CanShowItems, ElementName=root}"
-                                                    Tag="{Binding Id}"
-                                                    Theme="{StaticResource SolidButton}">
-                                                    <Button.Styles>
-                                                        <Style Selector="Button#ApplyLineItemDiscountButton">
-                                                            <Style Selector="^:not(.Success)">
-                                                                <Setter Property="Padding" Value="0" />
-                                                                <Setter Property="Width" Value="32" />
-                                                                <Setter Property="Content" Value="%" />
-                                                            </Style>
-
-                                                            <Style Selector="^.Success">
-                                                                <Setter Property="Content" Value="{Binding Discount.Discount.Name, StringFormat='Applied - {0}'}}" />
-                                                            </Style>
-                                                        </Style>
-                                                    </Button.Styles>
-                                                </Button>
-
-                                                <StackPanel
-                                                    Grid.Column="1"
-                                                    VerticalAlignment="Center"
-                                                    Orientation="Horizontal"
-                                                    Spacing="2">
-                                                    <StackPanel.Styles>
-                                                        <Style Selector="TextBlock">
-                                                            <Setter Property="FontSize" Value="{StaticResource SemiFontSizeRegular}" />
-
-                                                            <Style Selector="^#DiscountedItemTotal">
-                                                                <Setter Property="IsVisible" Value="false" />
-                                                            </Style>
-                                                            <Style Selector="^#DiscountedItemTotal.discounted">
-                                                                <Setter Property="IsVisible" Value="true" />
-                                                            </Style>
-
-                                                            <Style Selector="^#ItemTotal.discounted">
-                                                                <Setter Property="Foreground" Value="{StaticResource SemiColorText2}" />
-                                                                <Setter Property="FontSize" Value="{StaticResource SemiFontSizeSmall}" />
-                                                                <Setter Property="TextDecorations" Value="Strikethrough" />
-                                                            </Style>
-                                                        </Style>
-                                                    </StackPanel.Styles>
-
-                                                    <TextBlock
-                                                        Name="DiscountedItemTotal"
-                                                        VerticalAlignment="Bottom"
-                                                        Classes.discounted="{Binding DiscountedAmount, Converter={x:Static ObjectConverters.IsNotNull}}"
-                                                        Text="{Binding DiscountedAmount, StringFormat=₱{0:F2}}" />
-                                                    <TextBlock
-                                                        Name="ItemTotal"
+                                                    <StackPanel
                                                         Grid.Column="1"
-                                                        VerticalAlignment="Bottom"
-                                                        Classes.discounted="{Binding Discount, Converter={x:Static ObjectConverters.IsNotNull}}"
-                                                        Text="{Binding ItemTotal, StringFormat=₱{0:F2}}" />
-                                                </StackPanel>
-                                            </Grid>
-                                        </StackPanel>
-                                    </Border>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                            <ListBox.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel Orientation="Vertical" Spacing="8" />
-                                </ItemsPanelTemplate>
-                            </ListBox.ItemsPanel>
-                        </ListBox>
-                    </ScrollViewer>
+                                                        VerticalAlignment="Center"
+                                                        Orientation="Horizontal"
+                                                        Spacing="2">
+                                                        <StackPanel.Styles>
+                                                            <Style Selector="TextBlock">
+                                                                <Setter Property="FontSize" Value="{StaticResource SemiFontSizeRegular}" />
 
-                    <!--  Zero state message  -->
-                    <TextBlock
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        FontSize="14"
-                        Foreground="Gray"
-                        IsVisible="{Binding OrderList.Count, Converter={StaticResource isZeroConverter}}"
-                        Text="No items yet. To add items, start by selecting a service and then choose a product."
-                        TextAlignment="Center"
-                        TextWrapping="Wrap" />
-                </Grid>
-            </Border>
+                                                                <Style Selector="^#DiscountedItemTotal">
+                                                                    <Setter Property="IsVisible" Value="false" />
+                                                                </Style>
+                                                                <Style Selector="^#DiscountedItemTotal.discounted">
+                                                                    <Setter Property="IsVisible" Value="true" />
+                                                                </Style>
 
+                                                                <Style Selector="^#ItemTotal.discounted">
+                                                                    <Setter Property="Foreground" Value="{StaticResource SemiColorText2}" />
+                                                                    <Setter Property="FontSize" Value="{StaticResource SemiFontSizeSmall}" />
+                                                                    <Setter Property="TextDecorations" Value="Strikethrough" />
+                                                                </Style>
+                                                            </Style>
+                                                        </StackPanel.Styles>
+
+                                                        <TextBlock
+                                                            Name="DiscountedItemTotal"
+                                                            VerticalAlignment="Bottom"
+                                                            Classes.discounted="{Binding DiscountedAmount, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                                            Text="{Binding DiscountedAmount, StringFormat=₱{0:F2}}" />
+                                                        <TextBlock
+                                                            Name="ItemTotal"
+                                                            Grid.Column="1"
+                                                            VerticalAlignment="Bottom"
+                                                            Classes.discounted="{Binding Discount, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                                            Text="{Binding ItemTotal, StringFormat=₱{0:F2}}" />
+                                                    </StackPanel>
+                                                </Grid>
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                                <ListBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Vertical" Spacing="8" />
+                                    </ItemsPanelTemplate>
+                                </ListBox.ItemsPanel>
+                            </ListBox>
+                        </ScrollViewer>
+
+                        <!--  Zero state message  -->
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            FontSize="14"
+                            Foreground="Gray"
+                            IsVisible="{Binding OrderList.Count, Converter={StaticResource isZeroConverter}}"
+                            Text="No items yet. To add items, start by selecting a category and then choose a product."
+                            TextAlignment="Center"
+                            TextWrapping="Wrap" />
+                    </Grid>
+                </Border>
+                <Image
+                    Margin="5"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Top"
+                    IsVisible="{Binding IsCompleted}"
+                    Opacity="0.5"
+                    Source="avares://pos/Assets/paid.png">
+                    <Image.RenderTransform>
+                        <ScaleTransform ScaleX="0.75" ScaleY="0.75" />
+                    </Image.RenderTransform>
+                </Image>
+            </Grid>
             <!--  summary  -->
             <Grid Grid.Row="2">
                 <Border
@@ -270,9 +286,6 @@
                                 <Setter Property="FontSize" Value="{StaticResource SemiFontSizeSmall}" />
                                 <Style Selector="^.title">
                                     <Setter Property="Foreground" Value="{StaticResource SemiColorText2}" />
-                                </Style>
-                                <Style Selector="^.description">
-                                    <Setter Property="HorizontalContentAlignment" Value="Right" />
                                 </Style>
                             </Style>
                         </StackPanel.Styles>
@@ -290,8 +303,8 @@
                                     <Style Selector="^:not(.Success)">
                                         <Setter Property="Content">
                                             <Template>
-                                                <StackPanel Orientation="Horizontal" Spacing="6">
-                                                    <PathIcon Data="{StaticResource SemiIconPlus}" Theme="{StaticResource InnerPathIcon}" />
+                                                <StackPanel Orientation="Horizontal" Spacing="{StaticResource SemiSpacingTight}">
+                                                    <PathIcon Data="{StaticResource SemiIconPercentage}" Theme="{StaticResource InnerPathIcon}" />
                                                     <AccessText Text="Apply Discount" />
                                                 </StackPanel>
                                             </Template>
@@ -312,32 +325,48 @@
                             StrokeDashArray="2,6"
                             StrokeThickness="1" />
 
-                        <UniformGrid Columns="2" RowSpacing="6">
-                            <Label Classes="title" Content="Subtotal" />
-                            <Label Classes="description" Content="{Binding CartSubTotal, StringFormat='₱{0:N2}'}" />
+                        <Grid ColumnDefinitions="Auto,Auto,*,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="6">
+                            <Label Grid.Row="0" Grid.Column="0" Classes="title" HorizontalAlignment="Left"
+                                   Content="Subtotal" />
+                            <Label Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left"
+                                   Content="{Binding CartSubTotal, StringFormat='₱{0:N2}'}" />
 
-                            <Label Classes="title" Content="Discount" />
-                            <Label Classes="description" Content="{Binding DiscountTotal, StringFormat='₱{0:N2}'}" />
-                        </UniformGrid>
+                            <Label Grid.Row="0" Grid.Column="2" Classes="title" HorizontalAlignment="Right"
+                                   Content="Total" />
+                            <Label Grid.Row="0" Grid.Column="3" HorizontalAlignment="Right"
+                                   Content="{Binding CartTotal, StringFormat='₱{0:N2}'}" />
+
+                            <Label Grid.Row="1" Grid.Column="0" Classes="title" HorizontalAlignment="Left"
+                                   Content="Discount" />
+                            <Label Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left"
+                                   Content="{Binding DiscountTotal, StringFormat='₱{0:N2}'}" />
+
+                            <Label Grid.Row="1" Grid.Column="2" Classes="title" HorizontalAlignment="Right"
+                                   Content="Amount Paid" />
+                            <Label Grid.Row="1" Grid.Column="3" HorizontalAlignment="Right"
+                                   Content="{Binding AmountPaid, StringFormat='₱{0:N2}'}" />
+                        </Grid>
 
                         <Rectangle
                             Margin="0,4"
                             Stroke="{StaticResource SemiColorFill2}"
                             StrokeDashArray="2,6"
                             StrokeThickness="1" />
+                        
+                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto" ColumnSpacing="12" RowSpacing="6">
+                            <Label Grid.Row="0" Grid.Column="0"
+                                   HorizontalAlignment="Right"
+                                   FontSize="{StaticResource SemiFontSizeRegular}"
+                                   Theme="{StaticResource TitleLabel}"
+                                   Content="Remaining Balance" />
 
-                        <UniformGrid Rows="1">
-                            <Label
-                                HorizontalAlignment="Stretch"
-                                Content="Total"
-                                FontSize="{StaticResource SemiFontSizeRegular}"
-                                Theme="{StaticResource TitleLabel}" />
-                            <Label
-                                Classes="description"
-                                Content="{Binding CartTotal, StringFormat='₱{0:N2}'}"
-                                FontSize="{StaticResource SemiFontSizeRegular}"
-                                Theme="{StaticResource TitleLabel}" />
-                        </UniformGrid>
+                            <Label Grid.Row="0" Grid.Column="1"
+                                   Classes="description"
+                                   HorizontalAlignment="Right"
+                                   FontSize="{StaticResource SemiFontSizeRegular}"
+                                   Theme="{StaticResource TitleLabel}"
+                                   Content="{Binding RemainingBalance, StringFormat='₱{0:N2}'}" />
+                        </Grid>
 
                         <UniformGrid
                             Margin="0,8,0,0"
@@ -369,15 +398,6 @@
                         </UniformGrid>
                     </StackPanel>
                 </Border>
-                <Image
-                    Width="120"
-                    Height="120"
-                    Margin="5"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Top"
-                    IsVisible="{Binding IsCompleted}"
-                    Opacity="0.5"
-                    Source="avares://pos/Assets/paid.png" />
             </Grid>
         </Grid>
     </DockPanel>

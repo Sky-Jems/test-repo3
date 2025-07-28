@@ -24,6 +24,10 @@
         <Setter Property="Margin" Value="0" />
     </Style>
 
+    <Style Selector="DataGrid DataGridRowsPresenter#PART_RowsPresenter">
+        <Setter Property="Margin" Value="0 4" />
+    </Style>
+
     <Style Selector="DataGridCell">
         <Style Selector="^ ContentPresenter">
             <Setter Property="Padding" Value="20 0" />

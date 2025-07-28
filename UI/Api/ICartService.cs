@@ -23,10 +23,8 @@ public interface ICartService
     ObservableCollection<Payment> Payments { get; set; }
     DiscountOrder? DiscountOrder { get; set; }
     List<Discount> Discounts { get; set; }
-    void ClearItems();
     void LoadOrder(GetOrderResponseDto order);
-    void ResetOrder();
-    void ResetPayments();
+    void Reset();
     Payment MakePayment();
     void AddPayment(Payment payment);
     void LoadDiscounts(List<Discount> discounts);

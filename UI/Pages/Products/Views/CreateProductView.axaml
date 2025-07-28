@@ -6,45 +6,58 @@
     xmlns:controls="using:Pos.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Padding="{StaticResource SemiThicknessSuperLoose}"
     x:DataType="app:CreateProductViewModel"
     mc:Ignorable="d">
 
-    <DockPanel>
-        <Border Padding="32,32,32,0" DockPanel.Dock="Top">
-            <Grid ColumnDefinitions="auto * auto" ColumnSpacing="16">
-                <Button
-                    Grid.Column="0"
-                    Width="40"
-                    Height="40"
-                    Command="{Binding GoBack}">
-                    <PathIcon
-                        Width="16"
-                        Data="{StaticResource SemiIconArrowLeft}"
-                        Theme="{DynamicResource InnerPathIcon}" />
-                </Button>
+    <DockPanel VerticalSpacing="{StaticResource SemiSpacingExtraLoose}">
+        <Grid
+            Height="{StaticResource SemiHeightControlLarge}"
+            ColumnDefinitions="auto * auto"
+            ColumnSpacing="16"
+            DockPanel.Dock="Top">
+            <Button
+                Grid.Column="0"
+                Width="40"
+                Height="40"
+                Command="{Binding GoBack}">
+                <PathIcon
+                    Width="16"
+                    Data="{StaticResource SemiIconArrowLeft}"
+                    Theme="{DynamicResource InnerPathIcon}" />
+            </Button>
 
-                <StackPanel
-                    x:Name="breadcrumbNavigationPanel"
-                    Grid.Column="1"
-                    Orientation="Horizontal" />
-                <Button
-                    x:Name="NextButton"
-                    Grid.Column="2"
-                    MinWidth="86"
-                    HorizontalContentAlignment="Center"
-                    VerticalContentAlignment="Center"
-                    Classes="Large"
-                    Click="NextButton_Click"
-                    Content="Submit"
-                    CornerRadius="6"
-                    Theme="{StaticResource SolidButton}" />
-            </Grid>
-        </Border>
+            <Label
+                Name="NavigationTitle"
+                Grid.Column="1"
+                VerticalContentAlignment="Center"
+                Classes="H2"
+                Classes.Edit="{Binding !!EditingProductId}"
+                Theme="{StaticResource TitleLabel}">
+                <Label.Styles>
+                    <Style Selector="Label#NavigationTitle">
+                        <Setter Property="Content" Value="Add Product" />
 
-        <Carousel
-            Name="createProductPagination"
-            Grid.Row="1"
-            Padding="24">
+                        <Style Selector="^.Edit">
+                            <Setter Property="Content" Value="Edit Product" />
+                        </Style>
+                    </Style>
+                </Label.Styles>
+            </Label>
+            <Button
+                x:Name="NextButton"
+                Grid.Column="2"
+                MinWidth="86"
+                HorizontalContentAlignment="Center"
+                VerticalContentAlignment="Center"
+                Classes="Large Success"
+                Click="NextButton_Click"
+                Content="Submit"
+                CornerRadius="6"
+                Theme="{StaticResource SolidButton}" />
+        </Grid>
+
+        <Carousel Name="createProductPagination" Grid.Row="1">
             <Carousel.PageTransition>
                 <CompositePageTransition>
                     <PageSlide
@@ -56,26 +69,29 @@
             </Carousel.PageTransition>
 
             <Carousel.Items>
-                <StackPanel Orientation="Vertical" Spacing="12">
-
-                    <StackPanel Orientation="Vertical" Spacing="4">
+                <StackPanel Orientation="Vertical" Spacing="{StaticResource SemiSpacingLoose}">
+                    <StackPanel Orientation="Vertical" Spacing="{StaticResource SemiSpacingTight}">
                         <Label Content="Product Name" />
                         <TextBox
                             x:Name="ProductName"
                             Classes="Large Bordered"
                             MaxLength="250"
                             Text="{Binding ProductName, Mode=TwoWay}"
-                            TextChanged="ProductBox_TextChanged"
                             Watermark="Enter product name" />
                         <TextBlock
-                            Name="ProductCounter"
-                            Margin="0,4,0,0"
-                            HorizontalAlignment="Right"
-                            FontSize="12"
-                            Foreground="Gray" />
+                            Margin="4,-2,0,0"
+                            FontSize="{StaticResource SemiFontSizeSmall}"
+                            Foreground="{StaticResource SemiColorText2}">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}{0} / {1} Characters">
+                                    <Binding FallbackValue="0" Path="#ProductName.Text.Length" />
+                                    <Binding Path="#ProductName.MaxLength" />
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
                     </StackPanel>
 
-                    <StackPanel Orientation="Vertical" Spacing="4">
+                    <StackPanel Orientation="Vertical" Spacing="{StaticResource SemiSpacingTight}">
                         <Label Content="Description" />
                         <TextBox
                             x:Name="DescriptionName"
@@ -84,15 +100,19 @@
                             Classes="TextArea Bordered"
                             MaxLength="500"
                             Text="{Binding DescriptionName, Mode=TwoWay}"
-                            TextChanged="DescriptionBox_TextChanged"
                             TextWrapping="Wrap"
                             Watermark="Enter description name" />
                         <TextBlock
-                            Name="DescriptionCounter"
-                            Margin="0,4,0,0"
-                            HorizontalAlignment="Right"
-                            FontSize="12"
-                            Foreground="Gray" />
+                            Margin="4,-2,0,0"
+                            FontSize="{StaticResource SemiFontSizeSmall}"
+                            Foreground="{StaticResource SemiColorText2}">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}{0} / {1} Characters">
+                                    <Binding FallbackValue="0" Path="#DescriptionName.Text.Length" />
+                                    <Binding Path="#DescriptionName.MaxLength" />
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
                     </StackPanel>
 
                     <!-- <StackPanel Orientation="Vertical" Spacing="4">
@@ -115,38 +135,42 @@
 						</Button>
 					</StackPanel>-->
 
-                    <StackPanel Orientation="Vertical" Spacing="4">
+                    <StackPanel Orientation="Vertical" Spacing="{StaticResource SemiSpacingTight}">
                         <Label Content="Category" />
 
                         <!--  TODO: convert as custom control  -->
                         <Border
                             Background="White"
-                            BorderBrush="#141C1F23"
+                            BorderBrush="{StaticResource SemiColorBorder}"
                             BorderThickness="1"
-                            CornerRadius="4">
+                            ClipToBounds="True"
+                            CornerRadius="{StaticResource SemiBorderRadiusSmall}">
                             <Button
                                 Padding="4,0"
                                 HorizontalAlignment="Stretch"
                                 HorizontalContentAlignment="Stretch"
-                                Classes="Large Bordered"
+                                Classes="Large"
+                                CornerRadius="5"
                                 Theme="{StaticResource BorderlessButton}">
                                 <Grid VerticalAlignment="Center" ColumnDefinitions="*,Auto">
                                     <ItemsControl x:Name="selectedCategoriesItemsControl" ItemsSource="{Binding SelectedCategoryList}">
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>
-                                                <StackPanel Orientation="Horizontal" Spacing="4" />
+                                                <StackPanel Orientation="Horizontal" Spacing="{StaticResource SemiSpacingExtraTight}" />
                                             </ItemsPanelTemplate>
                                         </ItemsControl.ItemsPanel>
 
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
                                                 <Button
+                                                    Padding="12,0,8,0"
                                                     Classes="Primary"
                                                     Command="{Binding $parent[UserControl].DataContext.RemoveCategoryFromListCommand}"
                                                     CommandParameter="{Binding .}"
+                                                    CornerRadius="16"
                                                     Theme="{StaticResource SolidButton}">
-                                                    <StackPanel Orientation="Horizontal" Spacing="6">
-                                                        <AccessText Text="{Binding Name}" />
+                                                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource SemiSpacingTight}">
+                                                        <AccessText FontWeight="{StaticResource SemiFontWeightRegular}" Text="{Binding Name}" />
                                                         <PathIcon
                                                             Height="16"
                                                             Data="{StaticResource SemiIconClear}"
@@ -168,34 +192,37 @@
                                         Theme="{StaticResource InnerPathIcon}" />
                                 </Grid>
 
-                            <Button.Flyout>
-                                <Flyout 
-                                    Opened="OnButtonFlyoutOpened"
-                                    Placement="BottomEdgeAlignedLeft"
-                                    Closed="OnButtonFlyoutClosed">
-                                    <ListBox
-                                        ItemsSource="{Binding CategoryList}"
-                                        SelectedItems="{Binding SelectedCategoryList}"
-                                        SelectionMode="Multiple,Toggle">
-                                        <ListBox.ItemTemplate>
-                                            <DataTemplate>
-                                                <Label Content="{Binding Name}" />
-                                            </DataTemplate>
-                                        </ListBox.ItemTemplate>
-                                    </ListBox>
-                                </Flyout>
-                            </Button.Flyout>
-                        </Button>
-                    </Border>
+                                <Button.Flyout>
+                                    <Flyout
+                                        Closed="OnButtonFlyoutClosed"
+                                        Opened="OnButtonFlyoutOpened"
+                                        Placement="BottomEdgeAlignedLeft">
+                                        <ListBox
+                                            x:Name="SelectedCategoryListBox"
+                                            ItemsSource="{Binding CategoryList}"
+                                            SelectionChanged="OnCategorySelectionChanged"
+                                            SelectionMode="Multiple,Toggle">
+                                            <ListBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Label Content="{Binding Name}" />
+                                                </DataTemplate>
+                                            </ListBox.ItemTemplate>
+                                        </ListBox>
+                                    </Flyout>
+                                </Button.Flyout>
+                            </Button>
+                        </Border>
                     </StackPanel>
-                    <StackPanel Orientation="Vertical" Spacing="4">
+
+                    <StackPanel Orientation="Vertical" Spacing="{StaticResource SemiSpacingTight}">
                         <Label Content="Price" />
                         <TextBox
                             Name="PriceTextBox"
                             Classes="Large Bordered"
+                            InnerLeftContent="₱"
                             Text="{Binding Price}"
                             TextInput="PriceTextBox_TextInput"
-                            Watermark="Enter price" />
+                            Watermark="0.00" />
                     </StackPanel>
                 </StackPanel>
             </Carousel.Items>

@@ -69,7 +69,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     public Product findById(Long id) {
-        return productRepository.findById(id).orElse(null);
+        return productRepository.findByIdIgnoreDeleted(id).orElse(null);
     }
 
     public Product update(Product productToUpdate) {

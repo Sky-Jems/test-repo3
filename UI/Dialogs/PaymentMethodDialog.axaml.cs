@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -45,6 +46,16 @@ public partial class PaymentMethodDialog : BaseDialog<string>
         else if (e.Text == "." && ((sender as TextBox)?.Text.Contains(".") ?? false))
         {
             e.Handled = true;
+        }
+    }
+
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnDetachedFromVisualTree(e);
+
+        if (DataContext is PaymentMethodDialogViewModel vm)
+        {
+            vm.Reset();
         }
     }
 }

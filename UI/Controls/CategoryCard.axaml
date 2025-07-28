@@ -17,13 +17,14 @@
         </Button.DataContext>
 
         <Viewbox HorizontalAlignment="Left">
-            <StackPanel Margin="16" HorizontalAlignment="Left">
-                <Svg
-                    MaxHeight="30"
-                    HorizontalAlignment="Left"
-                    Css="{Binding IconColor}"
-                    Path="{Binding Icon}" />
-                <AccessText FontSize="{StaticResource SemiFontSizeHeader4}" Text="{Binding TrimmedCategoryName}" />
+            <StackPanel Width="180" Margin="12">
+                <AccessText
+                    FontSize="{StaticResource SemiFontSizeHeader4}"
+                    MaxLines="2"
+                    Text="{Binding Name}"
+                    TextAlignment="Center"
+                    TextTrimming="CharacterEllipsis"
+                    TextWrapping="Wrap" />
             </StackPanel>
         </Viewbox>
     </Button>

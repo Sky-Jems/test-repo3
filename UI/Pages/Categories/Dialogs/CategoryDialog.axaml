@@ -18,18 +18,20 @@
                 <StackPanel Grid.Column="0">
                     <Label
                         Name="DialogTitle"
+                        Margin="0,0,56,0"
                         Classes="H4"
                         Content="Payment"
                         Theme="{StaticResource TitleLabel}" />
                 </StackPanel>
 
-                <Canvas Margin="0,-12,-12,0" DockPanel.Dock="Top">
+                <Canvas VerticalAlignment="Stretch" DockPanel.Dock="Top">
                     <Button
                         Canvas.Top="0"
                         Canvas.Right="0"
                         Width="24"
                         MinHeight="24"
                         Padding="0"
+                        VerticalAlignment="Center"
                         Classes="Danger"
                         Click="CloseDialog"
                         CornerRadius="{StaticResource SemiBorderRadiusFull}">
@@ -40,11 +42,25 @@
         </Border>
 
         <Border Grid.Row="1" Padding="{StaticResource SemiThicknessBase}">
-            <TextBox
-                Name="categoryTextBox"
-                Classes="Large"
-                DockPanel.Dock="Top"
-                Watermark="Enter category name" />
+            <StackPanel Spacing="{StaticResource SemiSpacingTight}">
+                <TextBox
+                    Name="categoryTextBox"
+                    Classes="Large Bordered"
+                    DockPanel.Dock="Top"
+                    MaxLength="50"
+                    Watermark="Enter category name" />
+                <TextBlock
+                    Margin="4,-2,0,0"
+                    FontSize="{StaticResource SemiFontSizeSmall}"
+                    Foreground="{StaticResource SemiColorText2}">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="{}{0} / {1} Characters">
+                            <Binding FallbackValue="0" Path="#categoryTextBox.Text.Length" />
+                            <Binding Path="#categoryTextBox.MaxLength" />
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+            </StackPanel>
         </Border>
 
         <Border
@@ -63,7 +79,7 @@
                 <Button
                     Grid.Column="1"
                     HorizontalAlignment="Stretch"
-                    Classes="Large"
+                    Classes="Large Success"
                     Click="SaveButton_Click"
                     Content="Save"
                     Theme="{StaticResource SolidButton}" />

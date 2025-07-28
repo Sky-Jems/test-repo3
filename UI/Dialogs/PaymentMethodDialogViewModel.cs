@@ -35,7 +35,18 @@ public class PaymentMethodDialogViewModel : ReactiveObject
     public string PaymentMethod
     {
         get => _cartService.PaymentMethod;
-        set => _cartService.PaymentMethod = value;
+        set
+        {
+            var previous = _cartService.PaymentMethod;
+            _cartService.PaymentMethod = value;
+
+            this.RaisePropertyChanged(nameof(PaymentMethod));
+
+            if (string.Equals(previous, value, StringComparison.OrdinalIgnoreCase))
+            {
+                this.RaisePropertyChanged(nameof(NotePrefix));
+            }
+        }
     }
     private string _amountText;
     public string AmountText
@@ -72,6 +83,18 @@ public class PaymentMethodDialogViewModel : ReactiveObject
     public event Action? RequestClose;
     private readonly ObservableAsPropertyHelper<string?> _notePrefix;
     public string? NotePrefix => _notePrefix.Value;
+    private string _noteLabel = "Note";
+    public string NoteLabel
+    {
+        get => _noteLabel;
+        set => this.RaiseAndSetIfChanged(ref _noteLabel, value);
+    }
+    private string _noteWatermark = "Enter note";
+    public string NoteWatermark
+    {
+        get => _noteWatermark;
+        set => this.RaiseAndSetIfChanged(ref _noteWatermark, value);
+    }
 
     public PaymentMethodDialogViewModel()
     {
@@ -90,7 +113,7 @@ public class PaymentMethodDialogViewModel : ReactiveObject
             .WhenAnyValue(x => x.RemainingBalance)
             .ObserveOn(RxApp.MainThreadScheduler)
             .ToProperty(this, x => x.RemainingBalance, out _remainingBalance);
-        
+
         _cartService
             .WhenAnyValue(x => x.PaymentStatus)
             .ObserveOn(RxApp.MainThreadScheduler)
@@ -105,9 +128,24 @@ public class PaymentMethodDialogViewModel : ReactiveObject
             this.RaisePropertyChanged(nameof(AmountPaid));
             this.RaisePropertyChanged(nameof(RemainingBalance));
         };
-
+        
         _cartService.WhenAnyValue(x => x.PaymentMethod)
-            .Select(method => string.Equals(method, "cash", StringComparison.OrdinalIgnoreCase) ? null : "*")
+            .Do(method =>
+            {
+                NoteLabel = string.Equals(method, "cash", StringComparison.OrdinalIgnoreCase)
+                    ? "Note"
+                    : "Reference Number";
+            })
+            .Do(method =>
+            {
+                NoteWatermark = string.Equals(method, "cash", StringComparison.OrdinalIgnoreCase)
+                    ? "Enter note"
+                    : "Enter reference number";
+            })
+            .Select(method =>
+                string.Equals(method, "cash", StringComparison.OrdinalIgnoreCase)
+                    ? null
+                    : "*")
             .ToProperty(this, x => x.NotePrefix, out _notePrefix);
 
         AddPaymentCommand.ThrownExceptions
@@ -135,10 +173,6 @@ public class PaymentMethodDialogViewModel : ReactiveObject
             return;
         }
 
-        if (_cartService.RemainingBalance <= 0)
-        {
-            _cartService.ResetPayments();
-        }
         RequestClose?.Invoke();
     }
 
@@ -205,5 +239,12 @@ public class PaymentMethodDialogViewModel : ReactiveObject
         }
 
         return null;
+    }
+
+    public void Reset()
+    {
+        PaymentMethod = "cash";
+        AmountText = "";
+        Notes = "";
     }
 }

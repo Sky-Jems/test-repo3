@@ -16,6 +16,7 @@
 
         <StyleInclude Source="avares://pos/ThemeOverrides/Styles/DataGrid.axaml" />
         <StyleInclude Source="avares://pos/ThemeOverrides/Styles/Dialog.axaml" />
+        <StyleInclude Source="avares://pos/ThemeOverrides/Styles/NumericUpDown.axaml" />
     </Application.Styles>
 
     <Application.Resources>
@@ -30,8 +31,9 @@
                 <ResourceInclude Source="avares://pos/ThemeOverrides/Variables.axaml" />
                 <ResourceInclude Source="avares://pos/ThemeOverrides/Resources/Border.axaml" />
                 <ResourceInclude Source="avares://pos/ThemeOverrides/Resources/Button.axaml" />
-                <ResourceInclude Source="avares://pos/ThemeOverrides/Resources/ListBox.axaml" />
                 <ResourceInclude Source="avares://pos/ThemeOverrides/Resources/DataGrid.axaml" />
+                <ResourceInclude Source="avares://pos/ThemeOverrides/Resources/Flyout.axaml" />
+                <ResourceInclude Source="avares://pos/ThemeOverrides/Resources/ListBox.axaml" />
                 <ResourceInclude Source="avares://pos/ThemeOverrides/Resources/RadioButton.axaml" />
                 <ResourceInclude Source="avares://pos/ThemeOverrides/Resources/SplitView.axaml" />
                 <ResourceInclude Source="avares://pos/ThemeOverrides/Resources/TextBox.axaml" />

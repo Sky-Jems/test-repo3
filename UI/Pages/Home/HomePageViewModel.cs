@@ -35,8 +35,10 @@ public class HomePageViewModel : ReactiveObject, IRoutableViewModel
         try
         {
             var authService = ServiceLocator.Services.GetService<IAuthService>();
+            var cartService = ServiceLocator.Services.GetService<ICartService>();
             if (authService != null)
             {
+                cartService?.Reset();
                 await authService.LogoutAsync();
             }
             else

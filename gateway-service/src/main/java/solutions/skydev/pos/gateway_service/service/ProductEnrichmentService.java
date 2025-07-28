@@ -58,7 +58,7 @@ public class ProductEnrichmentService {
                     .collectList()
                     .map(enrichedLineItems -> {
                         enrichedLineItems.sort(Comparator.comparing(
-                                LineItemResponseDto::getUpdatedAt,
+                                LineItemResponseDto::getCreatedAt,
                                 Comparator.nullsLast(Comparator.naturalOrder())
                         ).reversed());
 

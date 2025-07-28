@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
-using System.Reactive.Linq;
 using System.Threading.Tasks;
 using pos.Models.EventArgs;
 
@@ -25,7 +24,9 @@ public partial class CreateProductViewModel : ReactiveObject, IRoutableViewModel
     [Reactive] public string ProductName { get; set; } = string.Empty;
     [Reactive] public string Price { get; set; } = string.Empty;
     [Reactive] public string DescriptionName { get; set; } = string.Empty;
-    [Reactive] public long? AddedProductId { get;  set; }
+    [Reactive] public long? AddedProductId { get; set; }
+    [Reactive] public long? EditingProductId { get; set; }
+
     #endregion
 
     #region ReactiveCommands
@@ -43,7 +44,6 @@ public partial class CreateProductViewModel : ReactiveObject, IRoutableViewModel
     public IScreen HostScreen { get; }
     public event EventHandler<NotificationEventArgs> TriggerNotif;
     public string? UrlPathSegment => throw new NotImplementedException();
-    private long? _editingProductId = null;
     #endregion
 
 
@@ -70,7 +70,7 @@ public partial class CreateProductViewModel : ReactiveObject, IRoutableViewModel
     {
         var product = await _productService.GetProductByIdAsync((int)productId);
 
-        _editingProductId = product.Id;
+        EditingProductId = product.Id;
         ProductName = product.Name;
         DescriptionName = product.Description;
         Price = product.Price.ToString();
@@ -99,6 +99,10 @@ public partial class CreateProductViewModel : ReactiveObject, IRoutableViewModel
 
     public async Task<bool> AddOrEditProductAsync()
     {
+        ProductName = ProductName.Trim();
+        DescriptionName = DescriptionName.Trim();
+        Price = Price.Trim();
+
         if (string.IsNullOrWhiteSpace(ProductName))
         {
             TriggerNotif?.Invoke(this, NotificationUtil.Warning("Product name is required."));
@@ -121,14 +125,14 @@ public partial class CreateProductViewModel : ReactiveObject, IRoutableViewModel
         {
             var product = new Product
             {
-                Id = _editingProductId,
+                Id = EditingProductId,
                 Name = ProductName,
                 Description = DescriptionName,
                 CategoryIds = SelectedCategoryList.Select(p => p.Id.GetValueOrDefault()).ToList(),
                 Price = parsedPrice
             };
 
-            if (_editingProductId != null)
+            if (EditingProductId != null)
             {
                 await _productService.UpdateProductAsync(product);
                 TriggerNotif?.Invoke(this, NotificationUtil.Success("Product has been updated."));
@@ -150,6 +154,17 @@ public partial class CreateProductViewModel : ReactiveObject, IRoutableViewModel
     public void RemoveCategoryFromList(Category category)
     {
         SelectedCategoryList.Remove(category);
+    }
+
+    public void SetCategoryList(IEnumerable<Category> categories)
+    {
+        foreach (var category in categories)
+        {
+            if (SelectedCategoryList.All(c => c.Id != category.Id))
+            {
+                SelectedCategoryList.Add(category);
+            }
+        }
     }
 
     public ReactiveCommand<Unit, IRoutableViewModel> GoBack => HostScreen.Router.NavigateBack;

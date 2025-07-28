@@ -1,0 +1,18 @@
+<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style Selector="NumericUpDown">
+        <Style Selector="^.Bordered">
+            <Style Selector="^ /template/ TextBox Border#PART_ContentPresenterBorder">
+                <Setter Property="Background" Value="{DynamicResource TextBoxBorderedDefaultBackground}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource TextBoxBorderedDefaultBorderBrush}" />
+            </Style>
+            <Style Selector="^:pointerover /template/ TextBox Border#PART_ContentPresenterBorder">
+                <Setter Property="Background" Value="{DynamicResource TextBoxBorderedPointeroverBackground}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource TextBoxBorderedPointeroverBorderBrush}" />
+            </Style>
+            <Style Selector="^:focus-within /template/ TextBox Border#PART_ContentPresenterBorder">
+                <Setter Property="Background" Value="{DynamicResource TextBoxBorderedPointeroverBackground}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource TextBoxBorderedPointeroverBorderBrush}" />
+            </Style>
+        </Style>
+    </Style>
+</Styles>

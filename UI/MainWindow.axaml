@@ -17,13 +17,13 @@
     <Panel>
         <rxui:RoutedViewHost Router="{Binding Router}">
             <rxui:RoutedViewHost.DefaultContent>
-                <Grid ColumnDefinitions="*,*">
+                <Grid ColumnDefinitions="65*,35*">
                     <Image
                         Grid.Column="0"
-                        Source="avares://Pos/Assets/poster.jpg"
-                        Stretch="Fill"
                         HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch" />
+                        VerticalAlignment="Stretch"
+                        Source="avares://Pos/Assets/poster.jpg"
+                        Stretch="Fill" />
                     <StackPanel
                         Grid.Column="1"
                         MaxWidth="350"

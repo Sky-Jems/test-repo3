@@ -1,3 +1,4 @@
+using Avalonia.Interactivity;
 using AvaloniaDialogs.Views;
 using Pos.Dialogs;
 
@@ -10,4 +11,6 @@ public partial class DetailedCategoryDialog : BaseDialog
         InitializeComponent();
         DataContext = new DetailedCategoryDialogViewModel();
     }
+
+    private void CloseDialog(object sender, RoutedEventArgs args) => Close();
 }

@@ -4,35 +4,57 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:app="using:Pos.Pages.WaitStaff"
     xmlns:controls="using:Pos.Controls"
+    xmlns:converters="clr-namespace:Pos.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Padding="{StaticResource SemiThicknessExtraLoose}"
     x:DataType="app:CategoriesViewModel"
     mc:Ignorable="d">
-    <Border Padding="32">
-        <StackPanel Spacing="24">
-            <Label Classes="H2" Theme="{StaticResource TitleLabel}">
-                Services
-            </Label>
 
-            <ItemsRepeater
-                Margin="0,0,0,20"
-                VerticalAlignment="Top"
-                ItemsSource="{Binding Categories}">
-                <ItemsRepeater.Layout>
-                    <UniformGridLayout
-                        ItemsStretch="Uniform"
-                        MinColumnSpacing="12"
-                        MinItemHeight="100"
-                        MinItemWidth="160"
-                        MinRowSpacing="12" />
-                </ItemsRepeater.Layout>
+    <UserControl.Resources>
+        <converters:IsZeroConverter x:Key="isZeroConverter" />
+        <converters:IsGreaterThanZeroConverter x:Key="isGreaterThanZeroConverter" />
+    </UserControl.Resources>
 
-                <ItemsRepeater.ItemTemplate>
-                    <DataTemplate>
-                        <controls:CategoryCard Category="{Binding}" CategoryCommand="{Binding $parent[ItemsRepeater].((app:CategoriesViewModel)DataContext).CategoryCardClickedCommand}" />
-                    </DataTemplate>
-                </ItemsRepeater.ItemTemplate>
-            </ItemsRepeater>
-        </StackPanel>
-    </Border>
+    <StackPanel Spacing="24">
+        <Label
+            Height="{StaticResource SemiHeightControlLarge}"
+            VerticalContentAlignment="Center"
+            Classes="H2"
+            Theme="{StaticResource TitleLabel}">
+            Categories
+        </Label>
+
+        <ItemsRepeater
+            Margin="0,0,0,20"
+            VerticalAlignment="Top"
+            IsVisible="{Binding Categories.Count, Converter={StaticResource isGreaterThanZeroConverter}}"
+            ItemsSource="{Binding Categories}">
+            <ItemsRepeater.Layout>
+                <UniformGridLayout
+                    ItemsStretch="Uniform"
+                    MinColumnSpacing="12"
+                    MinItemHeight="100"
+                    MinItemWidth="160"
+                    MinRowSpacing="12" />
+            </ItemsRepeater.Layout>
+
+            <ItemsRepeater.ItemTemplate>
+                <DataTemplate>
+                    <controls:CategoryCard Category="{Binding}" CategoryCommand="{Binding $parent[ItemsRepeater].((app:CategoriesViewModel)DataContext).CategoryCardClickedCommand}" />
+                </DataTemplate>
+            </ItemsRepeater.ItemTemplate>
+        </ItemsRepeater>
+
+        <!--  Zero state message  -->
+        <TextBlock
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            FontSize="14"
+            Foreground="Gray"
+            IsVisible="{Binding Categories.Count, Converter={StaticResource isZeroConverter}}"
+            Text="No categories available. Go to the Categories tab to add a category or contact admin."
+            TextAlignment="Center"
+            TextWrapping="Wrap" />
+    </StackPanel>
 </UserControl>

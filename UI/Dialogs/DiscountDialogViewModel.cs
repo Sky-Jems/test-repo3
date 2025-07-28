@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,19 +17,17 @@ public class DiscountDialogViewModel : ReactiveObject
 {
     public ObservableCollection<Discount> DiscountList { get; set; } = [];
     private readonly ICartService _cartService;
-    private readonly IOrderService _orderService;
     private readonly IDiscountService _discountService;
     private readonly long? _selectedLineItemId;
     [Reactive] public long AppliedDiscountId { get; set; }
-
     public bool _isManagingDiscount;
+    public Interaction<Unit, Unit> CloseDialog { get; } = new();
 
     public DiscountDialogViewModel(long? selectedLineItemId)
     {
         _selectedLineItemId = selectedLineItemId;
 
         _cartService = ServiceLocator.Services.GetRequiredService<ICartService>();
-        _orderService = ServiceLocator.Services.GetRequiredService<IOrderService>();
         _discountService = ServiceLocator.Services.GetRequiredService<IDiscountService>();
     }
 
@@ -37,8 +36,6 @@ public class DiscountDialogViewModel : ReactiveObject
         List<Discount> discounts = await _discountService.GetDiscounts();
         _cartService.LoadDiscounts(discounts);
         DiscountList.Clear();
-        foreach (var discount in discounts)
-            DiscountList.Add(discount);
 
         DiscountOrder? discountOrder = _cartService.DiscountOrder;
         if (discountOrder?.Discount?.Id != null || discountOrder?.lineItems != null)
@@ -46,6 +43,21 @@ public class DiscountDialogViewModel : ReactiveObject
             AppliedDiscountId = discountOrder.lineItems != null
                 ? discountOrder.lineItems.FirstOrDefault(lineItem => lineItem.LineItemId == _selectedLineItemId)?.Discount.Id ?? 0
                 : discountOrder.Discount!.Id;
+        }
+
+        var applied = discounts.FirstOrDefault(d => d.Id == AppliedDiscountId);
+        if (applied != null)
+        {
+            DiscountList.Add(applied); // Add applied discount first
+        }
+
+        // Add the rest, excluding the applied one
+        foreach (var discount in discounts)
+        {
+            if (discount.Id != AppliedDiscountId)
+            {
+                DiscountList.Add(discount);
+            }
         }
     }
 
@@ -81,6 +93,7 @@ public class DiscountDialogViewModel : ReactiveObject
             }
             GetOrderResponseDto orderResponseDto = await _discountService.ApplyDiscount(discountOrderRequest);
             _cartService.LoadOrder(orderResponseDto);
+            await CloseDialog.Handle(Unit.Default);
         }
         finally
         {
@@ -124,6 +137,7 @@ public class DiscountDialogViewModel : ReactiveObject
                 orderResponseDto = await _discountService.RemoveOrderDiscount(discountOrderRequest);
 
             _cartService.LoadOrder(orderResponseDto);
+            await CloseDialog.Handle(Unit.Default);
         }
         finally
         {

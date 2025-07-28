@@ -190,13 +190,6 @@ public class MenuViewModel : ReactiveObject, IRoutableViewModel
         if (_isProcessingProduct || product.Id is null)
             return;
 
-        var existingItem = _cartService.Items.FirstOrDefault(x => x.ProductId == product.Id);
-        if (existingItem is not null)
-        {
-            _cartService.SelectedItem = existingItem;
-            return;
-        }
-
         try
         {
             _isProcessingProduct = true;

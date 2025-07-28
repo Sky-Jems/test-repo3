@@ -1,30 +1,45 @@
 <UserControl
-  x:Class="pos.Dialogs.DetailedCategoryDialog"
-  xmlns="https://github.com/avaloniaui"
-  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-  xmlns:vm="using:Pos.Dialogs"
-  Width="500"
-  Padding="{StaticResource SemiThicknessLoose}"
-  x:DataType="vm:DetailedCategoryDialogViewModel"
-  Background="{StaticResource SemiColorBackground4}"
-  ClipToBounds="True"
-  CornerRadius="{StaticResource SemiBorderRadiusMedium}">
-  <StackPanel Spacing="16">
-    <Label
-      HorizontalAlignment="Center"
-      Classes="H5"
-      Content="Detailed View"
-      Theme="{StaticResource TitleLabel}" />
-    <Border Theme="{StaticResource CardBorder}">
-      <StackPanel>
+    x:Class="pos.Dialogs.DetailedCategoryDialog"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:Pos.Dialogs"
+    Width="500"
+    Padding="{StaticResource SemiThicknessLoose}"
+    x:DataType="vm:DetailedCategoryDialogViewModel"
+    Background="{StaticResource SemiColorBackground4}"
+    ClipToBounds="True"
+    CornerRadius="{StaticResource SemiBorderRadiusMedium}">
+    <StackPanel>
+        <Canvas Margin="0,-16,-16,0">
+            <Button
+                Canvas.Top="0"
+                Canvas.Right="0"
+                Width="24"
+                MinHeight="24"
+                Padding="0"
+                Classes="Danger"
+                Click="CloseDialog"
+                CornerRadius="{StaticResource SemiBorderRadiusFull}">
+                <PathIcon Height="12" Data="{DynamicResource SemiIconClose}" />
+            </Button>
+        </Canvas>
+
         <Label
-          Content="Name:"
-          FontSize="{StaticResource SemiFontSizeSmall}"
-          Foreground="{StaticResource SemiColorText2}" />
-        <TextBlock Text="{Binding Name}" TextWrapping="Wrap" />
-      </StackPanel>
-    </Border>
-  </StackPanel>
+            Margin="0,0,0,16"
+            HorizontalAlignment="Center"
+            Classes="H5"
+            Content="Detailed View"
+            Theme="{StaticResource TitleLabel}" />
+        <Border Theme="{StaticResource CardBorder}">
+            <StackPanel>
+                <Label
+                    Content="Name:"
+                    FontSize="{StaticResource SemiFontSizeSmall}"
+                    Foreground="{StaticResource SemiColorText2}" />
+                <TextBlock Text="{Binding Name}" TextWrapping="Wrap" />
+            </StackPanel>
+        </Border>
+    </StackPanel>
 </UserControl>

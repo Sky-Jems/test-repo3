@@ -87,12 +87,17 @@ public class CategoriesViewModel : ReactiveObject
             Category category = new Category();
             category.Id = null;
             category.Name = name;
-            await _categoryService.CreateCategory(category);
-            LoadCategoriesCommand.Execute();
+            Task<GetCategoryResponseDto> response = _categoryService.CreateCategory(category);
+            await response;
+            if (response.IsCompletedSuccessfully)
+            {
+                TriggerNotif?.Invoke(this, NotificationUtil.Success("Category created successfully."));
+                LoadCategoriesCommand.Execute();
+            }
         }
         catch (Exception)
         {
-            TriggerNotif?.Invoke(this, NotificationUtil.Error("Category create failed."));
+            TriggerNotif?.Invoke(this, NotificationUtil.Error("Failed to create category."));
         }
     }
 
@@ -103,12 +108,17 @@ public class CategoriesViewModel : ReactiveObject
             Category category = new Category();
             category.Id = id;
             category.Name = name;
-            await _categoryService.UpdateCategory(id, category);
-            LoadCategoriesCommand.Execute();
+            Task<GetCategoryResponseDto> response = _categoryService.UpdateCategory(id, category);
+            await response;
+            if (response.IsCompletedSuccessfully)
+            {
+                TriggerNotif?.Invoke(this, NotificationUtil.Success("Category updated successfully."));
+                LoadCategoriesCommand.Execute();
+            }
         }
         catch (Exception)
         {
-            TriggerNotif?.Invoke(this, NotificationUtil.Error("Category update failed."));
+            TriggerNotif?.Invoke(this, NotificationUtil.Error("Failed to update category."));
         }
     }
 
@@ -116,12 +126,17 @@ public class CategoriesViewModel : ReactiveObject
     {
         try
         {
-            await _categoryService.DeleteCategory(id);
-            LoadCategoriesCommand.Execute();
+            Task<GetCategoryResponseDto> response = _categoryService.DeleteCategory(id);
+            await response;
+            if (response.IsCompletedSuccessfully)
+            {
+                TriggerNotif?.Invoke(this, NotificationUtil.Success("Category deleted successfully."));
+                LoadCategoriesCommand.Execute();
+            }
         }
         catch (Exception)
         {
-            TriggerNotif?.Invoke(this, NotificationUtil.Error("Category delete failed."));
+            TriggerNotif?.Invoke(this, NotificationUtil.Error("Failed to delete category."));
         }
     }
 }

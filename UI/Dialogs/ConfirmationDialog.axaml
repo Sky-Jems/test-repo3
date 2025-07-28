@@ -26,7 +26,7 @@
         </Canvas>
 
         <TextBlock
-            Margin="24,6,24,-12"
+            Margin="20,6,24,-12"
             HorizontalAlignment="Center"
             Classes="H4"
             DockPanel.Dock="Top"
@@ -38,7 +38,7 @@
 
         <TextBlock
             Name="DialogMessage"
-            Margin="4,16,4,20"
+            Margin="4,20"
             HorizontalAlignment="Center"
             DockPanel.Dock="Top"
             Foreground="{StaticResource SemiColorText2}"

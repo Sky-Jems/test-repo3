@@ -35,14 +35,21 @@
                     Margin="12"
                     HorizontalAlignment="Center">
                     <AccessText
+                        Margin="0,0,0,4"
                         HorizontalAlignment="Center"
                         FontSize="{StaticResource SemiFontSizeHeader5}"
-                        Text="{Binding TrimmedProductName}" />
+                        Text="{Binding TrimmedProductName}"
+                        TextTrimming="CharacterEllipsis" />
                     <AccessText
                         Margin="0,0,0,8"
                         HorizontalAlignment="Center"
                         FontWeight="{StaticResource SemiFontWeightRegular}"
-                        Text="{Binding TrimmedDescription}" />
+                        MaxLines="2"
+                        Opacity="0.8"
+                        Text="{Binding TrimmedDescription}"
+                        TextAlignment="Center"
+                        TextTrimming="CharacterEllipsis"
+                        TextWrapping="Wrap" />
                     <Label
                         HorizontalAlignment="Center"
                         Background="{StaticResource SemiColorPrimaryLight}"

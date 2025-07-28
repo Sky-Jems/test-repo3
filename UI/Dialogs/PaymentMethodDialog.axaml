@@ -18,6 +18,7 @@
         <converters:EqualsConverter x:Key="equalsConverter" />
         <converters:StringEqualsConverter x:Key="stringEqualsConverter" />
         <converters:StringNotEmptyConverter x:Key="stringNotEmptyConverter" />
+        <converters:TextCaseConverter x:Key="textCaseConverter" />
     </UserControl.Resources>
 
     <UserControl.Styles>
@@ -92,7 +93,10 @@
             BorderBrush="{StaticResource SemiColorBorder}"
             BorderThickness="0,0,0,1">
             <Grid VerticalAlignment="Center" ColumnDefinitions="*, Auto">
-                <StackPanel Grid.Column="0">
+                <StackPanel
+                    Grid.Column="0"
+                    Margin="0,0,56,0"
+                    Spacing="{StaticResource SemiSpacingExtraTight}">
                     <Label
                         Classes="H4"
                         Content="Payment"
@@ -100,7 +104,7 @@
                     <Label Content="Choose your payment method and complete the transaction." Foreground="{StaticResource SemiColorText2}" />
                 </StackPanel>
 
-                <Canvas Margin="0,-12,-12,0" DockPanel.Dock="Top">
+                <Canvas VerticalAlignment="Stretch" DockPanel.Dock="Top">
                     <Button
                         Canvas.Top="0"
                         Canvas.Right="0"
@@ -117,130 +121,96 @@
         </Border>
 
         <ScrollViewer Grid.Row="1">
-            <Border Name="SummaryContainer" Padding="{StaticResource SemiThicknessBase}">
+            <Border Name="SummaryContainer" Padding="{StaticResource SemiThicknessBaseLoose}">
                 <Grid
-                    ColumnDefinitions="* *"
-                    ColumnSpacing="16"
+                    ColumnDefinitions="*, *"
+                    ColumnSpacing="{StaticResource SemiSpacingBaseLoose}"
                     RowDefinitions="auto auto"
-                    RowSpacing="24">
+                    RowSpacing="{StaticResource SemiSpacingExtraLoose}">
                     <!--  order summary  -->
                     <DockPanel
                         Grid.Row="0"
                         Grid.Column="0"
-                        VerticalSpacing="8">
+                        VerticalSpacing="{StaticResource SemiSpacingBaseTight}">
                         <Label
+                            Classes="H6"
                             Content="Order Summary"
                             DockPanel.Dock="Top"
                             Theme="{StaticResource TitleLabel}" />
                         <Border
                             Margin="0"
                             Padding="{StaticResource SemiThicknessBase}"
+                            VerticalAlignment="Stretch"
                             Background="{StaticResource SemiColorPrimaryLight}"
                             BorderBrush="Transparent"
                             Theme="{StaticResource CardBorder}">
                             <StackPanel
-                                Margin="0,-2,0,-4"
-                                HorizontalAlignment="Stretch"
+                                Margin="0,-2"
+                                VerticalAlignment="Stretch"
                                 Spacing="8">
                                 <Grid
-                                    ColumnDefinitions="* *"
-                                    RowDefinitions="auto auto auto auto auto auto auto auto"
-                                    RowSpacing="8">
-                                    <Label
-                                        Grid.Row="0"
-                                        Grid.Column="0"
-                                        Classes="title"
-                                        Content="Customer" />
-                                    <Label
-                                        Grid.Row="0"
-                                        Grid.Column="1"
-                                        HorizontalAlignment="Right"
-                                        Classes="description"
-                                        Content="{Binding Customer}" />
+                                    ColumnDefinitions="Auto,Auto,*,Auto"
+                                    RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+                                    ColumnSpacing="12"
+                                    VerticalAlignment="Center"
+                                    RowSpacing="{StaticResource SemiSpacingBaseTight}">
 
-                                    <Label
-                                        Grid.Row="1"
-                                        Grid.Column="0"
-                                        Classes="title"
-                                        Content="Total Items" />
-                                    <Label
-                                        Grid.Row="1"
-                                        Grid.Column="1"
-                                        HorizontalAlignment="Right"
-                                        Classes="description"
-                                        Content="{Binding ItemsCount}" />
+                                    <!-- Row 0 -->
+                                    <Label Grid.Row="0" Grid.Column="0" Classes="title" Content="Customer" Margin="0, 12, 0, 0" />
+                                    <Label Grid.Row="0" Grid.Column="1" Classes="description" Content="{Binding Customer}" Margin="0, 12, 0, 0" />
 
-                                    <Label
-                                        Grid.Row="2"
-                                        Grid.Column="0"
-                                        Classes="title"
-                                        Content="Total Amount" />
-                                    <Label
-                                        Grid.Row="2"
-                                        Grid.Column="1"
-                                        HorizontalAlignment="Right"
-                                        Classes="H6 description"
-                                        Content="{Binding SubTotal, StringFormat='₱{0:N2}'}" />
+                                    <Label Grid.Row="0" Grid.Column="2" Classes="title" HorizontalAlignment="Right" Content="Total Items" Margin="0, 12, 0, 0" />
+                                    <Label Grid.Row="0" Grid.Column="3" Classes="description" HorizontalAlignment="Right" Content="{Binding ItemsCount}" Margin="0, 12, 0, 0" />
 
-                                    <Label
-                                        Grid.Row="3"
-                                        Grid.Column="0"
-                                        Classes="title"
-                                        Content="Discount" />
-                                    <Label
-                                        Grid.Row="3"
-                                        Grid.Column="1"
-                                        HorizontalAlignment="Right"
-                                        Classes="H6 description"
-                                        Content="{Binding DiscountAmount, StringFormat='₱{0:N2}'}" />
+                                    <!-- Divider -->
+                                    <Rectangle Grid.Row="1" Grid.ColumnSpan="4"
+                                               Stroke="{StaticResource SemiColorFill2}"
+                                               StrokeDashArray="2,6"
+                                               StrokeThickness="1"
+                                               Margin="0,12" />
 
-                                    <Label
-                                        Grid.Row="4"
-                                        Grid.Column="0"
-                                        Classes="title"
-                                        Content="Total" />
-                                    <Label
-                                        Grid.Row="4"
-                                        Grid.Column="1"
-                                        HorizontalAlignment="Right"
-                                        Classes="H6 description"
-                                        Content="{Binding Total, StringFormat='₱{0:N2}'}" />
+                                    <!-- Row 2 -->
+                                    <Label Grid.Row="2" Grid.Column="0" Classes="title" Content="Subtotal Amount" />
+                                    <Label Grid.Row="2" Grid.Column="1" Classes="H6 description" 
+                                           Content="{Binding SubTotal, StringFormat='₱{0:N2}'}" />
 
-                                    <Label
-                                        Grid.Row="5"
-                                        Grid.Column="0"
-                                        Classes="title"
-                                        Content="Amount Paid" />
-                                    <Label
-                                        Grid.Row="5"
-                                        Grid.Column="1"
-                                        HorizontalAlignment="Right"
-                                        Classes="H6 description"
-                                        Content="{Binding AmountPaid, StringFormat='₱{0:N2}'}"
-                                        Foreground="{StaticResource SemiGreen5Color}" />
+                                    <Label Grid.Row="2" Grid.Column="2" Classes="title" HorizontalAlignment="Right" Content="Total Amount" />
+                                    <Label Grid.Row="2" Grid.Column="3" Classes="H6 description" HorizontalAlignment="Right"
+                                           Content="{Binding Total, StringFormat='₱{0:N2}'}" />
 
-                                    <Rectangle
-                                        Grid.Row="6"
-                                        Grid.ColumnSpan="2"
-                                        Margin="0,4,0,8"
-                                        Stroke="{StaticResource SemiColorBorder}"
-                                        StrokeDashArray="3,6"
-                                        StrokeThickness="1" />
+                                    <!-- Row 3 -->
+                                    <Label Grid.Row="3" Grid.Column="0" Classes="title" Content="Discount" />
+                                    <Label Grid.Row="3" Grid.Column="1" Classes="H6 description"
+                                           Content="{Binding DiscountAmount, StringFormat='₱{0:N2}'}" />
 
-                                    <Label
-                                        Grid.Row="7"
-                                        Grid.Column="0"
-                                        Content="Remaining Balance"
-                                        FontSize="{StaticResource SemiFontSizeHeader4}"
-                                        Theme="{StaticResource TitleLabel}" />
-                                    <Label
-                                        Grid.Row="7"
-                                        Grid.Column="1"
-                                        HorizontalAlignment="Right"
-                                        Content="{Binding RemainingBalance, StringFormat='₱{0:N2}'}"
-                                        FontSize="{StaticResource SemiFontSizeHeader4}"
-                                        Foreground="{StaticResource SemiRed6Color}"
-                                        Theme="{StaticResource TitleLabel}" />
+                                    <Label Grid.Row="3" Grid.Column="2" Classes="title" HorizontalAlignment="Right" Content="Amount Paid" />
+                                    <Label Grid.Row="3" Grid.Column="3" Classes="H6 description" HorizontalAlignment="Right"
+                                           Content="{Binding AmountPaid, StringFormat='₱{0:N2}'}"
+                                           Foreground="{StaticResource SemiGreen5Color}" />
+
+                                    <!-- Divider -->
+                                    <Rectangle Grid.Row="4" Grid.ColumnSpan="4"
+                                               Stroke="{StaticResource SemiColorFill2}"
+                                               StrokeDashArray="2,6"
+                                               StrokeThickness="1"
+                                               Margin="0,12" />
+                                </Grid>
+
+                                <!-- Separate Grid for Remaining Balance -->
+                                <Grid ColumnDefinitions="*,Auto" Margin="0,12,0,0">
+                                    <Label Grid.Column="0"
+                                           Content="Remaining Balance"
+                                           FontSize="{StaticResource SemiFontSizeHeader5}"
+                                           Theme="{StaticResource TitleLabel}"
+                                           HorizontalAlignment="Right" />
+
+                                    <Label Grid.Column="1"
+                                           Content="{Binding RemainingBalance, StringFormat='₱{0:N2}'}"
+                                           FontSize="{StaticResource SemiFontSizeHeader5}"
+                                           Foreground="{StaticResource SemiRed6Color}"
+                                           Theme="{StaticResource TitleLabel}"
+                                           HorizontalAlignment="Right"
+                                           Margin="12,0,0,0" />
                                 </Grid>
                             </StackPanel>
                         </Border>
@@ -250,11 +220,14 @@
                     <StackPanel
                         Grid.Row="0"
                         Grid.Column="1"
-                        Spacing="8">
-                        <Label Content="Payment Method" Theme="{StaticResource TitleLabel}" />
+                        Spacing="{StaticResource SemiSpacingBaseTight}">
+                        <Label
+                            Classes="H6"
+                            Content="Payment Method"
+                            Theme="{StaticResource TitleLabel}" />
 
-                        <StackPanel Spacing="16">
-                            <UniformGrid ColumnSpacing="8" RowSpacing="8">
+                        <StackPanel Spacing="{StaticResource SemiSpacingBaseLoose}">
+                            <UniformGrid ColumnSpacing="{StaticResource SemiSpacingTight}" RowSpacing="{StaticResource SemiSpacingTight}">
                                 <RadioButton
                                     IsChecked="{Binding PaymentMethod, Mode=TwoWay, Converter={StaticResource stringEqualsConverter}, ConverterParameter=cash}"
                                     Tag="cash"
@@ -292,8 +265,8 @@
                                     </StackPanel>
                                 </RadioButton>
                             </UniformGrid>
-                            <Grid ColumnDefinitions="* *" ColumnSpacing="8">
-                                <StackPanel Grid.Column="0" Spacing="6">
+                            <Grid ColumnDefinitions="* *" ColumnSpacing="{StaticResource SemiSpacingTight}">
+                                <StackPanel Grid.Column="0" Spacing="{StaticResource SemiSpacingTight}">
                                     <Label Content="Payment Amount" />
                                     <TextBox
                                         Name="PriceTextBox"
@@ -302,17 +275,44 @@
                                         Text="{Binding AmountText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                         Watermark="0.00" />
                                 </StackPanel>
-                                <StackPanel Grid.Column="1" Spacing="6">
-                                    <Label Content="Note" />
+                                <StackPanel Grid.Column="1" Spacing="{StaticResource SemiSpacingTight}">
+                                    <Label Content="{Binding NoteLabel}" />
                                     <TextBox
                                         Name="referenceSection"
                                         Classes="Large Bordered"
                                         InnerLeftContent="{Binding NotePrefix}"
                                         IsVisible="True"
                                         Text="{Binding Notes, Mode=TwoWay}"
-                                        Watermark="Enter reference no." />
+                                        Watermark="{Binding NoteWatermark}" />
                                 </StackPanel>
                             </Grid>
+
+                            <Panel>
+                                <Button
+                                    Name="confirmButton"
+                                    HorizontalAlignment="Stretch"
+                                    Classes="Large Success"
+                                    Click="ConfirmButton_Click"
+                                    IsEnabled="True"
+                                    IsVisible="{Binding CanCompletePayment}"
+                                    Theme="{StaticResource SolidButton}">
+                                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource SemiSpacingTight}">
+                                        <PathIcon Data="{StaticResource SemiIconTickCircle}" Theme="{StaticResource InnerPathIcon}" />
+                                        <AccessText Text="Complete payment" />
+                                    </StackPanel>
+                                </Button>
+                                <Button
+                                    HorizontalAlignment="Stretch"
+                                    Classes="Large"
+                                    Command="{Binding AddPaymentCommand}"
+                                    IsVisible="{Binding CanAddPayment}"
+                                    Theme="{StaticResource SolidButton}">
+                                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource SemiSpacingTight}">
+                                        <PathIcon Data="{StaticResource SemiIconPlus}" Theme="{StaticResource InnerPathIcon}" />
+                                        <AccessText Text="Add payment" />
+                                    </StackPanel>
+                                </Button>
+                            </Panel>
                         </StackPanel>
                     </StackPanel>
 
@@ -321,24 +321,28 @@
                         Grid.Row="1"
                         Grid.Column="0"
                         Grid.ColumnSpan="2"
-                        Spacing="8">
-                        <Label Content="Payment History" Theme="{StaticResource TitleLabel}" />
+                        Spacing="{StaticResource SemiSpacingBaseTight}">
+                        <Label
+                            Classes="H6"
+                            Content="Payment History"
+                            Theme="{StaticResource TitleLabel}" />
 
                         <ItemsControl Name="PaymentHistoryItemsControl" ItemsSource="{Binding Payments}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <UniformGrid
-                                        ColumnSpacing="8"
-                                        Columns="3"
-                                        RowSpacing="8" />
+                                        ColumnSpacing="{StaticResource SemiSpacingTight}"
+                                        Columns="4"
+                                        RowSpacing="{StaticResource SemiSpacingTight}" />
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
 
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Border
+                                        Height="50"
                                         Margin="0"
-                                        Padding="16,12"
+                                        Padding="16,8"
                                         Theme="{StaticResource CardBorder}">
                                         <Grid
                                             HorizontalAlignment="Stretch"
@@ -354,8 +358,8 @@
                                                 Classes.gcash="{Binding PaymentMethod, Converter={StaticResource equalsConverter}, ConverterParameter='gcash'}"
                                                 Classes.voucher="{Binding PaymentMethod, Converter={StaticResource equalsConverter}, ConverterParameter='voucher'}" />
 
-                                            <StackPanel Grid.Column="1">
-                                                <TextBlock Text="{Binding PaymentMethod}" />
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding PaymentMethod, Converter={StaticResource textCaseConverter}, ConverterParameter=title}" />
                                                 <ContentControl IsVisible="{Binding Notes, Converter={StaticResource stringNotEmptyConverter}}">
                                                     <TextBlock
                                                         FontSize="{StaticResource SemiFontSizeSmall}"
@@ -368,9 +372,7 @@
                                                 Grid.Row="0"
                                                 Grid.Column="2"
                                                 VerticalAlignment="Center"
-                                                FontWeight="Bold"
                                                 Foreground="{StaticResource SemiGreen5Color}"
-                                                LineSpacing="-2"
                                                 Text="{Binding Amount, StringFormat=₱{0:F2}}">
                                                 <Run Text="{Binding PaymentMethod}" />
                                                 <LineBreak />
@@ -388,36 +390,5 @@
                 </Grid>
             </Border>
         </ScrollViewer>
-
-        <Border
-            Grid.Row="2"
-            Padding="{StaticResource SemiThicknessBase}"
-            BorderBrush="{StaticResource SemiColorBorder}"
-            BorderThickness="0,1,0,0">
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
-                <Button
-                    Name="confirmButton"
-                    Grid.Column="1"
-                    HorizontalAlignment="Stretch"
-                    Classes="Large Success"
-                    Click="ConfirmButton_Click"
-                    Content="Complete Payment"
-                    IsEnabled="True"
-                    IsVisible="{Binding CanCompletePayment}"
-                    Theme="{StaticResource SolidButton}" />
-                <Button
-                    Grid.Column="1"
-                    HorizontalAlignment="Stretch"
-                    Classes="Large"
-                    Command="{Binding AddPaymentCommand}"
-                    IsVisible="{Binding CanAddPayment}"
-                    Theme="{StaticResource SolidButton}">
-                    <StackPanel Orientation="Horizontal" Spacing="6">
-                        <PathIcon Data="{StaticResource SemiIconPlus}" Theme="{StaticResource InnerPathIcon}" />
-                        <AccessText Text="Add payment" />
-                    </StackPanel>
-                </Button>
-            </Grid>
-        </Border>
     </Grid>
 </UserControl>

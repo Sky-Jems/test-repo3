@@ -1,51 +1,66 @@
 <UserControl
-  x:Class="pos.Dialogs.DetailedProductDialog"
-  xmlns="https://github.com/avaloniaui"
-  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-  xmlns:vm="using:Pos.Dialogs"
-  Width="500"
-  Padding="{StaticResource SemiThicknessLoose}"
-  x:DataType="vm:DetailedProductDialogViewModel"
-  Background="{StaticResource SemiColorBackground4}"
-  ClipToBounds="True"
-  CornerRadius="{StaticResource SemiBorderRadiusMedium}"
-  mc:Ignorable="d">
-  <StackPanel Spacing="16">
-    <Label
-      HorizontalAlignment="Center"
-      Classes="H5"
-      Content="Detailed View"
-      Theme="{StaticResource TitleLabel}" />
+    x:Class="pos.Dialogs.DetailedProductDialog"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:Pos.Dialogs"
+    Width="500"
+    Padding="{StaticResource SemiThicknessLoose}"
+    x:DataType="vm:DetailedProductDialogViewModel"
+    Background="{StaticResource SemiColorBackground4}"
+    ClipToBounds="True"
+    CornerRadius="{StaticResource SemiBorderRadiusMedium}"
+    mc:Ignorable="d">
     <StackPanel>
-      <Border Theme="{StaticResource CardBorder}">
-        <StackPanel>
-          <Label
-            Content="Name:"
-            FontSize="{StaticResource SemiFontSizeSmall}"
-            Foreground="{StaticResource SemiColorText2}" />
-          <TextBlock Text="{Binding Name}" TextWrapping="Wrap" />
+        <Canvas Margin="0,-16,-16,0">
+            <Button
+                Canvas.Top="0"
+                Canvas.Right="0"
+                Width="24"
+                MinHeight="24"
+                Padding="0"
+                Classes="Danger"
+                Click="CloseDialog"
+                CornerRadius="{StaticResource SemiBorderRadiusFull}">
+                <PathIcon Height="12" Data="{DynamicResource SemiIconClose}" />
+            </Button>
+        </Canvas>
+
+        <Label
+            Margin="0,0,0,16"
+            HorizontalAlignment="Center"
+            Classes="H5"
+            Content="Detailed View"
+            Theme="{StaticResource TitleLabel}" />
+        <StackPanel Spacing="4">
+            <Border Theme="{StaticResource CardBorder}">
+                <StackPanel>
+                    <Label
+                        Content="Name:"
+                        FontSize="{StaticResource SemiFontSizeSmall}"
+                        Foreground="{StaticResource SemiColorText2}" />
+                    <TextBlock Text="{Binding Name}" TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+            <Border Theme="{StaticResource CardBorder}">
+                <StackPanel>
+                    <Label
+                        Content="Description:"
+                        FontSize="{StaticResource SemiFontSizeSmall}"
+                        Foreground="{StaticResource SemiColorText2}" />
+                    <TextBlock Text="{Binding Description}" TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+            <Border Theme="{StaticResource CardBorder}">
+                <StackPanel>
+                    <Label
+                        Content="Price:"
+                        FontSize="{StaticResource SemiFontSizeSmall}"
+                        Foreground="{StaticResource SemiColorText2}" />
+                    <TextBlock Text="{Binding Price, StringFormat=₱{0:F2}}" />
+                </StackPanel>
+            </Border>
         </StackPanel>
-      </Border>
-      <Border Theme="{StaticResource CardBorder}">
-        <StackPanel>
-          <Label
-            Content="Description:"
-            FontSize="{StaticResource SemiFontSizeSmall}"
-            Foreground="{StaticResource SemiColorText2}" />
-          <TextBlock Text="{Binding Description}" TextWrapping="Wrap" />
-        </StackPanel>
-      </Border>
-      <Border Theme="{StaticResource CardBorder}">
-        <StackPanel>
-          <Label
-            Content="Price:"
-            FontSize="{StaticResource SemiFontSizeSmall}"
-            Foreground="{StaticResource SemiColorText2}" />
-          <TextBlock Text="{Binding Price}" />
-        </StackPanel>
-      </Border>
     </StackPanel>
-  </StackPanel>
 </UserControl>

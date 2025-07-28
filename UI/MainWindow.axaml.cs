@@ -61,6 +61,8 @@ public partial class MainWindow : Window
         try
         {
             await viewModel.LoginCommand.Execute();
+            UsernameTextBox.Text = "";
+            PasswordTextBox.Text = "";
         }
         catch (Exception ex)
         {

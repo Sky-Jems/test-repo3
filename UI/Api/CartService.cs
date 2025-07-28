@@ -21,65 +21,22 @@ public class CartService : ReactiveObject, ICartService
      [Reactive] public long? OrderId { get; set; }
      [Reactive] public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.PENDING;
      [Reactive] public string Customer { get; set; } = string.Empty;
-     public ObservableCollection<LineItem> Items { get; set; } = new();
-     public decimal SubTotal => Items.Sum(lineItem => lineItem.Quantity * lineItem.Price);
-     public decimal DiscountAmount { get; set; } = 0;
-     public decimal Total => SubTotal - DiscountAmount;
+     [Reactive] public decimal SubTotal { get; set; }
+     [Reactive] public decimal DiscountAmount { get; set; }
+     [Reactive] public decimal Total { get; set; }
      [Reactive] public LineItem? SelectedItem { get; set; }
-     public bool CanModifyItems => PaymentStatus == PaymentStatus.PENDING && Payments.Count == 0;
      [Reactive] public decimal AmountPaid { get; set; }
-     private decimal? _overrideRemainingBalance;
-     public decimal RemainingBalance =>
-          _overrideRemainingBalance ?? Total - AmountPaid;
-
+     [Reactive] public decimal RemainingBalance { get; set; }
      [Reactive] public decimal Amount { get; set; }
      [Reactive] public string PaymentMethod { get; set; } = "cash";
      [Reactive] public string Notes { get; set; } = string.Empty;
-     public ObservableCollection<Payment> Payments { get; set; } = new();
-     [Reactive]
-     public DiscountOrder? DiscountOrder { get; set; }
+     [Reactive] public DiscountOrder? DiscountOrder { get; set; }
 
+     public ObservableCollection<Payment> Payments { get; set; } = new();
+     public ObservableCollection<LineItem> Items { get; set; } = new();
      public List<Discount> Discounts { get; set; } = new();
 
-     public CartService()
-     {
-          Items.CollectionChanged += (_, _) =>
-          {
-               this.RaisePropertyChanged(nameof(SubTotal));
-               this.RaisePropertyChanged(nameof(Total));
-               SubscribeToLineItemChanges();
-          };
-     }
-
-     private void SubscribeToLineItemChanges()
-     {
-          foreach (var item in Items)
-          {
-               item.Changed.Subscribe(_ =>
-               {
-                    this.RaisePropertyChanged(nameof(SubTotal));
-                    this.RaisePropertyChanged(nameof(Total));
-               });
-          }
-     }
-
-     public void ClearItems()
-     {
-          Items.Clear();
-          Customer = string.Empty;
-          PaymentStatus = PaymentStatus.PENDING;
-          Payments.Clear();
-          Discounts.Clear();
-          DiscountAmount = 0;
-          DiscountOrder = null;
-          this.RaisePropertyChanged(nameof(Items));
-          this.RaisePropertyChanged(nameof(SubTotal));
-          this.RaisePropertyChanged(nameof(Total));
-          this.RaisePropertyChanged(nameof(PaymentStatus));
-          this.RaisePropertyChanged(nameof(DiscountAmount));
-
-          ClearRemainingBalanceOverride();
-     }
+     public bool CanModifyItems => PaymentStatus == PaymentStatus.PENDING && Payments.Count == 0;
 
      public void LoadOrder(GetOrderResponseDto orderResponse)
      {
@@ -89,71 +46,39 @@ public class CartService : ReactiveObject, ICartService
           DiscountOrder = orderResponse.DiscountOrder;
 
           if (Enum.TryParse<PaymentStatus>(orderResponse.PaymentStatus, true, out var parsedStatus))
-          {
                PaymentStatus = parsedStatus;
-          }
 
-          Items.Clear();
+          LoadLineItems(orderResponse.Order.LineItems);
+          LoadPayments(orderResponse.Payments);
+          ApplyBilling(orderResponse.Billing, orderResponse.NetAmount);
+          ApplyLineItemDiscounts();
 
-          foreach (var lineItemDto in orderResponse.Order.LineItems ?? Enumerable.Empty<GetLineItemDto>())
-          {
-               var lineItem = LineItemMapper.FromDto(lineItemDto);
-               Items.Add(lineItem);
-          }
-
-
-          Payments.Clear();
-          foreach (var paymentDto in orderResponse.Payments ?? Enumerable.Empty<PaymentListResponseDto>())
-          {
-               var payment = new Payment
-               {
-                    OrderId = orderResponse.OrderId,
-                    Amount = paymentDto.Amount,
-                    PaymentMethod = paymentDto.PaymentMethod,
-                    Notes = paymentDto.Notes
-               };
-               Payments.Add(payment);
-          }
-
-          if (orderResponse.Billing != null)
-          {
-               AmountPaid = orderResponse.Billing.PaidAmount;
-               _overrideRemainingBalance = orderResponse.Billing.RemainingAmount;
-          }
-          else
-          {
-               AmountPaid = Payments.Sum(p => p.Amount);
-               _overrideRemainingBalance = null;
-          }
-
-          if (DiscountOrder?.lineItems != null)
-          {
-               foreach (var lineItem in Items)
-               {
-                    lineItem.Discount = DiscountOrder.lineItems.FirstOrDefault(item => item.LineItemId == lineItem.Id);
-               }
-          }
+          SubTotal = orderResponse.GrossAmount;
+          Total = orderResponse.NetAmount;
 
           this.RaisePropertyChanged(nameof(Items));
-          this.RaisePropertyChanged(nameof(SubTotal));
-          this.RaisePropertyChanged(nameof(DiscountAmount));
-          this.RaisePropertyChanged(nameof(Total));
-          this.RaisePropertyChanged(nameof(RemainingBalance));
           this.RaisePropertyChanged(nameof(DiscountOrder));
      }
 
-     public void ResetOrder()
+     public void Reset()
      {
-          ClearItems();
           OrderId = null;
-     }
+          Customer = string.Empty;
+          PaymentStatus = PaymentStatus.PENDING;
+          DiscountAmount = 0;
+          DiscountOrder = null;
+          SubTotal = 0;
+          Total = 0;
 
-     public void ResetPayments()
-     {
+          Items.Clear();
           Payments.Clear();
+          Discounts.Clear();
+          
           AmountPaid = 0;
+          RemainingBalance = 0;
 
-          ClearRemainingBalanceOverride();
+          this.RaisePropertyChanged(nameof(Items));
+          this.RaisePropertyChanged(nameof(PaymentStatus));
      }
 
      public Payment MakePayment()
@@ -167,7 +92,6 @@ public class CartService : ReactiveObject, ICartService
           };
      }
 
-
      public void AddPayment(Payment payment)
      {
           if (payment.Amount < 0 || payment.OrderId != OrderId) return;
@@ -180,19 +104,62 @@ public class CartService : ReactiveObject, ICartService
           if (paymentResponse.OrderId != OrderId) return;
 
           AmountPaid = paymentResponse.PaidAmount;
-          _overrideRemainingBalance = paymentResponse.RemainingAmount;
-          this.RaisePropertyChanged(nameof(RemainingBalance));
-     }
-
-     private void ClearRemainingBalanceOverride()
-     {
-          _overrideRemainingBalance = null;
-          this.RaisePropertyChanged(nameof(RemainingBalance));
+          RemainingBalance = paymentResponse.RemainingAmount;
      }
 
      public void LoadDiscounts(List<Discount> discounts)
      {
           Discounts = discounts;
           this.RaisePropertyChanged(nameof(Discounts));
+     }
+
+     private void LoadLineItems(IEnumerable<GetLineItemDto>? lineItems)
+     {
+          Items.Clear();
+          foreach (var lineItemDto in lineItems ?? Enumerable.Empty<GetLineItemDto>())
+          {
+               var lineItem = LineItemMapper.FromDto(lineItemDto);
+               Items.Add(lineItem);
+          }
+     }
+
+     private void LoadPayments(IEnumerable<PaymentListResponseDto>? paymentDtos)
+     {
+          Payments.Clear();
+          foreach (var paymentDto in paymentDtos ?? Enumerable.Empty<PaymentListResponseDto>())
+          {
+               var payment = new Payment
+               {
+                    OrderId = OrderId.Value,
+                    Amount = paymentDto.Amount,
+                    PaymentMethod = paymentDto.PaymentMethod,
+                    Notes = paymentDto.Notes
+               };
+               Payments.Add(payment);
+          }
+     }
+
+     private void ApplyBilling(PaymentResponseDto? billing, decimal netAmount)
+     {
+          if (billing != null)
+          {
+               AmountPaid = billing.PaidAmount;
+               RemainingBalance = billing.RemainingAmount;
+          }
+          else
+          {
+               AmountPaid = 0;
+               RemainingBalance = netAmount;
+          }
+     }
+
+     private void ApplyLineItemDiscounts()
+     {
+          if (DiscountOrder?.lineItems == null) return;
+
+          foreach (var lineItem in Items)
+          {
+               lineItem.Discount = DiscountOrder.lineItems.FirstOrDefault(item => item.LineItemId == lineItem.Id);
+          }
      }
 }

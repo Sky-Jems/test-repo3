@@ -15,6 +15,7 @@ using pos.Models.EventArgs;
 using Pos.Util;
 using ReactiveUI;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using ReactiveUI.Fody.Helpers;
 
 namespace Pos.Controls;
@@ -28,12 +29,13 @@ public class OrderCartPanelViewModel : ReactiveObject
     private readonly IDiscountService _discountService;
     private long OrderTransactionId { get; set; }
     public ObservableCollection<LineItem> OrderList => _cartService.Items;
-    private readonly ObservableAsPropertyHelper<decimal> _cartSubTotal;
-    public decimal CartSubTotal => _cartSubTotal.Value;
-    private readonly ObservableAsPropertyHelper<decimal> _cartTotal;
-    public decimal CartTotal => _cartTotal.Value;
-    private readonly ObservableAsPropertyHelper<decimal> _DiscountTotal;
-    public decimal DiscountTotal => _DiscountTotal.Value;
+    [ObservableAsProperty] public decimal CartSubTotal { get; }
+    [ObservableAsProperty] public decimal DiscountTotal { get; }
+    [ObservableAsProperty] public decimal CartTotal { get; }
+    [ObservableAsProperty] public decimal AmountPaid { get; }
+    [ObservableAsProperty] public decimal RemainingBalance { get; }
+    [ObservableAsProperty] public DiscountOrder? DiscountOrder { get; }
+    
     private LineItem _selectedItem;
     public LineItem SelectedItem
     {
@@ -51,8 +53,6 @@ public class OrderCartPanelViewModel : ReactiveObject
     public bool CanShowItems => _showItems.Value;
     public bool CanModifyItems => _cartService.CanModifyItems;
     public bool IsCompleted => _cartService.PaymentStatus != PaymentStatus.PENDING;
-    private readonly ObservableAsPropertyHelper<DiscountOrder> _DiscountOrder;
-    public DiscountOrder DiscountOrder => _DiscountOrder.Value;
     public event Action<LineItem>? CartItemClicked;
     public event Action NavigateToCategory;
     public ReactiveCommand<LineItem, Unit> NavigateToMenuCommand { get; }
@@ -65,10 +65,9 @@ public class OrderCartPanelViewModel : ReactiveObject
     private ReactiveCommand<Unit, Unit> LoadOrderToCartCommand { get; }
     public ReactiveCommand<Unit, Unit> PayOrderCommand { get; }
     public ReactiveCommand<Unit, Unit> NewOrderCommand { get; }
-    public ReactiveCommand<Unit, bool> ValidateCustomerNameCommand { get; }
+    private ReactiveCommand<Unit, bool> ValidateCustomerNameCommand { get; }
     public event EventHandler<NotificationEventArgs>? TriggerNotif;
     private bool _isModifyingOrder;
-    private string? _originalCustomer;
     [Reactive] public bool ShouldFocusCustomer { get; set; }
 
     public OrderCartPanelViewModel()
@@ -78,26 +77,8 @@ public class OrderCartPanelViewModel : ReactiveObject
         _orderTransactionService = ServiceLocator.Services.GetRequiredService<IOrderTransactionService>();
         _uiInteractionService = ServiceLocator.Services.GetRequiredService<IUIInteractionService>();
         _discountService = ServiceLocator.Services.GetRequiredService<IDiscountService>();
-
-        _cartService
-           .WhenAnyValue(x => x.SubTotal)
-           .ObserveOn(RxApp.MainThreadScheduler)
-           .ToProperty(this, x => x.CartSubTotal, out _cartSubTotal);
-
-        _cartService
-            .WhenAnyValue(x => x.DiscountAmount)
-            .ObserveOn(RxApp.MainThreadScheduler)
-            .ToProperty(this, x => x.DiscountTotal, out _DiscountTotal);
-
-        _cartService
-            .WhenAnyValue(x => x.Total)
-            .ObserveOn(RxApp.MainThreadScheduler)
-            .ToProperty(this, x => x.CartTotal, out _cartTotal);
-
-        _cartService
-            .WhenAnyValue(x => x.DiscountOrder)
-            .ObserveOn(RxApp.MainThreadScheduler)
-            .ToProperty(this, x => x.DiscountOrder, out _DiscountOrder);
+        
+        BindCartObservables();
 
         // Sync from service to viewmodel
         _cartService.WhenAnyValue(x => x.SelectedItem)
@@ -168,6 +149,23 @@ public class OrderCartPanelViewModel : ReactiveObject
             .Subscribe(ex => HandleCommandError("Failed to open payment dialog.", ex));
         ValidateCustomerNameCommand.ThrownExceptions
             .Subscribe(ex => HandleCommandError("Failed to validate customer name.", ex));
+    }
+
+    private void BindCartObservables()
+    {
+        Bind(_cartService.WhenAnyValue(x => x.SubTotal), x => x.CartSubTotal);
+        Bind(_cartService.WhenAnyValue(x => x.DiscountAmount), x => x.DiscountTotal);
+        Bind(_cartService.WhenAnyValue(x => x.Total), x => x.CartTotal);
+        Bind(_cartService.WhenAnyValue(x => x.AmountPaid), x => x.AmountPaid);
+        Bind(_cartService.WhenAnyValue(x => x.RemainingBalance), x => x.RemainingBalance);
+        Bind(_cartService.WhenAnyValue(x => x.DiscountOrder), x => x.DiscountOrder);
+    }
+    
+    private void Bind<T>(IObservable<T> source, Expression<Func<OrderCartPanelViewModel, T>> property)
+    {
+        source
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .ToPropertyEx(this, property);
     }
 
     private async Task LoadOrderToCartAsync()
@@ -265,7 +263,7 @@ public class OrderCartPanelViewModel : ReactiveObject
 
     private void PayLater()
     {
-        _cartService.ResetOrder();
+        _cartService.Reset();
         TriggerNotif?.Invoke(this, new NotificationEventArgs
         {
             Message = "Order has been moved to Pending Orders.",
@@ -360,7 +358,7 @@ public class OrderCartPanelViewModel : ReactiveObject
 
     private void StartNewOrder()
     {
-        _cartService.ResetOrder();
+        _cartService.Reset();
         NavigateToCategory.Invoke();
     }
 

@@ -32,4 +32,7 @@ public class LineItemResponseDto implements Serializable {
 
     @JsonProperty("updated_at")
     OffsetDateTime updatedAt;
+
+    @JsonProperty("created_at")
+    OffsetDateTime createdAt;
 }

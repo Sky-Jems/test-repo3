@@ -7,25 +7,21 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     x:DataType="app:StaffLoginViewModel"
     mc:Ignorable="d">
-    
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+
+    <Grid ColumnDefinitions="65* 35*">
         <Image
             Grid.Column="0"
-            Source="avares://Pos/Assets/poster_staff.jpg"
-            Stretch="Fill"
             HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch" />
+            VerticalAlignment="Stretch"
+            Source="avares://Pos/Assets/poster_staff.jpg"
+            Stretch="Fill" />
+
         <Grid
             Grid.Column="1"
-            Width="350"
-            Margin="150"
+            Margin="{StaticResource SemiThicknessSuperLoose}"
+            VerticalAlignment="Center"
             ColumnDefinitions="*"
-            RowDefinitions="Auto,*,Auto">
-    
+            RowDefinitions="auto auto auto">
             <Border
                 Grid.Row="0"
                 Padding="12"
@@ -38,7 +34,7 @@
                     Content="Select User"
                     Theme="{StaticResource TitleLabel}" />
             </Border>
-    
+
             <Border
                 Grid.Row="1"
                 BorderBrush="#141C1F23"
@@ -60,7 +56,7 @@
                     </ItemsControl>
                 </ScrollViewer>
             </Border>
-    
+
             <Border
                 Grid.Row="2"
                 Padding="12"
@@ -76,6 +72,6 @@
                     FontSize="14"
                     Theme="{StaticResource SolidButton}" />
             </Border>
-            </Grid>
+        </Grid>
     </Grid>
 </UserControl>

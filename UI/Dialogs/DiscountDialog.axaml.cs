@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Reactive;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -21,6 +22,12 @@ public partial class DiscountDialog : BaseDialog
         viewModel = new DiscountDialogViewModel(selectedLineItemId);
         DataContext = viewModel;
         viewModel.GetDiscounts().ContinueWith(_ => Dispatcher.UIThread.Post(() => ShowSelectedDiscount()));
+        
+        viewModel.CloseDialog.RegisterHandler(interaction =>
+        {
+            Close(EventArgs.Empty);
+            interaction.SetOutput(Unit.Default);
+        });
     }
 
     private void CloseDialog(object sender, RoutedEventArgs args) => Close(EventArgs.Empty);

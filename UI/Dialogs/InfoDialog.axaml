@@ -41,7 +41,7 @@
 
         <TextBlock
             Name="DialogMessage"
-            Margin="4,16,4,20"
+            Margin="4,20"
             HorizontalAlignment="Center"
             DockPanel.Dock="Top"
             Foreground="{StaticResource SemiColorText2}"

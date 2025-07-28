@@ -23,24 +23,50 @@
         PaneBackground="{StaticResource SemiBackground4Color}"
         PanePlacement="Right">
         <SplitView.Pane>
-            <!--  OrderDisplayPanel Width prevents contents inside the pane from getting squished  -->
+            <!--  OrderDisplayPanel `Width` prevents contents inside the pane from getting squished  -->
             <!--  as the pane resizes when appearing, not moving  -->
-            <controls:OrderDisplayPanel
-                Width="{Binding $parent.OpenPaneLength}"
-                DataContext="{Binding OrderDisplayPanelViewModel}"
-                ShowSummaryButton="{Binding $parent.DataContext.ShowOrderCartPanelButton}"
-                SummaryButtonCommand="{Binding $parent.DataContext.AddOrdersButtonCommand}"
-                SummaryButtonText="Manage Order" />
+            <Panel Width="{Binding #orderDetailsPane.OpenPaneLength}">
+                <Canvas>
+                    <ToggleSwitch
+                        Canvas.Top="20"
+                        Canvas.Right="24"
+                        Width="24"
+                        MinHeight="24"
+                        Padding="0"
+                        CornerRadius="{StaticResource SemiBorderRadiusFull}"
+                        IsChecked="{Binding #orderDetailsPane.IsPaneOpen}"
+                        Theme="{DynamicResource ButtonToggleSwitch}">
+                        <ToggleSwitch.Styles>
+                            <Style Selector="ToggleSwitch:not(:pointerover):not(:pressed)">
+                                <Setter Property="Background" Value="{StaticResource ButtonDefaultBackground}" />
+                            </Style>
+                        </ToggleSwitch.Styles>
+
+                        <ToggleSwitch.Content>
+                            <PathIcon
+                                Height="12"
+                                Data="{DynamicResource SemiIconClose}"
+                                Foreground="{StaticResource SemiColorDanger}" />
+                        </ToggleSwitch.Content>
+                    </ToggleSwitch>
+                </Canvas>
+                <controls:OrderDisplayPanel
+                    DataContext="{Binding OrderDisplayPanelViewModel}"
+                    ShowSummaryButton="{Binding $parent.DataContext.ShowOrderCartPanelButton}"
+                    SummaryButtonCommand="{Binding $parent.DataContext.AddOrdersButtonCommand}"
+                    SummaryButtonText="Manage Order" />
+            </Panel>
         </SplitView.Pane>
 
-        <Border Padding="32">
-            <DockPanel>
+        <Border Padding="{StaticResource SemiThicknessSuperLoose}">
+            <DockPanel VerticalSpacing="{StaticResource SemiSpacingLoose}">
                 <Grid
-                    Margin="0,0,0,24"
+                    Height="{StaticResource SemiHeightControlLarge}"
                     ColumnDefinitions="* auto"
                     DockPanel.Dock="Top">
                     <Label
                         Grid.Column="0"
+                        VerticalContentAlignment="Center"
                         Classes="H2"
                         Content="{Binding Status, StringFormat='{}{0} Orders', Converter={StaticResource textCaseConverter}, ConverterParameter=title}"
                         Theme="{StaticResource TitleLabel}" />
@@ -51,14 +77,13 @@
                         Classes="Large"
                         IsVisible="{Binding Status, Converter={StaticResource equalsConverter}, ConverterParameter={StaticResource OrderCompleted}}"
                         Theme="{StaticResource SolidButton}">
-                        <StackPanel Orientation="Horizontal">
-                            <PathIcon
-                                Margin="0,0,8,0"
-                                Data="{StaticResource SemiIconCalendar}"
-                                Theme="{StaticResource InnerPathIcon}" />
-                            <AccessText Name="startRangeText" Text="Start range" />
-                            <AccessText Margin="6,0" Text="–" />
-                            <AccessText Name="endRangeText" Text="End range" />
+                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource SemiSpacingTight}">
+                            <PathIcon Data="{StaticResource SemiIconCalendar}" Theme="{StaticResource InnerPathIcon}" />
+                            <StackPanel Orientation="Horizontal">
+                                <AccessText Name="startRangeText" Text="Start range" />
+                                <AccessText Text=" – " />
+                                <AccessText Name="endRangeText" Text="End range" />
+                            </StackPanel>
                         </StackPanel>
                         <Button.Flyout>
                             <Flyout Opened="DateRangeFlyOut_Opened" Placement="BottomEdgeAlignedRight">
@@ -197,18 +222,22 @@
                                 Header="Items" />
                             <DataGridTextColumn
                                 Width="auto"
-                                Binding="{Binding Order.Total, StringFormat='₱{00}'}"
+                                Binding="{Binding GrossAmount, StringFormat='₱{00}'}"
+                                Header="Subtotal Amount" />
+                            <DataGridTextColumn
+                                Width="auto"
+                                Binding="{Binding NetAmount, StringFormat='₱{00}'}"
                                 Header="Total Amount" />
                             <DataGridTextColumn
-                                IsVisible="{Binding Status, Converter={StaticResource equalsConverter}, ConverterParameter={StaticResource OrderPending}}"
                                 Width="auto"
                                 Binding="{Binding SafeRemainingAmount, StringFormat='₱{00}'}"
-                                Header="Remaining Balance" />
+                                Header="Remaining Balance"
+                                IsVisible="{Binding Status, Converter={StaticResource equalsConverter}, ConverterParameter={StaticResource OrderPending}}" />
                             <DataGridTextColumn
-                                IsVisible="{Binding Status, Converter={StaticResource equalsConverter}, ConverterParameter={StaticResource OrderCompleted}}"
                                 Width="auto"
                                 Binding="{Binding PaymentMethodsDisplay}"
-                                Header="Payment Method" />
+                                Header="Payment Method"
+                                IsVisible="{Binding Status, Converter={StaticResource equalsConverter}, ConverterParameter={StaticResource OrderCompleted}}" />
                             <DataGridTextColumn
                                 Width="2*"
                                 Binding="{Binding Order.CreatedAt, Converter={StaticResource dateTimeConverter}, ConverterParameter='M/d/yy - h:mm tt', Mode=OneWay}"

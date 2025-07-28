@@ -8,7 +8,6 @@ using Pos.Models;
 using ReactiveUI;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using AvaloniaDialogs.Views;
 using Pos.Dialogs;
 
 namespace Pos.Pages.Products;
@@ -26,6 +25,7 @@ public partial class MainView : ReactiveUserControl<MainViewModel>
             });
         Dispatcher.UIThread.Post(() =>
         {
+            ViewModel.TriggerNotif -= MainWindow.NotificationMessage;
             ViewModel.TriggerNotif += MainWindow.NotificationMessage;
         });
     }

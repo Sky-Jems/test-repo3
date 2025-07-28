@@ -4,75 +4,88 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:app="using:Pos.Pages.WaitStaff"
     xmlns:controls="using:Pos.Controls"
+    xmlns:converters="clr-namespace:Pos.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Padding="{StaticResource SemiThicknessExtraLoose}"
     x:DataType="app:MenuViewModel"
     mc:Ignorable="d">
 
-    <Border Padding="32">
-        <StackPanel Spacing="12">
-            <Grid
-                Margin="0,0,0,12"
-                VerticalAlignment="Center"
-                ColumnDefinitions="Auto,Auto,*">
-                <Button
-                    Grid.Column="0"
-                    Width="40"
-                    Height="40"
-                    Command="{Binding GoBack}">
+    <UserControl.Resources>
+        <converters:IsZeroConverter x:Key="isZeroConverter" />
+        <converters:IsGreaterThanZeroConverter x:Key="isGreaterThanZeroConverter" />
+    </UserControl.Resources>
+
+    <StackPanel Spacing="24">
+        <Grid Height="{StaticResource SemiHeightControlLarge}" ColumnDefinitions="Auto,Auto,*">
+            <Button
+                Grid.Column="0"
+                Width="40"
+                Height="40"
+                Command="{Binding GoBack}">
+                <PathIcon
+                    Width="16"
+                    Data="{StaticResource SemiIconArrowLeft}"
+                    Theme="{DynamicResource InnerPathIcon}" />
+            </Button>
+
+            <Label
+                Grid.Column="1"
+                Margin="16,0"
+                VerticalContentAlignment="Center"
+                Classes="H2"
+                Theme="{StaticResource TitleLabel}">
+                Products
+            </Label>
+
+            <TextBox
+                Name="search_box"
+                Grid.Column="2"
+                MinWidth="200"
+                HorizontalAlignment="Right"
+                Classes="Large Bordered clearButton"
+                Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                Watermark="Search...">
+                <TextBox.InnerLeftContent>
                     <PathIcon
-                        Width="16"
-                        Data="{StaticResource SemiIconArrowLeft}"
-                        Theme="{DynamicResource InnerPathIcon}" />
-                </Button>
+                        Height="16"
+                        Data="{StaticResource SemiIconSearch}"
+                        Theme="{StaticResource InnerPathIcon}" />
+                </TextBox.InnerLeftContent>
+            </TextBox>
+        </Grid>
 
-                <Label
-                    Grid.Column="1"
-                    Margin="16,0"
-                    VerticalAlignment="Center"
-                    Classes="H2"
-                    Theme="{StaticResource TitleLabel}">
-                    Products
-                </Label>
+        <ItemsRepeater
+            Margin="0,0,0,20"
+            VerticalAlignment="Top"
+            ClipToBounds="False"
+            IsVisible="{Binding Products.Count, Converter={StaticResource isGreaterThanZeroConverter}}"
+            ItemsSource="{Binding Products}">
+            <ItemsRepeater.Layout>
+                <UniformGridLayout
+                    ItemsStretch="Uniform"
+                    MinColumnSpacing="12"
+                    MinItemHeight="100"
+                    MinItemWidth="160"
+                    MinRowSpacing="12" />
+            </ItemsRepeater.Layout>
 
-                <TextBox
-                    Name="search_box"
-                    Grid.Column="2"
-                    MinWidth="200"
-                    HorizontalAlignment="Right"
-                    Classes="Large Bordered"
-                    Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                    Watermark="Search...">
-                    <TextBox.InnerRightContent>
-                        <PathIcon
-                            Height="16"
-                            Data="{StaticResource SemiIconSearch}"
-                            Theme="{StaticResource InnerPathIcon}" />
-                    </TextBox.InnerRightContent>
-                </TextBox>
-            </Grid>
+            <ItemsRepeater.ItemTemplate>
+                <DataTemplate>
+                    <controls:MenuItemCard MenuItemCommand="{Binding $parent[ItemsRepeater].((app:MenuViewModel)DataContext).ProductCardClickedCommand}" Product="{Binding}" />
+                </DataTemplate>
+            </ItemsRepeater.ItemTemplate>
+        </ItemsRepeater>
 
-            <ItemsRepeater
-                Margin="0,0,0,20"
-                VerticalAlignment="Top"
-                ClipToBounds="False"
-                ItemsSource="{Binding Products}">
-                <ItemsRepeater.Layout>
-                    <UniformGridLayout
-                        ItemsStretch="Uniform"
-                        MinColumnSpacing="12"
-                        MinItemHeight="100"
-                        MinItemWidth="160"
-                        MinRowSpacing="12" />
-                </ItemsRepeater.Layout>
-
-                <ItemsRepeater.ItemTemplate>
-                    <DataTemplate>
-                        <controls:MenuItemCard MenuItemCommand="{Binding $parent[ItemsRepeater].((app:MenuViewModel)DataContext).ProductCardClickedCommand}" Product="{Binding}" />
-                    </DataTemplate>
-                </ItemsRepeater.ItemTemplate>
-            </ItemsRepeater>
-        </StackPanel>
-    </Border>
-
+        <!--  Zero state message  -->
+        <TextBlock
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            FontSize="14"
+            Foreground="Gray"
+            IsVisible="{Binding Products.Count, Converter={StaticResource isZeroConverter}}"
+            Text="No products available. Go to the Products tab to add a product or contact admin."
+            TextAlignment="Center"
+            TextWrapping="Wrap" />
+    </StackPanel>
 </UserControl>

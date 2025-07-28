@@ -8,6 +8,7 @@ using Avalonia.Threading;
 using System.Linq;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml.MarkupExtensions;
+using Pos.Models;
 
 namespace Pos.Pages.Products;
 
@@ -19,7 +20,7 @@ public partial class CreateProductView : ReactiveUserControl<CreateProductViewMo
 
         Dispatcher.UIThread.Post(() =>
         {
-            ViewModel.TriggerNotif += MainWindow.NotificationMessage;
+            ViewModel!.TriggerNotif += MainWindow.NotificationMessage;
             ViewModel.LoadCategoryCommand.Execute().Subscribe();
         });
 
@@ -48,6 +49,7 @@ public partial class CreateProductView : ReactiveUserControl<CreateProductViewMo
             e.Handled = true;
         }
     }
+
     private async void UploadImageButton_Clicked(object sender, RoutedEventArgs args)
     {
         var topLevel = TopLevel.GetTopLevel(this);
@@ -67,25 +69,28 @@ public partial class CreateProductView : ReactiveUserControl<CreateProductViewMo
         }
     }
 
-    private void DescriptionBox_TextChanged(object? sender, TextChangedEventArgs e)
-    {
-        var currentLength = DescriptionName.Text?.Length ?? 0;
-        DescriptionCounter.Text = $"{currentLength} / 500 Characters";
-    }
-
-    private void ProductBox_TextChanged(object? sender, TextChangedEventArgs e)
-    {
-        var currentLength = ProductName.Text?.Length ?? 0;
-        ProductCounter.Text = $"{currentLength} / 250 Characters";
-    }
-
     private void OnButtonFlyoutOpened(object sender, EventArgs e)
     {
         CategoryDropdownIcon.Bind(PathIcon.DataProperty, new DynamicResourceExtension("SemiIconChevronRight"));
+        SelectedCategoryListBox.SelectedItems!.Clear();
+        foreach (var selectedCategory in ViewModel!.SelectedCategoryList)
+        {
+            SelectedCategoryListBox.SelectedItems.Add(ViewModel!.CategoryList.First(x => x.Id == selectedCategory.Id));
+        }
     }
 
     private void OnButtonFlyoutClosed(object sender, EventArgs e)
     {
         CategoryDropdownIcon.Bind(PathIcon.DataProperty, new DynamicResourceExtension("SemiIconChevronDown"));
     }
+
+    private void OnCategorySelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (DataContext is CreateProductViewModel vm && sender is ListBox listBox)
+        {
+            vm.SetCategoryList(listBox.SelectedItems.OfType<Category>());
+
+        }
+    }
+
 }

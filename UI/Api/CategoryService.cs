@@ -19,19 +19,22 @@ public class CategoryService : ICategoryService
         return await _httpClient.GetJsonAsync<List<Category>>("categories");
     }
 
-    public async Task CreateCategory(Category category)
+    public async Task<GetCategoryResponseDto> CreateCategory(Category category)
     {
-        await _httpClient.PostJsonAsync("categories", category);
+        var response = await _httpClient.PostJsonAsync("categories", category);
+        return await _httpClient.ReadJsonResponseAsync<GetCategoryResponseDto>(response);
     }
 
-    public async Task UpdateCategory(long id, Category category)
+    public async Task<GetCategoryResponseDto> UpdateCategory(long id, Category category)
     {
-        await _httpClient.PutJsonAsync($"categories/{id}", category);
+        var response = await _httpClient.PutJsonAsync($"categories/{id}", category);
+        return await _httpClient.ReadJsonResponseAsync<GetCategoryResponseDto>(response);
     }
 
-    public async Task DeleteCategory(long id)
+    public async Task<GetCategoryResponseDto> DeleteCategory(long id)
     {
-        await _httpClient.DeleteAsync($"categories/{id}");
+        var response = await _httpClient.DeleteAsync($"categories/{id}");
+        return await _httpClient.ReadJsonResponseAsync<GetCategoryResponseDto>(response);
     }
 
     public async Task<Category> GetCategoryByIdAsync(int id)

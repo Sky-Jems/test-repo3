@@ -57,14 +57,10 @@
                                             <TextBlock
                                                 Grid.Column="0"
                                                 VerticalAlignment="Center"
-                                                FontSize="{StaticResource SemiFontSizeRegular}"
                                                 LineHeight="{StaticResource SemiFontSizeHeader5}">
-                                                <TextBlock.Text>
-                                                    <MultiBinding StringFormat="{}{0} - {1}">
-                                                        <Binding Path="Product.ProductName" />
-                                                        <Binding Path="Product.ProductDescription" />
-                                                    </MultiBinding>
-                                                </TextBlock.Text>
+                                                <Run FontWeight="{StaticResource SemiFontWeightBold}" Text="{Binding Product.ProductName}" />
+                                                <Run Text="-" />
+                                                <Run Text="{Binding Product.ProductDescription}" />
                                             </TextBlock>
 
                                             <Label
@@ -112,7 +108,7 @@
                         FontSize="14"
                         Foreground="Gray"
                         IsVisible="{Binding OrderTransactionDetails.Order.LineItems.Count, Converter={StaticResource isZeroConverter}}"
-                        Text="No items yet. To add items, start by selecting a service and then choose a product."
+                        Text="No items yet. To add items, start by selecting a category and then choose a product."
                         TextAlignment="Center"
                         TextWrapping="Wrap" />
                 </Grid>

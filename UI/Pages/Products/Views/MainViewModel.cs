@@ -107,7 +107,7 @@ public partial class MainViewModel : ReactiveObject, IRoutableViewModel
                     }
                 }
 
-                product.Categories = categoryList.OrderBy(c => c.Name).ToList();;
+                product.Categories = categoryList.OrderBy(c => c.Name).ToList();
                 _allProducts.Add(product);
                 _allProducts = _allProducts
                .GroupBy(p => p.Id)

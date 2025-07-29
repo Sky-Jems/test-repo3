@@ -1,5 +1,4 @@
 using services_app_pos.Services.Interfaces;
-using System.Diagnostics;
 
 namespace services_app_pos
 {
@@ -24,13 +23,15 @@ namespace services_app_pos
                         zookeeperBtn.Enabled = false;
                         kafkaBtn.Enabled = true;
                     }));
+
+                    AutomateBtnClick(kafkaBtn);
                 }
                 else if ((int)Utils.Constants.MainService.Kafka == e)
                 {
                     this.Invoke(new Action(() => { kafkaBtn.Enabled = false; }));
                 }
             };
-
+ 
             dataGridView1.DataSource = service.GetServiceList();
             dataGridView1.Columns["Path"].Visible = false;
             dataGridView1.Columns["Command"].Visible = false;
@@ -59,6 +60,21 @@ namespace services_app_pos
         private void Form1_Load(object sender, EventArgs e)
         {
             service.StopMicroServices();
+
+            AutomateBtnClick(zookeeperBtn);
+            AutomateBtnClick(postgreSQLBtn);
+        }
+
+        private void AutomateBtnClick(Button btn)
+        {
+            Task.Run(async () =>
+            {
+                while (btn.Enabled)
+                {
+                    this.Invoke(new Action(() => { btn.PerformClick(); }));
+                    await Task.Delay(5000);
+                }
+            });
         }
     }
 } 

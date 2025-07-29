@@ -105,6 +105,7 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(306, 342);
+            ControlBox = false;
             Controls.Add(kafkaBtn);
             Controls.Add(zookeeperBtn);
             Controls.Add(postgreSQLBtn);

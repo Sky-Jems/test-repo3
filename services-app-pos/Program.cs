@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using services_app_pos.Models;
+using System.Diagnostics;
 namespace services_app_pos
 {
     internal static class Program
@@ -12,6 +13,12 @@ namespace services_app_pos
         [STAThread]
         static void Main()
         {
+            if (Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Length > 1)
+            {
+                MessageBox.Show("Application already running.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             IConfigurationBuilder builder = new ConfigurationBuilder()
                 .SetBasePath(AppContext.BaseDirectory)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);

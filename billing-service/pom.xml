@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>solutions.skydev.pos</groupId>
 	<artifactId>billing-service</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>Billing Service</name>
 	<description>Billing service for skydev pos</description>
 	<url/>

@@ -1,0 +1,41 @@
+name: Build All Microservices
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up JDK 24
+      uses: actions/setup-java@v3
+      with:
+        java-version: '24'
+        distribution: 'temurin'
+        cache: 'maven'
+
+    - name: Make build script executable
+      run: chmod +x ./build-all-services.sh
+
+    - name: Build all microservices
+      run: ./build-all-services.sh
+
+    - name: Verify JAR files were created
+      run: |
+        echo "Checking for JAR files in jar-releases directory"
+        if [ -d "jar-releases" ] && [ "$(ls -A jar-releases)" ]; then
+          echo "JAR files found:"
+          ls -la jar-releases
+          echo "Build successful!"
+          exit 0
+        else
+          echo "No JAR files found in jar-releases directory"
+          echo "Build failed!"
+          exit 1
+        fi

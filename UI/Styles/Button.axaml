@@ -1,0 +1,77 @@
+<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style Selector=".LightSecondary">
+        <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="{DynamicResource SemiLightBlue8Color}" />
+            <Setter Property="Background" Value="{DynamicResource SemiLightBlue2Color}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SemiLightBlue2Color}" />
+        </Style>
+        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SemiLightBlue4Color}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SemiLightBlue4Color}" />
+        </Style>
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SemiLightBlue3Color}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SemiLightBlue3Color}" />
+        </Style>
+    </Style>
+    <Style Selector=".LightSuccess">
+        <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="{DynamicResource SemiGreen8Color}" />
+            <Setter Property="Background" Value="{DynamicResource SemiGreen2Color}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SemiGreen2Color}" />
+        </Style>
+        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SemiGreen4Color}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SemiGreen4Color}" />
+        </Style>
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SemiGreen3Color}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SemiGreen3Color}" />
+        </Style>
+    </Style>
+    <Style Selector=".LightPrimary">
+        <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="{DynamicResource SemiIndigo8Color}" />
+            <Setter Property="Background" Value="{DynamicResource SemiIndigo2Color}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SemiIndigo2Color}" />
+        </Style>
+        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SemiIndigo4Color}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SemiIndigo4Color}" />
+        </Style>
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SemiIndigo3Color}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SemiIndigo3Color}" />
+        </Style>
+    </Style>
+    <Style Selector=".LightDanger">
+        <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="{DynamicResource SemiRed9Color}" />
+            <Setter Property="Background" Value="{DynamicResource SemiRed2Color}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SemiRed2Color}" />
+        </Style>
+        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SemiRed4Color}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SemiRed4Color}" />
+        </Style>
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SemiRed3Color}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SemiRed3Color}" />
+        </Style>
+    </Style>
+    <Style Selector=".LightWarning">
+        <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="{DynamicResource SemiOrange8Color}" />
+            <Setter Property="Background" Value="{DynamicResource SemiOrange2Color}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SemiOrange2Color}" />
+        </Style>
+        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SemiOrange4Color}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SemiOrange4Color}" />
+        </Style>
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SemiOrange3Color}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SemiOrange3Color}" />
+        </Style>
+    </Style>
+</Styles>

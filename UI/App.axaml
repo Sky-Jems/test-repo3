@@ -17,6 +17,7 @@
         <StyleInclude Source="avares://pos/ThemeOverrides/Styles/DataGrid.axaml" />
         <StyleInclude Source="avares://pos/ThemeOverrides/Styles/Dialog.axaml" />
         <StyleInclude Source="avares://pos/ThemeOverrides/Styles/NumericUpDown.axaml" />
+        <StyleInclude Source="avares://pos/Styles/Button.axaml" />
     </Application.Styles>
 
     <Application.Resources>

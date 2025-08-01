@@ -14,6 +14,7 @@ namespace Pos.Pages.Products;
 
 public partial class CreateProductView : ReactiveUserControl<CreateProductViewModel>
 {
+    private bool categoryDisplayFlag;
     public CreateProductView()
     {
         InitializeComponent();
@@ -71,12 +72,14 @@ public partial class CreateProductView : ReactiveUserControl<CreateProductViewMo
 
     private void OnButtonFlyoutOpened(object sender, EventArgs e)
     {
+        categoryDisplayFlag = true;
         CategoryDropdownIcon.Bind(PathIcon.DataProperty, new DynamicResourceExtension("SemiIconChevronRight"));
         SelectedCategoryListBox.SelectedItems!.Clear();
         foreach (var selectedCategory in ViewModel!.SelectedCategoryList)
         {
             SelectedCategoryListBox.SelectedItems.Add(ViewModel!.CategoryList.First(x => x.Id == selectedCategory.Id));
         }
+        categoryDisplayFlag = false;
     }
 
     private void OnButtonFlyoutClosed(object sender, EventArgs e)
@@ -86,11 +89,13 @@ public partial class CreateProductView : ReactiveUserControl<CreateProductViewMo
 
     private void OnCategorySelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        if (DataContext is CreateProductViewModel vm && sender is ListBox listBox)
+        if (!categoryDisplayFlag && DataContext is CreateProductViewModel vm && sender is ListBox listBox)
         {
             vm.SetCategoryList(listBox.SelectedItems.OfType<Category>());
-
+            Dispatcher.UIThread.Post(() =>
+            {
+                categoryBtn.Flyout.Hide();
+            });
         }
     }
-
 }

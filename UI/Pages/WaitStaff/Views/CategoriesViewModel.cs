@@ -1,6 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
+using Pos.Contants;
 using System.Reactive;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -34,11 +35,13 @@ public class CategoriesViewModel : ReactiveObject, IRoutableViewModel
     {
         try
         {
-            var categories = await _categoryService.GetAllCategoriesAsync();
+            List<string> colors = [Classes.SUCCESS, Classes.PRIMARY, Classes.SECONDARY, Classes.WARNING, Classes.DANGER];
+            List<Category> categories = await _categoryService.GetAllCategoriesAsync();
             Categories.Clear();
-            foreach (var category in categories)
+            for (int x = 0; x < categories.Count; x++)
             {
-                Categories.Add(category);
+                categories[x].ButtonVariant = colors[x % colors.Count];
+                Categories.Add(categories[x]);
             }
         }
         catch (Exception e)

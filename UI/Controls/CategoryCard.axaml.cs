@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using System.Windows.Input;
 using Avalonia;
@@ -36,6 +37,7 @@ public partial class CategoryCard : UserControl
         InitializeComponent();
         categoryCard.AddHandler(Button.PointerPressedEvent, OnPointerPressed, handledEventsToo: true);
         categoryCard.AddHandler(Button.PointerReleasedEvent, OnPointerReleased, handledEventsToo: true);
+        this.DataContextChanged += OnDataContextChanged;
     }
 
     private void OnButtonClick(object? sender, RoutedEventArgs e)
@@ -64,6 +66,14 @@ public partial class CategoryCard : UserControl
             DetailedCategoryDialog dialog = new();
             (dialog.DataContext as DetailedCategoryDialogViewModel).Name = Category.Name;
             await dialog.ShowAsync();
+        }
+    }
+
+    private void OnDataContextChanged(object? sender, EventArgs e)
+    {
+        if (DataContext is Category category)
+        {
+            categoryCard.Classes.Add(category.ButtonVariant);
         }
     }
 }

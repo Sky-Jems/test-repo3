@@ -137,7 +137,6 @@
 
                     <StackPanel Orientation="Vertical" Spacing="{StaticResource SemiSpacingTight}">
                         <Label Content="Category" />
-
                         <!--  TODO: convert as custom control  -->
                         <Border
                             Background="White"
@@ -146,6 +145,7 @@
                             ClipToBounds="True"
                             CornerRadius="{StaticResource SemiBorderRadiusSmall}">
                             <Button
+                                x:Name="categoryBtn"
                                 Padding="4,0"
                                 HorizontalAlignment="Stretch"
                                 HorizontalContentAlignment="Stretch"

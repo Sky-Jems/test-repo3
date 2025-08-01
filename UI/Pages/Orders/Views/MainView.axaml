@@ -211,7 +211,7 @@
                         </DataGrid.Styles>
 
                         <DataGrid.Columns>
-                            <DataGridTextColumn Binding="{Binding Id}" Header="No." />
+                            <DataGridTextColumn Binding="{Binding OrderId}" Header="No." />
                             <DataGridTextColumn
                                 Width="3*"
                                 Binding="{Binding Order.Customer}"

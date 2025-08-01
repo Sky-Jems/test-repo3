@@ -35,7 +35,7 @@ public class OrderCartPanelViewModel : ReactiveObject
     [ObservableAsProperty] public decimal AmountPaid { get; }
     [ObservableAsProperty] public decimal RemainingBalance { get; }
     [ObservableAsProperty] public DiscountOrder? DiscountOrder { get; }
-    
+    [ObservableAsProperty] public long? OrderId { get; }
     private LineItem _selectedItem;
     public LineItem SelectedItem
     {
@@ -159,6 +159,7 @@ public class OrderCartPanelViewModel : ReactiveObject
         Bind(_cartService.WhenAnyValue(x => x.AmountPaid), x => x.AmountPaid);
         Bind(_cartService.WhenAnyValue(x => x.RemainingBalance), x => x.RemainingBalance);
         Bind(_cartService.WhenAnyValue(x => x.DiscountOrder), x => x.DiscountOrder);
+        Bind(_cartService.WhenAnyValue(x => x.OrderId), x => x.OrderId);
     }
     
     private void Bind<T>(IObservable<T> source, Expression<Func<OrderCartPanelViewModel, T>> property)

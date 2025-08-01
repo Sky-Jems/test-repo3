@@ -46,12 +46,18 @@
             <!--  header  -->
             <Border Grid.Row="0" Padding="24,24,24,0">
                 <Grid ColumnDefinitions="* auto">
-                    <Label
-                        Grid.Column="0"
-                        VerticalAlignment="Center"
-                        Classes="H4"
-                        Content="Order Items"
-                        Theme="{StaticResource TitleLabel}" />
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock
+                            Text="Order Items"
+                            FontSize="16"
+                            FontWeight="{StaticResource SemiFontWeightBold}"
+                            Theme="{StaticResource TitleLabel}" />
+                        <TextBlock
+                            Text=" - Order# "
+                            IsVisible="{Binding OrderId, Converter={StaticResource isGreaterThanZeroConverter}}"
+                            VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding OrderId}" VerticalAlignment="Center" />
+                    </StackPanel>
                     <Button
                         Grid.Column="1"
                         Classes="Danger"

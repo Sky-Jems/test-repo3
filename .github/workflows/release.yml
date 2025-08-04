@@ -1,8 +1,12 @@
 name: Release Microservices
 
 on:
-  release:
-    types: [created]
+  push:
+    tags:
+      - '*' 
+
+permissions:
+  contents: write
 
 jobs:
   build-and-upload:
@@ -37,9 +41,13 @@ jobs:
           exit 1
         fi
 
-    - name: Upload JAR files to release
+    - name: Zip built JARs
+      run: zip -r jar-releases.zip jar-releases
+
+    - name: Upload Zip file containing jar files
       uses: softprops/action-gh-release@v1
       with:
-        files: jar-releases/*.jar
+        tag_name: ${{ github.ref_name }}
+        files: jar-releases.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

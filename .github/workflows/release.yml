@@ -47,3 +47,6 @@ jobs:
         files: jar-releases/*.jar
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Zip built JARs
+      run: zip -r jar-releases.zip jar-releases

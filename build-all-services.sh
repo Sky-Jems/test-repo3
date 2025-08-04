@@ -5,14 +5,24 @@
 # Create a directory to store all JAR files
 mkdir -p jar-releases
 
+# Install common first (dependency of others)
+if [ -d "common" ]; then
+    echo "Installing common..."
+    cd common
+    ./mvnw clean install -DskipTests
+    cd ..
+    echo "common installed"
+else
+    echo "Error: common module not found"
+    exit 1
+fi
+
 # List of all microservices
 SERVICES=(
     "auth-service"
     "billing-service"
-    "common"
     "discount-service"
     "gateway-service"
-    "notification-service"
     "order-orchestrator-service"
     "order-service"
     "payment-service"

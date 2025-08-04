@@ -40,13 +40,13 @@ jobs:
           exit 1
         fi
 
+    - name: Zip built JARs
+      run: zip -r jar-releases.zip jar-releases
+
     - name: Upload JAR files to release
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ github.ref_name }}
-        files: jar-releases/*.jar
+        files: jar-releases.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Zip built JARs
-      run: zip -r jar-releases.zip jar-releases
